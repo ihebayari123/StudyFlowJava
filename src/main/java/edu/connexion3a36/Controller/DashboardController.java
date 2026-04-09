@@ -23,6 +23,7 @@ public class DashboardController {
     @FXML private HBox exercicesItem;
     @FXML private HBox progressionItem;
     @FXML private HBox settingsItem;
+    @FXML private HBox utilisateursItem;
 
     @FXML private StackPane contentArea;
 
@@ -40,6 +41,8 @@ public class DashboardController {
         exercicesItem.setOnMouseClicked(event -> loadView("exercices"));
         progressionItem.setOnMouseClicked(event -> loadView("progression"));
         settingsItem.setOnMouseClicked(event -> loadView("settings"));
+        utilisateursItem.setOnMouseClicked(event -> loadView("gestionUtilisateurs"));
+        addHoverEffect(utilisateursItem);
 
         addHoverEffect(homeItem);
         addHoverEffect(coursItem);
@@ -100,7 +103,7 @@ public class DashboardController {
     }
 
     private void resetActiveStyles() {
-        HBox[] items = {homeItem, coursItem, chapitresItem, quizItem, exercicesItem, progressionItem, settingsItem};
+        HBox[] items = {homeItem, coursItem, chapitresItem, quizItem, exercicesItem, progressionItem, settingsItem, utilisateursItem};
         for (HBox item : items) {
             if (item != null) {
                 item.setStyle("-fx-background-color: transparent; -fx-background-radius: 8; -fx-padding: 0 12 0 12;");
@@ -127,6 +130,7 @@ public class DashboardController {
             case "exercices": activeItem = exercicesItem; break;
             case "progression": activeItem = progressionItem; break;
             case "settings": activeItem = settingsItem; break;
+            case "gestionUtilisateurs": activeItem = utilisateursItem; break;
             default: break;
         }
 
