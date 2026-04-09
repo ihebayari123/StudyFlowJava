@@ -5,6 +5,7 @@ import edu.connexion3a36.services.UtilisateurService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -23,19 +24,27 @@ public class GestionUtilisateursController {
 
     @FXML private TableView<Utilisateur> tableUtilisateurs;
     @FXML private TableColumn<Utilisateur, Integer> colId;
-    @FXML private TableColumn<Utilisateur, String> colNom;
-    @FXML private TableColumn<Utilisateur, String> colPrenom;
-    @FXML private TableColumn<Utilisateur, String> colEmail;
-    @FXML private TableColumn<Utilisateur, String> colRole;
-    @FXML private TableColumn<Utilisateur, String> colStatut;
-    @FXML private TableColumn<Utilisateur, Void> colActions;
-    @FXML private TextField searchField;
+    @FXML private TableColumn<Utilisateur, String>  colNom;
+    @FXML private TableColumn<Utilisateur, String>  colPrenom;
+    @FXML private TableColumn<Utilisateur, String>  colEmail;
+    @FXML private TableColumn<Utilisateur, String>  colRole;
+    @FXML private TableColumn<Utilisateur, String>  colStatut;
+    @FXML private TableColumn<Utilisateur, Void>    colActions;
+    @FXML private TextField                          searchField;
+    @FXML private ComboBox<String>                   filtreRole;
+    @FXML private ComboBox<String>                   filtreStatut;
+    @FXML private Label                              compteurLabel;
 
     UtilisateurService service = new UtilisateurService();
     ObservableList<Utilisateur> observableList = FXCollections.observableArrayList();
+    FilteredList<Utilisateur> filteredList;
 
+    // ═══════════════════════════════
+    // INITIALISATION
+    // ═══════════════════════════════
     @FXML
     public void initialize() throws SQLException {
+        // Colonnes
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
         colPrenom.setCellValueFactory(new PropertyValueFactory<>("prenom"));
@@ -43,36 +52,106 @@ public class GestionUtilisateursController {
         colRole.setCellValueFactory(new PropertyValueFactory<>("role"));
         colStatut.setCellValueFactory(new PropertyValueFactory<>("statutCompte"));
 
+        // ComboBox filtres
+        filtreRole.setItems(FXCollections.observableArrayList(
+                "Tous les rôles", "ADMIN", "ENSEIGNANT", "ETUDIANT",
+                "ROLE_ADMIN", "ROLE_ENSEIGNANT", "ROLE_ETUDIANT"));
+        filtreRole.setValue("Tous les rôles");
+
+        filtreStatut.setItems(FXCollections.observableArrayList(
+                "Tous les statuts", "ACTIF", "BLOQUE", "INACTIF"));
+        filtreStatut.setValue("Tous les statuts");
+
         ajouterColonneActions();
         chargerDonnees();
-        configurerRecherche();
+        configurerFiltres();
     }
 
+    // ═══════════════════════════════
+    // CHARGER DONNEES
+    // ═══════════════════════════════
     private void chargerDonnees() throws SQLException {
         observableList.setAll(service.getData());
-        tableUtilisateurs.setItems(observableList);
-    }
-
-    private void configurerRecherche() {
-        FilteredList<Utilisateur> filteredList = new FilteredList<>(observableList, p -> true);
-        searchField.textProperty().addListener((obs, oldVal, newVal) -> {
-            filteredList.setPredicate(u -> {
-                if (newVal == null || newVal.isEmpty()) return true;
-                String filtre = newVal.toLowerCase();
-                return u.getNom().toLowerCase().contains(filtre)
-                        || u.getPrenom().toLowerCase().contains(filtre)
-                        || u.getEmail().toLowerCase().contains(filtre)
-                        || u.getRole().toLowerCase().contains(filtre);
-            });
-        });
+        filteredList = new FilteredList<>(observableList, p -> true);
         tableUtilisateurs.setItems(filteredList);
+        mettreAJourCompteur();
     }
 
+    // ═══════════════════════════════
+    // FILTRES COMBINES
+    // ═══════════════════════════════
+    private void configurerFiltres() {
+        // Recherche texte
+        searchField.textProperty().addListener((obs, old, val) -> appliquerFiltres());
+
+        // Filtre rôle
+        filtreRole.valueProperty().addListener((obs, old, val) -> appliquerFiltres());
+
+        // Filtre statut
+        filtreStatut.valueProperty().addListener((obs, old, val) -> appliquerFiltres());
+    }
+
+    private void appliquerFiltres() {
+        String recherche = searchField.getText().toLowerCase().trim();
+        String role      = filtreRole.getValue();
+        String statut    = filtreStatut.getValue();
+
+        filteredList.setPredicate(u -> {
+            // Filtre recherche texte
+            boolean matchRecherche = recherche.isEmpty()
+                    || u.getNom().toLowerCase().contains(recherche)
+                    || u.getPrenom().toLowerCase().contains(recherche)
+                    || u.getEmail().toLowerCase().contains(recherche);
+
+            // Filtre rôle
+            boolean matchRole = role == null
+                    || role.equals("Tous les rôles")
+                    || u.getRole().equals(role);
+
+            // Filtre statut
+            boolean matchStatut = statut == null
+                    || statut.equals("Tous les statuts")
+                    || u.getStatutCompte().equals(statut);
+
+            return matchRecherche && matchRole && matchStatut;
+        });
+
+        mettreAJourCompteur();
+    }
+
+    // ═══════════════════════════════
+    // REINITIALISER FILTRES
+    // ═══════════════════════════════
+    @FXML
+    void reinitialiserFiltres(ActionEvent event) {
+        searchField.clear();
+        filtreRole.setValue("Tous les rôles");
+        filtreStatut.setValue("Tous les statuts");
+        appliquerFiltres();
+    }
+
+    // ═══════════════════════════════
+    // COMPTEUR RESULTATS
+    // ═══════════════════════════════
+    private void mettreAJourCompteur() {
+        int total   = observableList.size();
+        int affiche = filteredList.size();
+        if (affiche == total) {
+            compteurLabel.setText(total + " utilisateurs au total");
+        } else {
+            compteurLabel.setText(affiche + " résultat(s) sur " + total + " utilisateurs");
+        }
+    }
+
+    // ═══════════════════════════════
+    // COLONNE ACTIONS
+    // ═══════════════════════════════
     private void ajouterColonneActions() {
         colActions.setCellFactory(col -> new TableCell<>() {
-            final Button btnModifier = new Button("✏ Modifier");
+            final Button btnModifier  = new Button("✏ Modifier");
             final Button btnSupprimer = new Button("🗑 Supprimer");
-            final HBox hbox = new HBox(6, btnModifier, btnSupprimer);
+            final Button btnBloquer   = new Button();
+            final HBox hbox = new HBox(6, btnModifier, btnSupprimer, btnBloquer);
 
             {
                 btnModifier.setStyle("-fx-background-color: #2979FF; -fx-text-fill: white; -fx-font-size: 11; -fx-background-radius: 6; -fx-cursor: hand;");
@@ -87,16 +166,42 @@ public class GestionUtilisateursController {
                     Utilisateur u = getTableView().getItems().get(getIndex());
                     confirmerSuppression(u);
                 });
+
+                btnBloquer.setOnAction(e -> {
+                    Utilisateur u = getTableView().getItems().get(getIndex());
+                    try {
+                        service.bloquerDebloquer(u);
+                        chargerDonnees();
+                        configurerFiltres();
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                    }
+                });
             }
 
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
-                setGraphic(empty ? null : hbox);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    Utilisateur u = getTableView().getItems().get(getIndex());
+                    if (u.getStatutCompte().equals("ACTIF")) {
+                        btnBloquer.setText("🔒 Bloquer");
+                        btnBloquer.setStyle("-fx-background-color: #FF6F00; -fx-text-fill: white; -fx-font-size: 11; -fx-background-radius: 6; -fx-cursor: hand;");
+                    } else {
+                        btnBloquer.setText("🔓 Débloquer");
+                        btnBloquer.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 11; -fx-background-radius: 6; -fx-cursor: hand;");
+                    }
+                    setGraphic(hbox);
+                }
             }
         });
     }
 
+    // ═══════════════════════════════
+    // AJOUTER
+    // ═══════════════════════════════
     @FXML
     void ouvrirAjouter() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/ajouterUtilisateur.fxml"));
@@ -109,6 +214,9 @@ public class GestionUtilisateursController {
         try { chargerDonnees(); } catch (SQLException e) { e.printStackTrace(); }
     }
 
+    // ═══════════════════════════════
+    // MODIFIER
+    // ═══════════════════════════════
     private void ouvrirModifier(Utilisateur u) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/modifierUtilisateur.fxml"));
@@ -124,6 +232,9 @@ public class GestionUtilisateursController {
         } catch (Exception e) { e.printStackTrace(); }
     }
 
+    // ═══════════════════════════════
+    // SUPPRIMER
+    // ═══════════════════════════════
     private void confirmerSuppression(Utilisateur u) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirmation");

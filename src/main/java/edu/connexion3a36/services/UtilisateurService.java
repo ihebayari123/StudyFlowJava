@@ -77,4 +77,38 @@ public class UtilisateurService implements IService<Utilisateur> {
         }
         return data;
     }
+
+    // LOGIN
+// ═══════════════════════════════
+    public Utilisateur login(String email, String motDePasse) throws SQLException {
+        String requete = "SELECT * FROM utilisateur WHERE email = ? AND mot_de_passe = ?";
+        PreparedStatement pst = cnx.prepareStatement(requete);
+        pst.setString(1, email);
+        pst.setString(2, motDePasse);
+        ResultSet rs = pst.executeQuery();
+        if (rs.next()) {
+            return new Utilisateur(
+                    rs.getInt("id"),
+                    rs.getString("nom"),
+                    rs.getString("prenom"),
+                    rs.getString("email"),
+                    rs.getString("mot_de_passe"),
+                    rs.getString("role"),
+                    rs.getString("statut_compte")
+            );
+        }
+        return null;
+    }
+    // ═══════════════════════════════
+// BLOQUER / DEBLOQUER
+// ═══════════════════════════════
+    public void bloquerDebloquer(Utilisateur utilisateur) throws SQLException {
+        String nouveauStatut = utilisateur.getStatutCompte().equals("ACTIF") ? "BLOQUE" : "ACTIF";
+        String requete = "UPDATE utilisateur SET statut_compte = ? WHERE id = ?";
+        PreparedStatement pst = cnx.prepareStatement(requete);
+        pst.setString(1, nouveauStatut);
+        pst.setInt(2, utilisateur.getId());
+        pst.executeUpdate();
+        System.out.println("Statut changé → " + nouveauStatut);
+    }
 }

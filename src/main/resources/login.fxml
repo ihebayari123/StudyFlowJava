@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+
+<StackPane xmlns="http://javafx.com/javafx/21"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="edu.connexion3a36.Controller.LoginController"
+           style="-fx-background-color: #c8d8e8;">
+
+    <!-- Background -->
+    <Rectangle width="1280" height="720"
+               style="-fx-fill: linear-gradient(to bottom right, #7BAFD4, #B0C9D8, #8A9BAA);"/>
+
+    <!-- Card principale -->
+    <HBox alignment="CENTER">
+        <VBox alignment="CENTER" spacing="0"
+              style="-fx-background-color: #FFFFFF; -fx-background-radius: 16;
+                     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 30, 0, 0, 8);
+                     -fx-min-width: 420; -fx-max-width: 420;">
+
+            <!-- Header bleu -->
+            <VBox alignment="CENTER" spacing="8"
+                  style="-fx-background-color: #2979FF; -fx-background-radius: 16 16 0 0;
+                         -fx-padding: 40 30 40 30;">
+                <Circle radius="30" style="-fx-fill: rgba(255,255,255,0.2);"/>
+                <Label text="StudyFlow"
+                       style="-fx-font-size: 26; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                <Label text="Connectez-vous à votre compte"
+                       style="-fx-font-size: 13; -fx-text-fill: rgba(255,255,255,0.8);"/>
+            </VBox>
+
+            <!-- Formulaire -->
+            <VBox spacing="16" style="-fx-padding: 36 36 36 36;">
+
+                <!-- Email -->
+                <VBox spacing="6">
+                    <Label text="Email"
+                           style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #424242;"/>
+                    <TextField fx:id="emailField"
+                               promptText="Entrez votre email"
+                               style="-fx-background-radius: 8; -fx-padding: 10;
+                                      -fx-font-size: 13; -fx-border-color: #E0E0E0;
+                                      -fx-border-radius: 8; -fx-border-width: 1.5;"/>
+                    <Label fx:id="emailError" text=""
+                           style="-fx-font-size: 11; -fx-text-fill: #F44336;"/>
+                </VBox>
+
+                <!-- Mot de passe -->
+                <VBox spacing="6">
+                    <Label text="Mot de passe"
+                           style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #424242;"/>
+                    <PasswordField fx:id="motDePasseField"
+                                   promptText="Entrez votre mot de passe"
+                                   style="-fx-background-radius: 8; -fx-padding: 10;
+                                          -fx-font-size: 13; -fx-border-color: #E0E0E0;
+                                          -fx-border-radius: 8; -fx-border-width: 1.5;"/>
+                    <Label fx:id="motDePasseError" text=""
+                           style="-fx-font-size: 11; -fx-text-fill: #F44336;"/>
+                </VBox>
+
+                <!-- Message erreur global -->
+                <Label fx:id="loginError" text=""
+                       wrapText="true"
+                       style="-fx-font-size: 12; -fx-text-fill: #F44336;
+                              -fx-background-color: #FFEBEE; -fx-background-radius: 8;
+                              -fx-padding: 8 12 8 12;"/>
+
+                <!-- Bouton connexion -->
+                <Button text="Se connecter" onAction="#seConnecter"
+                        prefWidth="348" prefHeight="44"
+                        style="-fx-background-color: #2979FF; -fx-text-fill: white;
+                               -fx-font-size: 14; -fx-font-weight: bold;
+                               -fx-background-radius: 8; -fx-cursor: hand;"/>
+
+                <!-- Footer -->
+                <Label text="StudyFlow © 2026"
+                       style="-fx-font-size: 11; -fx-text-fill: #9E9E9E;"
+                       HBox.hgrow="ALWAYS"/>
+
+            </VBox>
+        </VBox>
+    </HBox>
+</StackPane>

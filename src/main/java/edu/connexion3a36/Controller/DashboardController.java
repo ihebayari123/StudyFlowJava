@@ -1,5 +1,6 @@
 package edu.connexion3a36.Controller;
 
+import edu.connexion3a36.entities.Utilisateur;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -15,6 +16,7 @@ import java.util.logging.Logger;
 public class DashboardController {
 
     private static final Logger LOGGER = Logger.getLogger(DashboardController.class.getName());
+    private Utilisateur utilisateurConnecte;
 
     @FXML private HBox homeItem;
     @FXML private HBox coursItem;
@@ -164,5 +166,10 @@ public class DashboardController {
 
     public void navigateTo(String viewName) {
         loadView(viewName);
+    }
+    public void setUtilisateurConnecte(Utilisateur u) {
+        this.utilisateurConnecte = u;
+        // Afficher le nom dans le dashboard si tu veux
+        System.out.println("Bienvenue " + u.getNom() + " !");
     }
 }

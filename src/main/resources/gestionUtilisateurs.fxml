@@ -15,29 +15,53 @@
         <Region HBox.hgrow="ALWAYS"/>
         <Button fx:id="btnAjouter" text="+ Ajouter"
                 onAction="#ouvrirAjouter"
-                style="-fx-background-color: #2979FF; -fx-text-fill: white; -fx-font-size: 13; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-padding: 8 16 8 16;"/>
+                style="-fx-background-color: #2979FF; -fx-text-fill: white; -fx-font-size: 13;
+                       -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand;
+                       -fx-padding: 8 16 8 16;"/>
     </HBox>
 
-    <!-- Search Bar -->
-    <HBox alignment="CENTER_LEFT" spacing="8"
-          style="-fx-background-color: #FFFFFF; -fx-background-radius: 10; -fx-padding: 10 16 10 16; -fx-border-color: #E0E0E0; -fx-border-radius: 10;">
-        <Label text="🔍" style="-fx-font-size: 14; -fx-text-fill: #9E9E9E;"/>
-        <TextField fx:id="searchField" promptText="Rechercher un utilisateur..."
-                   HBox.hgrow="ALWAYS"
-                   style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-font-size: 13;"/>
+    <!-- Barre recherche + filtres -->
+    <HBox spacing="12" alignment="CENTER_LEFT">
+
+        <!-- Recherche -->
+        <HBox alignment="CENTER_LEFT" spacing="8" HBox.hgrow="ALWAYS"
+              style="-fx-background-color: #FFFFFF; -fx-background-radius: 10;
+                     -fx-padding: 10 16 10 16; -fx-border-color: #E0E0E0; -fx-border-radius: 10;">
+            <Label text="🔍" style="-fx-font-size: 14; -fx-text-fill: #9E9E9E;"/>
+            <TextField fx:id="searchField" promptText="Rechercher par nom, prénom, email..."
+                       HBox.hgrow="ALWAYS"
+                       style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-font-size: 13;"/>
+        </HBox>
+
+        <!-- Filtre Rôle -->
+        <ComboBox fx:id="filtreRole" prefWidth="160"
+                  style="-fx-background-radius: 8; -fx-font-size: 13;"/>
+
+        <!-- Filtre Statut -->
+        <ComboBox fx:id="filtreStatut" prefWidth="140"
+                  style="-fx-background-radius: 8; -fx-font-size: 13;"/>
+
+        <!-- Bouton Réinitialiser -->
+        <Button text="🔄 Réinitialiser" onAction="#reinitialiserFiltres"
+                style="-fx-background-color: #E0E0E0; -fx-text-fill: #424242; -fx-font-size: 12;
+                       -fx-background-radius: 8; -fx-cursor: hand; -fx-padding: 8 12 8 12;"/>
     </HBox>
+
+    <!-- Compteur résultats -->
+    <Label fx:id="compteurLabel" text=""
+           style="-fx-font-size: 12; -fx-text-fill: #9E9E9E;"/>
 
     <!-- TableView -->
     <TableView fx:id="tableUtilisateurs" VBox.vgrow="ALWAYS"
                style="-fx-background-color: #FFFFFF; -fx-background-radius: 12;">
         <columns>
-            <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
-            <TableColumn fx:id="colNom" text="Nom" prefWidth="120"/>
-            <TableColumn fx:id="colPrenom" text="Prénom" prefWidth="120"/>
-            <TableColumn fx:id="colEmail" text="Email" prefWidth="200"/>
-            <TableColumn fx:id="colRole" text="Rôle" prefWidth="120"/>
-            <TableColumn fx:id="colStatut" text="Statut" prefWidth="100"/>
-            <TableColumn fx:id="colActions" text="Actions" prefWidth="150"/>
+            <TableColumn fx:id="colId"      text="ID"      prefWidth="50"/>
+            <TableColumn fx:id="colNom"     text="Nom"     prefWidth="120"/>
+            <TableColumn fx:id="colPrenom"  text="Prénom"  prefWidth="120"/>
+            <TableColumn fx:id="colEmail"   text="Email"   prefWidth="200"/>
+            <TableColumn fx:id="colRole"    text="Rôle"    prefWidth="130"/>
+            <TableColumn fx:id="colStatut"  text="Statut"  prefWidth="100"/>
+            <TableColumn fx:id="colActions" text="Actions" prefWidth="220"/>
         </columns>
     </TableView>
 
