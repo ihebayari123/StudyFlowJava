@@ -131,11 +131,14 @@
                     <VBox spacing="5">
                         <Label text="Téléphone"
                                style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #2d6a4f; -fx-font-family: 'Palatino Linotype';"/>
-                        <TextField fx:id="telephoneTF" promptText="Ex : 50000000" prefHeight="38"
-                                   style="-fx-background-color: #f5f9f5; -fx-border-color: #b5d5b5;
-                                    -fx-border-width: 0 0 2 0; -fx-background-radius: 4 4 0 0;
-                                    -fx-text-fill: #1a3320; -fx-prompt-text-fill: #a0bea0;
-                                    -fx-font-family: 'Palatino Linotype'; -fx-font-size: 12px; -fx-padding: 8 12;"/>
+                        <HBox spacing="8" alignment="CENTER_LEFT">
+                            <Label fx:id="drapeauLabel" style="-fx-font-size: 24px;" prefWidth="40" alignment="CENTER"/>
+                            <TextField fx:id="telephoneTF" promptText="Ex : +212612345678" prefHeight="38" prefWidth="296"
+                                       style="-fx-background-color: #f5f9f5; -fx-border-color: #b5d5b5;
+                                        -fx-border-width: 0 0 2 0; -fx-background-radius: 4 4 0 0;
+                                        -fx-text-fill: #1a3320; -fx-prompt-text-fill: #a0bea0;
+                                        -fx-font-family: 'Palatino Linotype'; -fx-font-size: 12px; -fx-padding: 8 12;"/>
+                        </HBox>
                     </VBox>
 
                     <VBox spacing="5">

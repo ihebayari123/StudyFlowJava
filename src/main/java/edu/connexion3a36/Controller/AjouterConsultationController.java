@@ -2,10 +2,10 @@ package edu.connexion3a36.Controller;
 
 import edu.connexion3a36.entities.Consultation;
 import edu.connexion3a36.entities.Medecin;
-import edu.connexion3a36.entities.WellBeingScore;
+import edu.connexion3a36.entities.StressSurvey;
 import edu.connexion3a36.services.ConsultationService;
 import edu.connexion3a36.services.MedecinService;
-import edu.connexion3a36.services.WellBeingScoreService;
+import edu.connexion3a36.services.StressSurveyService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -22,11 +22,11 @@ public class AjouterConsultationController {
     @FXML private ComboBox<String> genreCB;
     @FXML private ComboBox<String> niveauCB;
     @FXML private ComboBox<Medecin> medecinCB;
-    @FXML private ComboBox<WellBeingScore> surveyCB;
+    @FXML private ComboBox<StressSurvey> surveyCB;
 
     private final ConsultationService service = new ConsultationService();
     private final MedecinService medecinService = new MedecinService();
-    private final WellBeingScoreService surveyService = new WellBeingScoreService();
+    private final StressSurveyService surveyService = new StressSurveyService();
 
     @FXML
     public void initialize() {
@@ -37,7 +37,7 @@ public class AjouterConsultationController {
             List<Medecin> medecins = medecinService.getData();
             medecinCB.getItems().addAll(medecins);
 
-            List<WellBeingScore> surveys = surveyService.getData();
+            List<StressSurvey> surveys = surveyService.getData();
             surveyCB.getItems().addAll(surveys);
         } catch (SQLException e) {
             showAlert(Alert.AlertType.ERROR, "Erreur chargement", e.getMessage());
