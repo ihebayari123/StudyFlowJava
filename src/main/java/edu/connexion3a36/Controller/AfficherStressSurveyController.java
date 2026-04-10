@@ -3,6 +3,9 @@ package edu.connexion3a36.Controller;
 import edu.connexion3a36.entities.StressSurvey;
 import edu.connexion3a36.services.StressSurveyService;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -10,6 +13,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.sql.Date;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 
 public class AfficherStressSurveyController {
@@ -26,8 +31,18 @@ public class AfficherStressSurveyController {
     @FXML private TextField studyHoursTF;
     @FXML private TextField userIdTF;
 
+    // Composants filtre/recherche/tri
+    @FXML private TextField rechercheTF;
+    @FXML private ComboBox<String> triCB;
+    @FXML private ComboBox<String> ordreCB;
+    @FXML private DatePicker filtreDatePicker;
+
     private final StressSurveyService service = new StressSurveyService();
     private StressSurvey selected;
+
+    private ObservableList<StressSurvey> masterData;
+    private FilteredList<StressSurvey> filteredData;
+    private SortedList<StressSurvey> sortedData;
 
     @FXML
     public void initialize() {
@@ -46,13 +61,30 @@ public class AfficherStressSurveyController {
                 userIdTF.setText(String.valueOf(s.getUser_id()));
             }
         });
+
+        // Configuration Filtre / Recherche / Tri
+        triCB.getItems().addAll("ID", "Date", "Sommeil", "Étude", "User ID");
+        ordreCB.getItems().addAll("Croissant", "Décroissant");
+
+        triCB.setOnAction(e -> appliquerTri());
+        ordreCB.setOnAction(e -> appliquerTri());
+
+        // Filtre par date
+        filtreDatePicker.valueProperty().addListener((obs, oldVal, newVal) -> appliquerFiltres());
+
+        // Recherche par User ID
+        rechercheTF.textProperty().addListener((obs, oldVal, newVal) -> appliquerFiltres());
+
         loadData();
     }
 
     private void loadData() {
         try {
-            List<StressSurvey> list = service.getData();
-            tableView.setItems(FXCollections.observableArrayList(list));
+            masterData = FXCollections.observableArrayList(service.getData());
+            filteredData = new FilteredList<>(masterData, p -> true);
+            sortedData = new SortedList<>(filteredData);
+            sortedData.comparatorProperty().bind(tableView.comparatorProperty());
+            tableView.setItems(sortedData);
         } catch (SQLException e) {
             showAlert(Alert.AlertType.ERROR, "Erreur", e.getMessage());
         }
@@ -101,6 +133,63 @@ public class AfficherStressSurveyController {
 
     @FXML
     void actualiser(ActionEvent event) { loadData(); }
+
+    private void appliquerFiltres() {
+        String recherche = rechercheTF.getText().trim().toLowerCase();
+        LocalDate dateFiltre = filtreDatePicker.getValue();
+
+        filteredData.setPredicate(survey -> {
+            // Filtre recherche User ID
+            if (!recherche.isEmpty()) {
+                if (!String.valueOf(survey.getUser_id()).contains(recherche)) {
+                    return false;
+                }
+            }
+            // Filtre date
+            if (dateFiltre != null) {
+                if (!survey.getDate().toLocalDate().equals(dateFiltre)) {
+                    return false;
+                }
+            }
+            return true;
+        });
+    }
+
+    private void appliquerTri() {
+        String champTri = triCB.getValue();
+        String ordre = ordreCB.getValue();
+
+        if (champTri == null || ordre == null) {
+            sortedData.setComparator(null);
+            return;
+        }
+
+        Comparator<StressSurvey> comparator = switch (champTri) {
+            case "ID" -> Comparator.comparingInt(StressSurvey::getId);
+            case "Date" -> Comparator.comparing(StressSurvey::getDate);
+            case "Sommeil" -> Comparator.comparingInt(StressSurvey::getSleep_hours);
+            case "Étude" -> Comparator.comparingInt(StressSurvey::getStudy_hours);
+            case "User ID" -> Comparator.comparingInt(StressSurvey::getUser_id);
+            default -> null;
+        };
+
+        if (comparator != null) {
+            if ("Décroissant".equals(ordre)) {
+                comparator = comparator.reversed();
+            }
+            sortedData.setComparator(comparator);
+        }
+    }
+
+    @FXML
+    void resetFiltre(ActionEvent event) {
+        triCB.setValue(null);
+        ordreCB.setValue(null);
+        filtreDatePicker.setValue(null);
+        rechercheTF.clear();
+        filteredData.setPredicate(p -> true);
+        sortedData.setComparator(null);
+    }
 
     private void showAlert(Alert.AlertType type, String titre, String msg) {
         Alert a = new Alert(type);

@@ -7,6 +7,9 @@ import edu.connexion3a36.services.ConsultationService;
 import edu.connexion3a36.services.MedecinService;
 import edu.connexion3a36.services.WellBeingScoreService;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -14,6 +17,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 
 public class AfficherConsultationController {
@@ -34,10 +39,19 @@ public class AfficherConsultationController {
     @FXML private ComboBox<Medecin> medecinCB;
     @FXML private ComboBox<WellBeingScore> surveyCB;
 
+    // Composants filtre et tri
+    @FXML private ComboBox<String> triCB;
+    @FXML private ComboBox<String> ordreCB;
+    @FXML private DatePicker filtreDatePicker;
+
     private final ConsultationService service = new ConsultationService();
     private final MedecinService medecinService = new MedecinService();
     private final WellBeingScoreService surveyService = new WellBeingScoreService();
     private Consultation selected;
+
+    private ObservableList<Consultation> masterData;
+    private FilteredList<Consultation> filteredData;
+    private SortedList<Consultation> sortedData;
 
     @FXML
     public void initialize() {
@@ -77,12 +91,31 @@ public class AfficherConsultationController {
             }
         });
 
+        // Configuration Filtre et Tri
+        triCB.getItems().addAll("ID", "Date");
+        ordreCB.getItems().addAll("Croissant", "Décroissant");
+
+        triCB.setOnAction(e -> appliquerTri());
+        ordreCB.setOnAction(e -> appliquerTri());
+
+        filtreDatePicker.valueProperty().addListener((obs, oldVal, newVal) -> {
+            filteredData.setPredicate(consultation -> {
+                if (newVal == null) return true;
+                LocalDate dateConsultation = consultation.getDate_de_consultation().toLocalDateTime().toLocalDate();
+                return dateConsultation.equals(newVal);
+            });
+        });
+
         loadData();
     }
 
     private void loadData() {
         try {
-            tableView.setItems(FXCollections.observableArrayList(service.getData()));
+            masterData = FXCollections.observableArrayList(service.getData());
+            filteredData = new FilteredList<>(masterData, p -> true);
+            sortedData = new SortedList<>(filteredData);
+            sortedData.comparatorProperty().bind(tableView.comparatorProperty());
+            tableView.setItems(sortedData);
         } catch (SQLException e) {
             showAlert(Alert.AlertType.ERROR, "Erreur", e.getMessage());
         }
@@ -139,6 +172,40 @@ public class AfficherConsultationController {
 
     @FXML
     void actualiser(ActionEvent event) { loadData(); }
+
+    private void appliquerTri() {
+        String champTri = triCB.getValue();
+        String ordre = ordreCB.getValue();
+
+        if (champTri == null || ordre == null) {
+            sortedData.setComparator(null);
+            return;
+        }
+
+        Comparator<Consultation> comparator = null;
+
+        if ("ID".equals(champTri)) {
+            comparator = Comparator.comparingInt(Consultation::getId);
+        } else if ("Date".equals(champTri)) {
+            comparator = Comparator.comparing(Consultation::getDate_de_consultation);
+        }
+
+        if (comparator != null) {
+            if ("Décroissant".equals(ordre)) {
+                comparator = comparator.reversed();
+            }
+            sortedData.setComparator(comparator);
+        }
+    }
+
+    @FXML
+    void resetFiltre(ActionEvent event) {
+        triCB.setValue(null);
+        ordreCB.setValue(null);
+        filtreDatePicker.setValue(null);
+        filteredData.setPredicate(p -> true);
+        sortedData.setComparator(null);
+    }
 
     private void showAlert(Alert.AlertType type, String titre, String msg) {
         Alert a = new Alert(type);

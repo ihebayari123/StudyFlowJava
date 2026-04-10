@@ -3,12 +3,16 @@ package edu.connexion3a36.Controller;
 import edu.connexion3a36.entities.WellBeingScore;
 import edu.connexion3a36.services.WellBeingScoreService;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.sql.SQLException;
+import java.util.Comparator;
 import java.util.List;
 
 public class AfficherWellBeingScoreController {
@@ -26,8 +30,17 @@ public class AfficherWellBeingScoreController {
     @FXML private TextField commentTF;
     @FXML private TextField scoreTF;
 
+    // Composants filtre/recherche/tri
+    @FXML private TextField rechercheTF;
+    @FXML private ComboBox<String> triCB;
+    @FXML private ComboBox<String> ordreCB;
+
     private final WellBeingScoreService service = new WellBeingScoreService();
     private WellBeingScore selected;
+
+    private ObservableList<WellBeingScore> masterData;
+    private FilteredList<WellBeingScore> filteredData;
+    private SortedList<WellBeingScore> sortedData;
 
     @FXML
     public void initialize() {
@@ -47,12 +60,35 @@ public class AfficherWellBeingScoreController {
                 scoreTF.setText(String.valueOf(w.getScore()));
             }
         });
+
+        // Configuration Filtre / Recherche / Tri
+        triCB.getItems().addAll("ID", "Score", "Survey ID");
+        ordreCB.getItems().addAll("Croissant", "Décroissant");
+
+        triCB.setOnAction(e -> appliquerTri());
+        ordreCB.setOnAction(e -> appliquerTri());
+
+        // Recherche temps réel
+        rechercheTF.textProperty().addListener((obs, oldVal, newVal) -> {
+            String recherche = newVal.trim().toLowerCase();
+            filteredData.setPredicate(score -> {
+                if (recherche.isEmpty()) return true;
+                return score.getComment().toLowerCase().contains(recherche)
+                        || score.getRecommendation().toLowerCase().contains(recherche)
+                        || score.getAction_plan().toLowerCase().contains(recherche);
+            });
+        });
+
         loadData();
     }
 
     private void loadData() {
         try {
-            tableView.setItems(FXCollections.observableArrayList(service.getData()));
+            masterData = FXCollections.observableArrayList(service.getData());
+            filteredData = new FilteredList<>(masterData, p -> true);
+            sortedData = new SortedList<>(filteredData);
+            sortedData.comparatorProperty().bind(tableView.comparatorProperty());
+            tableView.setItems(sortedData);
         } catch (SQLException e) {
             showAlert(Alert.AlertType.ERROR, "Erreur", e.getMessage());
         }
@@ -117,6 +153,39 @@ public class AfficherWellBeingScoreController {
 
     @FXML
     void actualiser(ActionEvent event) { loadData(); }
+
+    private void appliquerTri() {
+        String champTri = triCB.getValue();
+        String ordre = ordreCB.getValue();
+
+        if (champTri == null || ordre == null) {
+            sortedData.setComparator(null);
+            return;
+        }
+
+        Comparator<WellBeingScore> comparator = switch (champTri) {
+            case "ID" -> Comparator.comparingInt(WellBeingScore::getId);
+            case "Score" -> Comparator.comparingInt(WellBeingScore::getScore);
+            case "Survey ID" -> Comparator.comparingInt(WellBeingScore::getSurvey_id);
+            default -> null;
+        };
+
+        if (comparator != null) {
+            if ("Décroissant".equals(ordre)) {
+                comparator = comparator.reversed();
+            }
+            sortedData.setComparator(comparator);
+        }
+    }
+
+    @FXML
+    void resetFiltre(ActionEvent event) {
+        triCB.setValue(null);
+        ordreCB.setValue(null);
+        rechercheTF.clear();
+        filteredData.setPredicate(p -> true);
+        sortedData.setComparator(null);
+    }
 
     private void showAlert(Alert.AlertType type, String titre, String msg) {
         Alert a = new Alert(type);

@@ -20,7 +20,11 @@ public class MedecinService implements IService {
         pst.setString(2, m.getPrenom());
         pst.setString(3, m.getEmail());
         pst.setString(4, m.getTelephone());
-        pst.setString(5, m.getDisponibilite());
+        
+        // Convertir la disponibilité texte en valeur numérique pour BDD
+        int disponibiliteValue = "disponible".equalsIgnoreCase(m.getDisponibilite()) ? 1 : 0;
+        pst.setInt(5, disponibiliteValue);
+        
         pst.executeUpdate();
         pst.close();
         System.out.println("Médecin ajouté avec succès !");
@@ -46,7 +50,11 @@ public class MedecinService implements IService {
         pst.setString(2, m.getPrenom());
         pst.setString(3, m.getEmail());
         pst.setString(4, m.getTelephone());
-        pst.setString(5, m.getDisponibilite());
+        
+        // Convertir la disponibilité texte en valeur numérique pour BDD
+        int disponibiliteValue = "disponible".equalsIgnoreCase(m.getDisponibilite()) ? 1 : 0;
+        pst.setInt(5, disponibiliteValue);
+        
         pst.setInt(6, id);
         pst.executeUpdate();
         pst.close();
@@ -60,12 +68,16 @@ public class MedecinService implements IService {
         Statement st = cnx.createStatement();
         ResultSet rs = st.executeQuery(req);
         while (rs.next()) {
+            // Convertir la valeur numérique BDD en texte pour l'application
+            int disponibiliteInt = rs.getInt("disponibilite");
+            String disponibiliteText = disponibiliteInt == 1 ? "disponible" : "indisponible";
+            
             Medecin m = new Medecin(
                     rs.getString("nom"),
                     rs.getString("prenom"),
                     rs.getString("email"),
                     rs.getString("telephone"),
-                    rs.getString("disponibilite")
+                    disponibiliteText
             );
             m.setId(rs.getInt("id"));
             list.add(m);

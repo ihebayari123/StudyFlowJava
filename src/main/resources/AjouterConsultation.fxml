@@ -17,10 +17,10 @@
     <TextField fx:id="motifTF" promptText="Ex : Stress, anxiété..."/>
 
     <Label text="Genre"/>
-    <ComboBox fx:id="genreCB" prefWidth="300"/>
+    <TextField fx:id="genreTF" promptText="Ex : Homme, Femme, Autre..." prefWidth="300"/>
 
-    <Label text="Niveau"/>
-    <ComboBox fx:id="niveauCB" prefWidth="300"/>
+    <Label text="Niveau d'étude"/>
+    <TextField fx:id="niveauTF" promptText="Ex : L1, L2, L3, M1, M2..." prefWidth="300"/>
 
     <Label text="Médecin"/>
     <ComboBox fx:id="medecinCB" prefWidth="300"/>
