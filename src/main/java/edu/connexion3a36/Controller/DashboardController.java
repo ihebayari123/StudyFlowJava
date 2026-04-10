@@ -21,6 +21,7 @@ public class DashboardController {
     @FXML private HBox chapitresItem;
     @FXML private HBox quizItem;
     @FXML private HBox exercicesItem;
+    @FXML private HBox categorieItem; // ✅ ajouté
     @FXML private HBox progressionItem;
     @FXML private HBox settingsItem;
 
@@ -29,7 +30,7 @@ public class DashboardController {
     @FXML
     public void initialize() {
         setupNavigation();
-        loadView("cours");  // Charge cours.fxml par défaut
+        loadView("cours");
     }
 
     private void setupNavigation() {
@@ -38,6 +39,7 @@ public class DashboardController {
         chapitresItem.setOnMouseClicked(event -> loadView("chapitres"));
         quizItem.setOnMouseClicked(event -> loadView("quiz"));
         exercicesItem.setOnMouseClicked(event -> loadView("exercices"));
+        categorieItem.setOnMouseClicked(event -> loadView("categorieMenu")); // ✅ ajouté
         progressionItem.setOnMouseClicked(event -> loadView("progression"));
         settingsItem.setOnMouseClicked(event -> loadView("settings"));
 
@@ -46,6 +48,7 @@ public class DashboardController {
         addHoverEffect(chapitresItem);
         addHoverEffect(quizItem);
         addHoverEffect(exercicesItem);
+        addHoverEffect(categorieItem); // ✅ ajouté
         addHoverEffect(progressionItem);
         addHoverEffect(settingsItem);
     }
@@ -55,7 +58,6 @@ public class DashboardController {
             resetActiveStyles();
             setActiveStyle(viewName);
 
-            // Éviter de recharger studyflow.fxml
             if (viewName.equals("studyflow")) {
                 System.out.println("Ignorer studyflow.fxml");
                 return;
@@ -70,14 +72,15 @@ public class DashboardController {
                 return;
             }
 
-            System.out.println("Chargement: " + resourcePath);
             FXMLLoader loader = new FXMLLoader(resourceUrl);
             Node view = loader.load();
 
-            // Passer la référence du dashboard au contrôleur si nécessaire
             Object controller = loader.getController();
             if (controller instanceof CoursController) {
                 ((CoursController) controller).setDashboardController(this);
+            }
+            if (controller instanceof CategorieMenuController) { // ✅ ajouté
+                ((CategorieMenuController) controller).setDashboardController(this);
             }
 
             contentArea.getChildren().clear();
@@ -100,7 +103,7 @@ public class DashboardController {
     }
 
     private void resetActiveStyles() {
-        HBox[] items = {homeItem, coursItem, chapitresItem, quizItem, exercicesItem, progressionItem, settingsItem};
+        HBox[] items = {homeItem, coursItem, chapitresItem, quizItem, exercicesItem, categorieItem, progressionItem, settingsItem};
         for (HBox item : items) {
             if (item != null) {
                 item.setStyle("-fx-background-color: transparent; -fx-background-radius: 8; -fx-padding: 0 12 0 12;");
@@ -108,7 +111,7 @@ public class DashboardController {
                     if (node instanceof Label) {
                         Label label = (Label) node;
                         String text = label.getText();
-                        if (text != null && !text.matches("🏠|📚|📖|❓|✏️|📊|⚙️")) {
+                        if (text != null && !text.matches("🏠|📚|📖|❓|✏️|🏷️|📊|⚙️")) {
                             label.setStyle("-fx-font-size: 13; -fx-text-fill: #757575; -fx-font-weight: normal;");
                         }
                     }
@@ -119,12 +122,13 @@ public class DashboardController {
 
     private void setActiveStyle(String viewName) {
         HBox activeItem = null;
-        switch(viewName) {
+        switch (viewName) {
             case "dashboard": activeItem = homeItem; break;
             case "cours": activeItem = coursItem; break;
             case "chapitres": activeItem = chapitresItem; break;
             case "quiz": activeItem = quizItem; break;
             case "exercices": activeItem = exercicesItem; break;
+            case "categorieMenu": activeItem = categorieItem; break; // ✅ ajouté
             case "progression": activeItem = progressionItem; break;
             case "settings": activeItem = settingsItem; break;
             default: break;
@@ -136,7 +140,7 @@ public class DashboardController {
                 if (node instanceof Label) {
                     Label label = (Label) node;
                     String text = label.getText();
-                    if (text != null && !text.matches("🏠|📚|📖|❓|✏️|📊|⚙️")) {
+                    if (text != null && !text.matches("🏠|📚|📖|❓|✏️|🏷️|📊|⚙️")) {
                         label.setStyle("-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #2979FF;");
                     }
                 }

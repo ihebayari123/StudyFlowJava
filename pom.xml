@@ -1,27 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE project [
-        <!ELEMENT project (modelVersion|groupId|artifactId|version|properties|dependencies)*>
-        <!ATTLIST project
-                xmlns CDATA #REQUIRED
-                xmlns:xsi CDATA #REQUIRED
-                xsi:schemaLocation CDATA #REQUIRED>
-        <!ELEMENT modelVersion (#PCDATA)>
-        <!ELEMENT groupId (#PCDATA)>
-        <!ELEMENT artifactId (#PCDATA)>
-        <!ELEMENT version (#PCDATA)>
-        <!ELEMENT properties (maven.compiler.source|maven.compiler.target|project.build.sourceEncoding)*>
-        <!ELEMENT maven.compiler.source (#PCDATA)>
-        <!ELEMENT maven.compiler.target (#PCDATA)>
-        <!ELEMENT project.build.sourceEncoding (#PCDATA)>
-        <!ELEMENT dependencies (dependency)*>
-        <!ELEMENT dependency (groupId|artifactId|version|scope)*>
-        <!ELEMENT scope (#PCDATA)>
-        ]>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
+    <modelVersion>4.0.0</modelVersion>
     <groupId>edu</groupId>
     <artifactId>connexion3a36</artifactId>
     <version>1.0-SNAPSHOT</version>
@@ -33,36 +16,55 @@
     </properties>
 
     <dependencies>
+        <!-- MySQL -->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>8.0.30</version>
         </dependency>
+
+        <!-- JUnit -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <version>5.10.2</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- JavaFX -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
             <version>21.0.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>21.0.2</version>
+        </dependency>
     </dependencies>
+
     <build>
         <plugins>
+            <!-- JavaFX -->
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
                 <configuration>
-                    <mainClass>
-                        edu.connexion3a36.tests.MainFX
-                    </mainClass>
+                    <mainClass>edu.connexion3a36.tests.MainFX</mainClass>
                 </configuration>
             </plugin>
 
+            <!-- Exec pour MainClass -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <mainClass>edu.connexion3a36.tests.MainClass</mainClass>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
