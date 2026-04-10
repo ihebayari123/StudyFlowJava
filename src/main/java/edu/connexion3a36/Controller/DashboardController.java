@@ -1,5 +1,6 @@
 package edu.connexion3a36.Controller;
 
+import edu.connexion3a36.entities.Utilisateur;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -15,6 +16,7 @@ import java.util.logging.Logger;
 public class DashboardController {
 
     private static final Logger LOGGER = Logger.getLogger(DashboardController.class.getName());
+    private Utilisateur utilisateurConnecte;
 
     @FXML private HBox homeItem;
     @FXML private HBox coursItem;
@@ -24,6 +26,7 @@ public class DashboardController {
     @FXML private HBox progressionItem;
     @FXML private HBox administrationItem;
     @FXML private HBox settingsItem;
+    @FXML private HBox utilisateursItem;
 
     @FXML private StackPane contentArea;
 
@@ -43,6 +46,8 @@ public class DashboardController {
         progressionItem.setOnMouseClicked(event -> loadView("admin"));
         administrationItem.setOnMouseClicked(event -> loadView("settings"));
         settingsItem.setOnMouseClicked(event -> loadView("settings"));
+        utilisateursItem.setOnMouseClicked(event -> loadView("gestionUtilisateurs"));
+        addHoverEffect(utilisateursItem);
 
         addHoverEffect(homeItem);
         addHoverEffect(coursItem);
@@ -104,7 +109,7 @@ public class DashboardController {
     }
 
     private void resetActiveStyles() {
-        HBox[] items = {homeItem, coursItem, chapitresItem, quizItem, exercicesItem, progressionItem, administrationItem, settingsItem};
+        HBox[] items = {homeItem, coursItem, chapitresItem, quizItem, exercicesItem, progressionItem, administrationItem, settingsItem, utilisateursItem};
         for (HBox item : items) {
             if (item != null) {
                 item.setStyle("-fx-background-color: transparent; -fx-background-radius: 8; -fx-padding: 0 12 0 12;");
@@ -132,6 +137,7 @@ public class DashboardController {
             // When admin view is loaded, highlight progressionItem (Anti-Stresse button)
             case "admin": activeItem = progressionItem; break;
             case "settings": activeItem = settingsItem; break;
+            case "gestionUtilisateurs": activeItem = utilisateursItem; break;
             default: break;
         }
 
@@ -165,5 +171,10 @@ public class DashboardController {
 
     public void navigateTo(String viewName) {
         loadView(viewName);
+    }
+    public void setUtilisateurConnecte(Utilisateur u) {
+        this.utilisateurConnecte = u;
+        // Afficher le nom dans le dashboard si tu veux
+        System.out.println("Bienvenue " + u.getNom() + " !");
     }
 }
