@@ -74,6 +74,16 @@
                             style="-fx-background-color: #2d6a4f; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold; -fx-font-family: 'Palatino Linotype'; -fx-background-radius: 12; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(45,106,79,0.25), 10, 0, 0, 3);"
                             HBox.hgrow="ALWAYS"/>
                     
+                    <!-- Add Student Stress Score -->
+                    <Button text="  ➕  Ajouter score-etudiant" onAction="#ajouterStressSurvey" prefHeight="55" prefWidth="240"
+                            style="-fx-background-color: #f8f9fa; -fx-text-fill: #2d6a4f; -fx-font-size: 16px; -fx-font-weight: bold; -fx-font-family: 'Palatino Linotype'; -fx-background-radius: 12; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 5, 0, 0, 2);"
+                            HBox.hgrow="ALWAYS"/>
+                    
+                    <!-- Add Well Being Student Score -->
+                    <Button text="  📝  + etudiant" onAction="#ajouterWellBeingScore" prefHeight="55" prefWidth="240"
+                            style="-fx-background-color: #2d6a4f; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold; -fx-font-family: 'Palatino Linotype'; -fx-background-radius: 12; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(45,106,79,0.25), 10, 0, 0, 3);"
+                            HBox.hgrow="ALWAYS"/>
+                    
                     <!-- Spacer -->
                     <Region prefHeight="20" VBox.vgrow="ALWAYS"/>
                     
