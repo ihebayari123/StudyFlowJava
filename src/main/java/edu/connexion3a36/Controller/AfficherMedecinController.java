@@ -3,6 +3,7 @@ package edu.connexion3a36.Controller;
 import edu.connexion3a36.entities.Medecin;
 import edu.connexion3a36.services.MedecinService;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,7 +12,9 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
 import java.sql.SQLException;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class AfficherMedecinController {
 
@@ -23,11 +26,16 @@ public class AfficherMedecinController {
     @FXML private TableColumn<Medecin, String> colTelephone;
     @FXML private TableColumn<Medecin, String> colDisponibilite;
 
+    @FXML private TextField rechercheTF;
+    @FXML private ComboBox<String> filtreDispoCB;
+    
     @FXML private TextField nomTF;
     @FXML private TextField prenomTF;
     @FXML private TextField emailTF;
     @FXML private TextField telephoneTF;
     @FXML private ComboBox<String> disponibiliteCB;
+    
+    private ObservableList<Medecin> listeComplete;
 
     private final MedecinService service = new MedecinService();
     private Medecin selectedMedecin;
@@ -50,6 +58,16 @@ public class AfficherMedecinController {
             }
         });
 
+        // Initialiser les filtres
+        filtreDispoCB.getItems().addAll("Tous", "Disponible", "Indisponible");
+        filtreDispoCB.setValue("Tous");
+
+        // Listener recherche dynamique
+        rechercheTF.textProperty().addListener((obs, oldVal, newVal) -> appliquerFiltres());
+
+        // Listener filtre disponibilité
+        filtreDispoCB.valueProperty().addListener((obs, oldVal, newVal) -> appliquerFiltres());
+
         loadData();
     }
 
@@ -61,11 +79,41 @@ public class AfficherMedecinController {
     private void loadData() {
         try {
             List<Medecin> list = service.getData();
-            tableView.setItems(FXCollections.observableArrayList(list));
+            listeComplete = FXCollections.observableArrayList(list);
+            tableView.setItems(listeComplete);
             updateSummaryStats();
         } catch (SQLException e) {
             showAlert(Alert.AlertType.ERROR, "Erreur", e.getMessage());
         }
+    }
+
+    @FXML
+    void trierCroissant(ActionEvent event) {
+        ObservableList<Medecin> listeActuelle = tableView.getItems();
+        listeActuelle.sort(Comparator.comparing(Medecin::getNom, String.CASE_INSENSITIVE_ORDER));
+    }
+
+    @FXML
+    void trierDecroissant(ActionEvent event) {
+        ObservableList<Medecin> listeActuelle = tableView.getItems();
+        listeActuelle.sort(Comparator.comparing(Medecin::getNom, String.CASE_INSENSITIVE_ORDER).reversed());
+    }
+
+    private void appliquerFiltres() {
+        String recherche = rechercheTF.getText().trim().toLowerCase();
+        String filtreDispo = filtreDispoCB.getValue();
+
+        List<Medecin> resultat = listeComplete.stream()
+                .filter(m -> m.getNom().toLowerCase().contains(recherche) || m.getPrenom().toLowerCase().contains(recherche))
+                .filter(m -> {
+                    if ("Tous".equals(filtreDispo)) return true;
+                    if ("Disponible".equals(filtreDispo)) return "disponible".equalsIgnoreCase(m.getDisponibilite());
+                    if ("Indisponible".equals(filtreDispo)) return "indisponible".equalsIgnoreCase(m.getDisponibilite());
+                    return true;
+                })
+                .collect(Collectors.toList());
+
+        tableView.setItems(FXCollections.observableArrayList(resultat));
     }
 
     @FXML

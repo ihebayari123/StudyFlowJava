@@ -90,7 +90,19 @@
                     <Label text="LISTE DES MÉDECINS"
                            style="-fx-font-size: 9px; -fx-font-weight: bold; -fx-text-fill: #c8a84b; -fx-font-family: 'Palatino Linotype';"/>
 
-                    <TableView fx:id="tableView" prefHeight="380" prefWidth="344">
+                    <!-- BARRE DE RECHERCHE, FILTRE ET TRI -->
+                    <HBox spacing="8" alignment="CENTER_LEFT">
+                        <TextField fx:id="rechercheTF" promptText="🔍 Rechercher par nom..." prefWidth="160" />
+                        
+                        <ComboBox fx:id="filtreDispoCB" prefWidth="110" promptText="Disponibilité" />
+                        
+                        <Button fx:id="btnTriAsc" text="⬆ A-Z" onAction="#trierCroissant" prefWidth="70"
+                                style="-fx-background-color: #e8f0e8; -fx-text-fill: #2d6a4f; -fx-font-size:11px;"/>
+                        <Button fx:id="btnTriDesc" text="⬇ Z-A" onAction="#trierDecroissant" prefWidth="70"
+                                style="-fx-background-color: #e8f0e8; -fx-text-fill: #2d6a4f; -fx-font-size:11px;"/>
+                    </HBox>
+
+                    <TableView fx:id="tableView" prefHeight="350" prefWidth="344">
                         <columns>
                             <TableColumn fx:id="colId" text="ID" prefWidth="50"
                                           style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #2d6a4f; -fx-font-family: 'Palatino Linotype';"/>

@@ -10,6 +10,17 @@
     <Label text="Liste des Consultations"
            style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2d6a4f;"/>
 
+    <!-- Filtre et Tri -->
+    <HBox spacing="15" alignment="CENTER_LEFT">
+        <Label text="Trier par :"/>
+        <ComboBox fx:id="triCB" prefWidth="120" promptText="Choisir tri"/>
+        <ComboBox fx:id="ordreCB" prefWidth="80" promptText="Ordre"/>
+        <Label text="Filtrer par date :"/>
+        <DatePicker fx:id="filtreDatePicker" promptText="Sélectionner date"/>
+        <Button fx:id="btnResetFiltre" text="🔄 Réinitialiser" onAction="#resetFiltre"
+                style="-fx-background-color: #6c757d; -fx-text-fill: white; -fx-padding: 6 12;"/>
+    </HBox>
+
     <TableView fx:id="tableView" prefHeight="250">
         <columns>
             <TableColumn fx:id="colId" text="ID" prefWidth="50"/>

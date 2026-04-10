@@ -10,6 +10,19 @@
     <Label text="Liste des Stress Surveys"
            style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2d6a4f;"/>
 
+    <!-- Filtre, Recherche et Tri -->
+    <HBox spacing="12" alignment="CENTER_LEFT">
+        <Label text="Recherche :"/>
+        <TextField fx:id="rechercheTF" prefWidth="160" promptText="Rechercher par User ID"/>
+        <Label text="Trier par :"/>
+        <ComboBox fx:id="triCB" prefWidth="120" promptText="Champ"/>
+        <ComboBox fx:id="ordreCB" prefWidth="80" promptText="Ordre"/>
+        <Label text="Filtrer date :"/>
+        <DatePicker fx:id="filtreDatePicker" promptText="Sélectionner"/>
+        <Button fx:id="btnReset" text="🔄" onAction="#resetFiltre"
+                style="-fx-background-color: #6c757d; -fx-text-fill: white; -fx-padding: 6 10;"/>
+    </HBox>
+
     <TableView fx:id="tableView" prefHeight="250">
         <columns>
             <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
