@@ -19,7 +19,7 @@ public class MainFX extends Application {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/login.fxml"));
         Parent  root = loader.load();
         Scene sc = new Scene(root);
-        primaryStage.setTitle("Ajouter");
+        primaryStage.setTitle("Afficher Médecins");
         primaryStage.setScene(sc);
         primaryStage.show();
     }

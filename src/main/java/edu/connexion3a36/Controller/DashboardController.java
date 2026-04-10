@@ -24,6 +24,7 @@ public class DashboardController {
     @FXML private HBox quizItem;
     @FXML private HBox exercicesItem;
     @FXML private HBox progressionItem;
+    @FXML private HBox administrationItem;
     @FXML private HBox settingsItem;
     @FXML private HBox utilisateursItem;
 
@@ -32,7 +33,7 @@ public class DashboardController {
     @FXML
     public void initialize() {
         setupNavigation();
-        loadView("cours");  // Charge cours.fxml par défaut
+        loadView("cours");  // Load default view
     }
 
     private void setupNavigation() {
@@ -41,7 +42,9 @@ public class DashboardController {
         chapitresItem.setOnMouseClicked(event -> loadView("chapitres"));
         quizItem.setOnMouseClicked(event -> loadView("quiz"));
         exercicesItem.setOnMouseClicked(event -> loadView("exercices"));
-        progressionItem.setOnMouseClicked(event -> loadView("progression"));
+        // Change progressionItem to load admin view when clicked (Anti-Stresse button)
+        progressionItem.setOnMouseClicked(event -> loadView("admin"));
+        administrationItem.setOnMouseClicked(event -> loadView("settings"));
         settingsItem.setOnMouseClicked(event -> loadView("settings"));
         utilisateursItem.setOnMouseClicked(event -> loadView("gestionUtilisateurs"));
         addHoverEffect(utilisateursItem);
@@ -52,6 +55,7 @@ public class DashboardController {
         addHoverEffect(quizItem);
         addHoverEffect(exercicesItem);
         addHoverEffect(progressionItem);
+        addHoverEffect(administrationItem);
         addHoverEffect(settingsItem);
     }
 
@@ -60,7 +64,7 @@ public class DashboardController {
             resetActiveStyles();
             setActiveStyle(viewName);
 
-            // Éviter de recharger studyflow.fxml
+            // Avoid reloading studyflow.fxml
             if (viewName.equals("studyflow")) {
                 System.out.println("Ignorer studyflow.fxml");
                 return;
@@ -79,7 +83,7 @@ public class DashboardController {
             FXMLLoader loader = new FXMLLoader(resourceUrl);
             Node view = loader.load();
 
-            // Passer la référence du dashboard au contrôleur si nécessaire
+            // Pass dashboard reference to controller if needed
             Object controller = loader.getController();
             if (controller instanceof CoursController) {
                 ((CoursController) controller).setDashboardController(this);
@@ -105,7 +109,7 @@ public class DashboardController {
     }
 
     private void resetActiveStyles() {
-        HBox[] items = {homeItem, coursItem, chapitresItem, quizItem, exercicesItem, progressionItem, settingsItem, utilisateursItem};
+        HBox[] items = {homeItem, coursItem, chapitresItem, quizItem, exercicesItem, progressionItem, administrationItem, settingsItem, utilisateursItem};
         for (HBox item : items) {
             if (item != null) {
                 item.setStyle("-fx-background-color: transparent; -fx-background-radius: 8; -fx-padding: 0 12 0 12;");
@@ -113,7 +117,7 @@ public class DashboardController {
                     if (node instanceof Label) {
                         Label label = (Label) node;
                         String text = label.getText();
-                        if (text != null && !text.matches("🏠|📚|📖|❓|✏️|📊|⚙️")) {
+                        if (text != null && !text.matches("🏠|📚|📖|❓|✏️|📊|🏛️|⚙️")) {
                             label.setStyle("-fx-font-size: 13; -fx-text-fill: #757575; -fx-font-weight: normal;");
                         }
                     }
@@ -130,7 +134,8 @@ public class DashboardController {
             case "chapitres": activeItem = chapitresItem; break;
             case "quiz": activeItem = quizItem; break;
             case "exercices": activeItem = exercicesItem; break;
-            case "progression": activeItem = progressionItem; break;
+            // When admin view is loaded, highlight progressionItem (Anti-Stresse button)
+            case "admin": activeItem = progressionItem; break;
             case "settings": activeItem = settingsItem; break;
             case "gestionUtilisateurs": activeItem = utilisateursItem; break;
             default: break;

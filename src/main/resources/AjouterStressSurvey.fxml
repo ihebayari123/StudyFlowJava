@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="15" style="-fx-background-color: #eef2eb; -fx-padding: 30;"
+      xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="edu.connexion3a36.Controller.AjouterStressSurveyController">
+
+    <Label text="Ajouter un Stress Survey"
+           style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2d6a4f;"/>
+
+    <Label text="Date"/>
+    <DatePicker fx:id="datePicker" prefWidth="300"/>
+
+    <Label text="Heures de sommeil"/>
+    <TextField fx:id="sleepHoursTF" promptText="Ex : 7"/>
+
+    <Label text="Heures d'étude"/>
+    <TextField fx:id="studyHoursTF" promptText="Ex : 5"/>
+
+    <Label text="User ID"/>
+    <TextField fx:id="userIdTF" promptText="Ex : 1"/>
+
+    <HBox spacing="12">
+        <Button text="✦ Enregistrer" onAction="#ajouter"
+                style="-fx-background-color: #2d6a4f; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 4; -fx-padding: 10 20;"/>
+        <Button text="↺ Réinitialiser" onAction="#reinitialiser"
+                style="-fx-background-color: transparent; -fx-border-color: #2d6a4f; -fx-border-radius: 4; -fx-padding: 10 20;"/>
+    </HBox>
+</VBox>
