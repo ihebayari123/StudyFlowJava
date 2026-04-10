@@ -16,10 +16,10 @@ public class MainFX extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/AjouterPersonne.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/admin.fxml"));
         Parent  root = loader.load();
         Scene sc = new Scene(root);
-        primaryStage.setTitle("Ajouter");
+        primaryStage.setTitle("Afficher Médecins");
         primaryStage.setScene(sc);
         primaryStage.show();
     }

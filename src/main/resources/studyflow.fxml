@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.Rectangle?>
+
+<StackPane style="-fx-background-color: #c8d8e8;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.connexion3a36.Controller.DashboardController">
+
+    <Rectangle height="720" style="-fx-fill: linear-gradient(to bottom right, #7BAFD4, #B0C9D8, #8A9BAA);" width="1280" />
+
+    <HBox alignment="CENTER" style="-fx-background-color: transparent;">
+
+        <VBox prefHeight="620" prefWidth="1100" style="-fx-background-color: #F5F6FA; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 30, 0, 0, 8);">
+
+            <HBox VBox.vgrow="ALWAYS">
+
+                <!-- ======================== SIDEBAR ======================== -->
+                <VBox prefWidth="180" spacing="0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 16 0 0 16; -fx-padding: 24 0 24 0;">
+
+                    <HBox alignment="CENTER_LEFT" style="-fx-padding: 0 16 20 20;">
+                        <Circle radius="16" style="-fx-fill: #2979FF;" />
+                        <Label style="-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: #1A1A2E; -fx-padding: 0 0 0 8;" text="EduDoc" />
+                    </HBox>
+
+                    <VBox style="-fx-padding: 0 16 24 20; -fx-spacing: 4;">
+                        <Label style="-fx-font-size: 11; -fx-text-fill: #9E9E9E;" text="Progression" />
+                        <HBox alignment="CENTER_LEFT" spacing="4">
+                            <Label style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #2979FF;" text="65%" />
+                            <Label style="-fx-font-size: 11; -fx-text-fill: #9E9E9E;" text="complété" />
+                        </HBox>
+                        <ProgressBar prefHeight="6" prefWidth="120" progress="0.65" style="-fx-accent: #2979FF; -fx-background-color: #E0E0E0; -fx-background-radius: 4;" />
+                    </VBox>
+
+                    <Separator style="-fx-background-color: #F0F0F0;" />
+
+                    <VBox spacing="4" style="-fx-padding: 16 8 0 8;">
+                        <Label style="-fx-font-size: 11; -fx-text-fill: #9E9E9E; -fx-padding: 0 0 4 12;" text="MENU PRINCIPAL" />
+
+                        <HBox fx:id="homeItem" alignment="CENTER_LEFT" prefHeight="40" spacing="10" style="-fx-background-color: #E8F0FE; -fx-background-radius: 8; -fx-padding: 0 12 0 12; -fx-cursor: hand;">
+                            <Label style="-fx-font-size: 14;" text="🏠" />
+                            <Label style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #2979FF;" text="Tableau de bord" />
+                        </HBox>
+
+                        <HBox fx:id="coursItem" alignment="CENTER_LEFT" prefHeight="40" spacing="10" style="-fx-background-radius: 8; -fx-padding: 0 12 0 12; -fx-cursor: hand;">
+                            <Label style="-fx-font-size: 14;" text="📚" />
+                            <Label style="-fx-font-size: 13; -fx-text-fill: #757575;" text="Mes Cours" />
+                        </HBox>
+
+                        <HBox fx:id="chapitresItem" alignment="CENTER_LEFT" prefHeight="40" spacing="10" style="-fx-background-radius: 8; -fx-padding: 0 12 0 12; -fx-cursor: hand;">
+                            <Label style="-fx-font-size: 14;" text="📖" />
+                            <Label style="-fx-font-size: 13; -fx-text-fill: #757575;" text="Chapitres" />
+                        </HBox>
+
+                        <HBox fx:id="quizItem" alignment="CENTER_LEFT" prefHeight="40" spacing="10" style="-fx-background-radius: 8; -fx-padding: 0 12 0 12; -fx-cursor: hand;">
+                            <Label style="-fx-font-size: 14;" text="❓" />
+                            <Label style="-fx-font-size: 13; -fx-text-fill: #757575;" text="Quiz" />
+                        </HBox>
+
+                        <HBox fx:id="exercicesItem" alignment="CENTER_LEFT" prefHeight="40" spacing="10" style="-fx-background-radius: 8; -fx-padding: 0 12 0 12; -fx-cursor: hand;">
+                            <Label style="-fx-font-size: 14;" text="✏️" />
+                            <Label style="-fx-font-size: 13; -fx-text-fill: #757575;" text="Exercices" />
+                        </HBox>
+
+                        <Separator style="-fx-background-color: #F0F0F0; -fx-padding: 8 0 8 0;" />
+
+                        <Label style="-fx-font-size: 11; -fx-text-fill: #9E9E9E; -fx-padding: 0 0 4 12;" text="AUTRES" />
+
+                        <HBox fx:id="progressionItem" alignment="CENTER_LEFT" prefHeight="40" spacing="10" style="-fx-background-radius: 8; -fx-padding: 0 12 0 12; -fx-cursor: hand;">
+                            <Label style="-fx-font-size: 14;" text="📊" />
+                            <Label style="-fx-font-size: 13; -fx-text-fill: #757575;" text="Anti-Stresse" />
+                        </HBox>
+
+                        <HBox fx:id="administrationItem" alignment="CENTER_LEFT" prefHeight="40" spacing="10" style="-fx-background-radius: 8; -fx-padding: 0 12 0 12; -fx-cursor: hand;">
+                            <Label style="-fx-font-size: 14;" text="🏛️" />
+                            <Label style="-fx-font-size: 13; -fx-text-fill: #757575;" text="Administration" />
+                        </HBox>
+
+                        <HBox fx:id="settingsItem" alignment="CENTER_LEFT" prefHeight="40" spacing="10" style="-fx-background-radius: 8; -fx-padding: 0 12 0 12; -fx-cursor: hand;">
+                            <Label style="-fx-font-size: 14;" text="⚙️" />
+                            <Label style="-fx-font-size: 13; -fx-text-fill: #757575;" text="Paramètres" />
+                        </HBox>
+                    </VBox>
+
+                    <Region VBox.vgrow="ALWAYS" />
+                </VBox>
+
+                <!-- ======================== ZONE DE CONTENU DYNAMIQUE ======================== -->
+                <StackPane fx:id="contentArea" style="-fx-background-color: #F5F6FA;" HBox.hgrow="ALWAYS" />
+
+            </HBox>
+        </VBox>
+    </HBox>
+</StackPane>

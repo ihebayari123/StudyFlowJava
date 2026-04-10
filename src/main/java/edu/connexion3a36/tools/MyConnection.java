@@ -7,7 +7,7 @@ import java.sql.SQLException;
 
 
 public class MyConnection {
-    private String url="jdbc:mysql://localhost:3306/3a36";
+    private String url="jdbc:mysql://localhost:3306/studyflow";
     private String login="root";
     private String pwd="";
     private static Connection cnx;
