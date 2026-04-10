@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.geometry.Insets?>
+
+<AnchorPane
+        prefHeight="620.0" prefWidth="580.0"
+        style="-fx-background-color: #eef2eb;"
+        xmlns="http://javafx.com/javafx/21"
+        xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="edu.connexion3a36.Controller.WellBeingScoreController">
+
+   <children>
+
+      <!-- Bande verte gauche décorative -->
+      <Rectangle
+              width="8" height="620"
+              layoutX="0" layoutY="0"
+              fill="#2d6a4f"/>
+
+      <!-- Accent doré haut -->
+      <Rectangle
+              width="580" height="4"
+              layoutX="0" layoutY="0"
+              fill="#c8a84b"/>
+
+      <!-- Contenu principal -->
+      <VBox
+              layoutX="8" layoutY="4"
+              prefWidth="572"
+              spacing="0">
+
+         <!-- HEADER ZONE -->
+         <HBox
+                 style="-fx-background-color: #ffffff;"
+                 alignment="CENTER_LEFT"
+                 spacing="0"
+                 prefHeight="100">
+            <padding>
+               <Insets top="0" bottom="0" left="0" right="0"/>
+            </padding>
+
+            <!-- Bloc vert titre -->
+            <VBox
+                    style="-fx-background-color: #2d6a4f;"
+                    prefWidth="180" prefHeight="100"
+                    alignment="CENTER"
+                    spacing="2">
+               <Label text="STUDYFLOW"
+                      style="-fx-font-size: 11px;
+                                  -fx-font-weight: bold;
+                                  -fx-text-fill: #c8a84b;
+                                  -fx-font-family: 'Palatino Linotype';
+                                  -fx-letter-spacing: 3px;"/>
+               <Label text="🎓"
+                      style="-fx-font-size: 28px;"/>
+               <Label text="SANTÉ ÉTUDIANTE"
+                      style="-fx-font-size: 8px;
+                                  -fx-text-fill: rgba(255,255,255,0.7);
+                                  -fx-font-family: 'Palatino Linotype';"/>
+            </VBox>
+
+            <!-- Titre droit -->
+            <VBox
+                    prefWidth="392" prefHeight="100"
+                    alignment="CENTER_LEFT"
+                    spacing="4">
+               <padding>
+                  <Insets left="24" right="20"/>
+               </padding>
+               <Label text="Évaluation du Bien-Être"
+                      style="-fx-font-size: 20px;
+                                  -fx-font-weight: bold;
+                                  -fx-text-fill: #1a3320;
+                                  -fx-font-family: 'Palatino Linotype';"/>
+               <Label text="Formulaire de suivi — Santé Mentale &amp; Académique"
+                      style="-fx-font-size: 11px;
+                                  -fx-text-fill: #6b8f71;
+                                  -fx-font-family: 'Palatino Linotype';"/>
+               <!-- Ligne décorative dorée -->
+               <Rectangle width="160" height="2" fill="#c8a84b"/>
+            </VBox>
+         </HBox>
+
+         <!-- Séparateur -->
+         <HBox style="-fx-background-color: #d4e6d4;" prefHeight="1"/>
+
+         <!-- BODY : Deux colonnes -->
+         <HBox
+                 style="-fx-background-color: #ffffff;"
+                 spacing="0"
+                 prefHeight="460">
+
+            <!-- Colonne gauche : indicateurs -->
+            <VBox
+                    prefWidth="168"
+                    style="-fx-background-color: #f5f9f5;
+                           -fx-border-color: #d4e6d4;
+                           -fx-border-width: 0 1 0 0;"
+                    spacing="0">
+               <padding>
+                  <Insets top="28" bottom="20" left="16" right="16"/>
+               </padding>
+
+               <Label text="INDICATEURS"
+                      style="-fx-font-size: 9px;
+                                  -fx-font-weight: bold;
+                                  -fx-text-fill: #c8a84b;
+                                  -fx-font-family: 'Palatino Linotype';
+                                  -fx-letter-spacing: 2px;"/>
+
+               <!-- Séparateur -->
+               <Rectangle width="136" height="1" fill="#d4e6d4">
+                  <VBox.margin><Insets top="8" bottom="16"/></VBox.margin>
+               </Rectangle>
+
+               <!-- Indicateur 1 -->
+               <VBox spacing="3" style="-fx-background-color: #eef7ee; -fx-background-radius: 8; -fx-padding: 12;">
+                  <Label text="💚  Stress"
+                         style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #2d6a4f; -fx-font-family: 'Palatino Linotype';"/>
+                  <Label text="Mesurez votre\nniveau actuel"
+                         style="-fx-font-size: 10px; -fx-text-fill: #6b8f71; -fx-font-family: 'Palatino Linotype';"/>
+                  <VBox.margin><Insets bottom="10"/></VBox.margin>
+               </VBox>
+
+               <!-- Indicateur 2 -->
+               <VBox spacing="3" style="-fx-background-color: #fdf8ec; -fx-background-radius: 8; -fx-padding: 12;">
+                  <Label text="📘  Académique"
+                         style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #2d6a4f; -fx-font-family: 'Palatino Linotype';"/>
+                  <Label text="Impact sur vos\nétudes"
+                         style="-fx-font-size: 10px; -fx-text-fill: #6b8f71; -fx-font-family: 'Palatino Linotype';"/>
+                  <VBox.margin><Insets bottom="10"/></VBox.margin>
+               </VBox>
+
+               <!-- Indicateur 3 -->
+               <VBox spacing="3" style="-fx-background-color: #eef7ee; -fx-background-radius: 8; -fx-padding: 12;">
+                  <Label text="🏃  Activité"
+                         style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #2d6a4f; -fx-font-family: 'Palatino Linotype';"/>
+                  <Label text="Habitudes\nphysiques"
+                         style="-fx-font-size: 10px; -fx-text-fill: #6b8f71; -fx-font-family: 'Palatino Linotype';"/>
+                  <VBox.margin><Insets bottom="10"/></VBox.margin>
+               </VBox>
+
+               <!-- Badge score -->
+               <VBox alignment="CENTER" spacing="2" style="-fx-background-color: #2d6a4f; -fx-background-radius: 10; -fx-padding: 14;">
+                  <VBox.margin><Insets top="14"/></VBox.margin>
+                  <Label text="SCORE"
+                         style="-fx-font-size: 9px; -fx-text-fill: #c8a84b; -fx-font-weight: bold; -fx-font-family: 'Palatino Linotype';"/>
+                  <Label text="0–100"
+                         style="-fx-font-size: 22px; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-family: 'Palatino Linotype';"/>
+                  <Label text="Points de bien-être"
+                         style="-fx-font-size: 9px; -fx-text-fill: rgba(255,255,255,0.6); -fx-font-family: 'Palatino Linotype';"/>
+               </VBox>
+
+            </VBox>
+
+            <!-- Colonne droite : formulaire -->
+            <VBox
+                    prefWidth="404"
+                    spacing="18">
+               <padding>
+                  <Insets top="30" bottom="24" left="30" right="30"/>
+               </padding>
+
+               <Label text="SAISIR LES DONNÉES"
+                      style="-fx-font-size: 9px;
+                                  -fx-font-weight: bold;
+                                  -fx-text-fill: #c8a84b;
+                                  -fx-font-family: 'Palatino Linotype';"/>
+
+               <!-- Recommendation -->
+               <VBox spacing="5">
+                  <Label text="Recommandation Médicale"
+                         style="-fx-font-size: 11px;
+                                      -fx-font-weight: bold;
+                                      -fx-text-fill: #2d6a4f;
+                                      -fx-font-family: 'Palatino Linotype';"/>
+                  <TextField fx:id="recommendationTF"
+                             promptText="Ex : Pratiquer 20 min de relaxation..."
+                             prefHeight="38"
+                             style="-fx-background-color: #f5f9f5;
+                                          -fx-border-color: #b5d5b5;
+                                          -fx-border-width: 0 0 2 0;
+                                          -fx-border-radius: 0;
+                                          -fx-background-radius: 4 4 0 0;
+                                          -fx-text-fill: #1a3320;
+                                          -fx-prompt-text-fill: #a0bea0;
+                                          -fx-font-family: 'Palatino Linotype';
+                                          -fx-font-size: 12px;
+                                          -fx-padding: 8 12;"/>
+               </VBox>
+
+               <!-- Action Plan -->
+               <VBox spacing="5">
+                  <Label text="Plan d'Action Proposé"
+                         style="-fx-font-size: 11px;
+                                      -fx-font-weight: bold;
+                                      -fx-text-fill: #2d6a4f;
+                                      -fx-font-family: 'Palatino Linotype';"/>
+                  <TextField fx:id="actionPlanTF"
+                             promptText="Ex : Pause de 5 min toutes les heures..."
+                             prefHeight="38"
+                             style="-fx-background-color: #f5f9f5;
+                                          -fx-border-color: #b5d5b5;
+                                          -fx-border-width: 0 0 2 0;
+                                          -fx-border-radius: 0;
+                                          -fx-background-radius: 4 4 0 0;
+                                          -fx-text-fill: #1a3320;
+                                          -fx-prompt-text-fill: #a0bea0;
+                                          -fx-font-family: 'Palatino Linotype';
+                                          -fx-font-size: 12px;
+                                          -fx-padding: 8 12;"/>
+               </VBox>
+
+               <!-- Commentaire -->
+               <VBox spacing="5">
+                  <Label text="Observations Cliniques"
+                         style="-fx-font-size: 11px;
+                                      -fx-font-weight: bold;
+                                      -fx-text-fill: #2d6a4f;
+                                      -fx-font-family: 'Palatino Linotype';"/>
+                  <TextField fx:id="commentTF"
+                             promptText="Ex : Étudiant en période d'examens..."
+                             prefHeight="38"
+                             style="-fx-background-color: #f5f9f5;
+                                          -fx-border-color: #b5d5b5;
+                                          -fx-border-width: 0 0 2 0;
+                                          -fx-border-radius: 0;
+                                          -fx-background-radius: 4 4 0 0;
+                                          -fx-text-fill: #1a3320;
+                                          -fx-prompt-text-fill: #a0bea0;
+                                          -fx-font-family: 'Palatino Linotype';
+                                          -fx-font-size: 12px;
+                                          -fx-padding: 8 12;"/>
+               </VBox>
+
+               <!-- Score -->
+               <VBox spacing="5">
+                  <Label text="Score de Bien-Être  ( 0 — 100 )"
+                         style="-fx-font-size: 11px;
+                                      -fx-font-weight: bold;
+                                      -fx-text-fill: #2d6a4f;
+                                      -fx-font-family: 'Palatino Linotype';"/>
+                  <TextField fx:id="scoreTF"
+                             promptText="Ex : 78"
+                             prefHeight="38"
+                             style="-fx-background-color: #fdf8ec;
+                                          -fx-border-color: #c8a84b;
+                                          -fx-border-width: 0 0 2 0;
+                                          -fx-border-radius: 0;
+                                          -fx-background-radius: 4 4 0 0;
+                                          -fx-text-fill: #1a3320;
+                                          -fx-prompt-text-fill: #c8a84b;
+                                          -fx-font-family: 'Palatino Linotype';
+                                          -fx-font-size: 13px;
+                                          -fx-font-weight: bold;
+                                          -fx-padding: 8 12;"/>
+               </VBox>
+
+               <!-- Bouton -->
+               <HBox spacing="12" alignment="CENTER_LEFT">
+                  <VBox.margin><Insets top="6"/></VBox.margin>
+
+                  <Button
+                          text="✦  Enregistrer l'Évaluation"
+                          onAction="#ajouter"
+                          prefHeight="44"
+                          prefWidth="240"
+                          style="-fx-background-color: #2d6a4f;
+                                   -fx-text-fill: white;
+                                   -fx-font-size: 12px;
+                                   -fx-font-weight: bold;
+                                   -fx-font-family: 'Palatino Linotype';
+                                   -fx-background-radius: 4;
+                                   -fx-cursor: hand;
+                                   -fx-effect: dropshadow(gaussian, rgba(45,106,79,0.4), 10, 0, 0, 3);"/>
+
+                  <Button
+                          text="↺  Réinitialiser"
+                          prefHeight="44"
+                          prefWidth="100"
+                          style="-fx-background-color: transparent;
+                                   -fx-text-fill: #6b8f71;
+                                   -fx-font-size: 11px;
+                                   -fx-font-family: 'Palatino Linotype';
+                                   -fx-border-color: #b5d5b5;
+                                   -fx-border-width: 1.5;
+                                   -fx-border-radius: 4;
+                                   -fx-background-radius: 4;
+                                   -fx-cursor: hand;"/>
+               </HBox>
+
+            </VBox>
+         </HBox>
+
+         <!-- FOOTER -->
+         <HBox
+                 prefHeight="56"
+                 style="-fx-background-color: #2d6a4f;"
+                 alignment="CENTER_LEFT"
+                 spacing="16">
+            <padding>
+               <Insets left="24" right="24"/>
+            </padding>
+
+            <Rectangle width="2" height="28" fill="#c8a84b"/>
+
+            <VBox spacing="2">
+               <Label text="Université — Service de Santé Étudiante"
+                      style="-fx-font-size: 10px;
+                                  -fx-font-weight: bold;
+                                  -fx-text-fill: rgba(255,255,255,0.9);
+                                  -fx-font-family: 'Palatino Linotype';"/>
+               <Label text="Toutes les données sont confidentielles et sécurisées"
+                      style="-fx-font-size: 9px;
+                                  -fx-text-fill: rgba(255,255,255,0.5);
+                                  -fx-font-family: 'Palatino Linotype';"/>
+            </VBox>
+
+            <!-- Spacer -->
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <Label text="🔒 Confidentiel"
+                   style="-fx-font-size: 10px;
+                              -fx-text-fill: #c8a84b;
+                              -fx-font-family: 'Palatino Linotype';"/>
+         </HBox>
+
+      </VBox>
+
+   </children>
+</AnchorPane>

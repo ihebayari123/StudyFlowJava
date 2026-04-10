@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="15" style="-fx-background-color: #eef2eb; -fx-padding: 20;"
+      xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="edu.connexion3a36.Controller.AfficherStressSurveyController">
+
+    <Label text="Liste des Stress Surveys"
+           style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2d6a4f;"/>
+
+    <TableView fx:id="tableView" prefHeight="250">
+        <columns>
+            <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
+            <TableColumn fx:id="colDate" text="Date" prefWidth="120"/>
+            <TableColumn fx:id="colSleepHours" text="Sommeil (h)" prefWidth="110"/>
+            <TableColumn fx:id="colStudyHours" text="Étude (h)" prefWidth="100"/>
+            <TableColumn fx:id="colUserId" text="User ID" prefWidth="80"/>
+        </columns>
+    </TableView>
+
+    <Label text="Modifier le survey sélectionné :"
+           style="-fx-font-weight: bold; -fx-text-fill: #2d6a4f;"/>
+
+    <HBox spacing="10">
+        <VBox spacing="5"><Label text="Date"/><DatePicker fx:id="datePicker"/></VBox>
+        <VBox spacing="5"><Label text="Sommeil (h)"/><TextField fx:id="sleepHoursTF" prefWidth="100"/></VBox>
+        <VBox spacing="5"><Label text="Étude (h)"/><TextField fx:id="studyHoursTF" prefWidth="100"/></VBox>
+        <VBox spacing="5"><Label text="User ID"/><TextField fx:id="userIdTF" prefWidth="80"/></VBox>
+    </HBox>
+
+    <HBox spacing="12">
+        <Button text="✏ Modifier" onAction="#modifier"
+                style="-fx-background-color: #c8a84b; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 4; -fx-padding: 10 20;"/>
+        <Button text="🗑 Supprimer" onAction="#supprimer"
+                style="-fx-background-color: #c0392b; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 4; -fx-padding: 10 20;"/>
+        <Button text="↺ Actualiser" onAction="#actualiser"
+                style="-fx-background-color: #2d6a4f; -fx-text-fill: white; -fx-background-radius: 4; -fx-padding: 10 20;"/>
+    </HBox>
+</VBox>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="15" style="-fx-background-color: #eef2eb; -fx-padding: 20;"
+      xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="edu.connexion3a36.Controller.AfficherWellBeingScoreController">
+
+    <Label text="Liste des Scores de Bien-Être"
+           style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2d6a4f;"/>
+
+    <TableView fx:id="tableView" prefHeight="250">
+        <columns>
+            <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
+            <TableColumn fx:id="colSurveyId" text="Survey ID" prefWidth="90"/>
+            <TableColumn fx:id="colRecommendation" text="Recommandation" prefWidth="160"/>
+            <TableColumn fx:id="colActionPlan" text="Plan d'action" prefWidth="150"/>
+            <TableColumn fx:id="colComment" text="Commentaire" prefWidth="150"/>
+            <TableColumn fx:id="colScore" text="Score" prefWidth="70"/>
+        </columns>
+    </TableView>
+
+    <Label text="Modifier le score sélectionné :"
+           style="-fx-font-weight: bold; -fx-text-fill: #2d6a4f;"/>
+
+    <HBox spacing="10">
+        <VBox spacing="5"><Label text="Recommandation"/><TextField fx:id="recommendationTF" prefWidth="180"/></VBox>
+        <VBox spacing="5"><Label text="Plan d'action"/><TextField fx:id="actionPlanTF" prefWidth="180"/></VBox>
+    </HBox>
+    <HBox spacing="10">
+        <VBox spacing="5"><Label text="Commentaire"/><TextField fx:id="commentTF" prefWidth="180"/></VBox>
+        <VBox spacing="5"><Label text="Score (0-100)"/><TextField fx:id="scoreTF" prefWidth="100"/></VBox>
+    </HBox>
+
+    <HBox spacing="12">
+        <Button text="✏ Modifier" onAction="#modifier"
+                style="-fx-background-color: #c8a84b; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 4; -fx-padding: 10 20;"/>
+        <Button text="🗑 Supprimer" onAction="#supprimer"
+                style="-fx-background-color: #c0392b; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 4; -fx-padding: 10 20;"/>
+        <Button text="↺ Actualiser" onAction="#actualiser"
+                style="-fx-background-color: #2d6a4f; -fx-text-fill: white; -fx-background-radius: 4; -fx-padding: 10 20;"/>
+    </HBox>
+</VBox>
