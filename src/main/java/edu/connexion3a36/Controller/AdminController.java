@@ -49,6 +49,16 @@ public class AdminController {
     }
 
     @FXML
+    private void ajouterStressSurvey() {
+        loadView("AjouterStressSurvey");
+    }
+
+    @FXML
+    private void ajouterWellBeingScore() {
+        loadView("AjouterWellBeingScore");
+    }
+
+    @FXML
     private void deconnexion() {
         // Retour au tableau de bord principal studyflow
         try {
