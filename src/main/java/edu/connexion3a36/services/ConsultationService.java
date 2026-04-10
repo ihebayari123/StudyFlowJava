@@ -14,6 +14,15 @@ public class ConsultationService implements IService {
     @Override
     public void addEntity(Object o) throws SQLException {
         Consultation c = (Consultation) o;
+        
+        // Vérification existence des clés étrangères
+        if (!checkForeignKeyExists("medecin", c.getMedecin_id())) {
+            throw new SQLException("Médecin avec ID " + c.getMedecin_id() + " n'existe pas dans la base de données");
+        }
+        if (!checkForeignKeyExists("stress_survey", c.getStress_survey_id())) {
+            throw new SQLException("Stress Survey avec ID " + c.getStress_survey_id() + " n'existe pas dans la base de données");
+        }
+        
         String req = "INSERT INTO consultation (date_de_consultation, motif, genre, niveau, medecin_id, stress_survey_id) VALUES (?,?,?,?,?,?)";
         PreparedStatement pst = cnx.prepareStatement(req);
         pst.setTimestamp(1, c.getDate_de_consultation());
@@ -25,6 +34,19 @@ public class ConsultationService implements IService {
         pst.executeUpdate();
         pst.close();
         System.out.println("Consultation ajoutée !");
+    }
+    
+    /**
+     * Vérifie si un enregistrement existe dans une table pour un ID donné
+     */
+    private boolean checkForeignKeyExists(String tableName, int id) throws SQLException {
+        String query = "SELECT 1 FROM " + tableName + " WHERE id = ?";
+        try (PreparedStatement pst = cnx.prepareStatement(query)) {
+            pst.setInt(1, id);
+            try (ResultSet rs = pst.executeQuery()) {
+                return rs.next();
+            }
+        }
     }
 
     @Override
