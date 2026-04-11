@@ -36,7 +36,7 @@ public class DashboardController {
         homeItem.setOnMouseClicked(event -> loadView("dashboard"));
         coursItem.setOnMouseClicked(event -> loadView("cours"));
         chapitresItem.setOnMouseClicked(event -> loadView("chapitres"));
-        quizItem.setOnMouseClicked(event -> loadView("quiz"));
+        quizItem.setOnMouseClicked(event -> loadView("QuizView"));
         exercicesItem.setOnMouseClicked(event -> loadView("exercices"));
         progressionItem.setOnMouseClicked(event -> loadView("progression"));
         settingsItem.setOnMouseClicked(event -> loadView("settings"));
@@ -55,13 +55,7 @@ public class DashboardController {
             resetActiveStyles();
             setActiveStyle(viewName);
 
-            // Éviter de recharger studyflow.fxml
-            if (viewName.equals("studyflow")) {
-                System.out.println("Ignorer studyflow.fxml");
-                return;
-            }
-
-            String resourcePath = "/" + viewName + ".fxml";
+            String resourcePath = "/views/" + viewName + ".fxml";
             URL resourceUrl = getClass().getResource(resourcePath);
 
             if (resourceUrl == null) {
@@ -70,15 +64,8 @@ public class DashboardController {
                 return;
             }
 
-            System.out.println("Chargement: " + resourcePath);
             FXMLLoader loader = new FXMLLoader(resourceUrl);
             Node view = loader.load();
-
-            // Passer la référence du dashboard au contrôleur si nécessaire
-            Object controller = loader.getController();
-            if (controller instanceof CoursController) {
-                ((CoursController) controller).setDashboardController(this);
-            }
 
             contentArea.getChildren().clear();
             contentArea.getChildren().add(view);
