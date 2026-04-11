@@ -17,7 +17,7 @@
     <TextField fx:id="motifTF" promptText="Ex : Stress, anxiété..."/>
 
     <Label text="Genre"/>
-    <TextField fx:id="genreTF" promptText="Ex : Homme, Femme, Autre..." prefWidth="300"/>
+    <TextField fx:id="genreTF" promptText="Homme, Femme ou Etudiant" prefWidth="300"/>
 
     <Label text="Niveau d'étude"/>
     <TextField fx:id="niveauTF" promptText="Ex : L1, L2, L3, M1, M2..." prefWidth="300"/>

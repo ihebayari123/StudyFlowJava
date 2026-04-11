@@ -64,6 +64,13 @@ public class AjouterConsultationController {
             return;
         }
         
+        // ✅ Contrainte Genre : doit être Homme, Femme ou Etudiant (première lettre majuscule)
+        if (!genre.equals("Homme") && !genre.equals("Femme") && !genre.equals("Etudiant")) {
+            showAlert(Alert.AlertType.WARNING, "Genre invalide", "Le genre doit être : Homme, Femme ou Etudiant (première lettre majuscule) !");
+            genreTF.requestFocus();
+            return;
+        }
+        
         String niveau = niveauTF.getText().trim();
         if (niveau.isEmpty()) {
             showAlert(Alert.AlertType.WARNING, "Champ manquant", "Veuillez indiquer le niveau d'étude !");

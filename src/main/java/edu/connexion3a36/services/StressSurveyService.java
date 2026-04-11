@@ -28,12 +28,55 @@ public class StressSurveyService implements IService {
     @Override
     public void deleteEntity(Object o) throws SQLException {
         StressSurvey s = (StressSurvey) o;
-        String req = "DELETE FROM stress_survey WHERE id = ?";
-        PreparedStatement pst = cnx.prepareStatement(req);
-        pst.setInt(1, s.getId());
-        pst.executeUpdate();
-        pst.close();
-        System.out.println("StressSurvey supprimé !");
+        int surveyId = s.getId();
+        
+        // Enable foreign key checks temporarily to allow manual cascade
+        cnx.setAutoCommit(false);
+        
+        try {
+            // 1. Supprimer les consultations liées (CASCADE)
+            String deleteConsultations = "DELETE FROM consultation WHERE stress_survey_id = ?";
+            try (PreparedStatement pstConsult = cnx.prepareStatement(deleteConsultations)) {
+                pstConsult.setInt(1, surveyId);
+                int consultationsDeleted = pstConsult.executeUpdate();
+                System.out.println(consultationsDeleted + " Consultation(s) supprimée(s) en cascade");
+            }
+            
+            // 2. Supprimer les well_being_score liés (CASCADE)
+            String deleteWellBeing = "DELETE FROM well_being_score WHERE survey_id = ?";
+            try (PreparedStatement pstWellBeing = cnx.prepareStatement(deleteWellBeing)) {
+                pstWellBeing.setInt(1, surveyId);
+                int wellBeingDeleted = pstWellBeing.executeUpdate();
+                System.out.println(wellBeingDeleted + " WellBeingScore(s) supprimé(s) en cascade");
+            }
+            
+            // 3. Supprimer le StressSurvey lui-même
+            String req = "DELETE FROM stress_survey WHERE id = ?";
+            try (PreparedStatement pst = cnx.prepareStatement(req)) {
+                pst.setInt(1, surveyId);
+                pst.executeUpdate();
+            }
+            
+            // Valider la transaction
+            cnx.commit();
+            System.out.println("StressSurvey supprimé avec succès (suppression en cascade complète) !");
+            
+        } catch (SQLException e) {
+            // Annuler la transaction en cas d'erreur
+            cnx.rollback();
+            throw e;
+        } finally {
+            cnx.setAutoCommit(true);
+        }
+    }
+    
+    /**
+     * Supprime un StressSurvey par son ID (méthode alternative pour les contrôles)
+     */
+    public void deleteById(int id) throws SQLException {
+        StressSurvey s = new StressSurvey();
+        s.setId(id);
+        deleteEntity(s);
     }
 
     @Override
