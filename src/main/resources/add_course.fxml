@@ -29,20 +29,28 @@
 
         <!-- Titre -->
         <Label text="Titre :" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-        <TextField fx:id="titreField" promptText="Entrez le titre du cours"
-                   GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+        <VBox GridPane.columnIndex="1" GridPane.rowIndex="0">
+            <TextField fx:id="titreField" promptText="Entrez le titre du cours (3-100 caractères)"/>
+            <Label fx:id="titreErrorLabel" style="-fx-text-fill: red; -fx-font-size: 11px;" visible="false"/>
+        </VBox>
 
         <!-- Description -->
         <Label text="Description :" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-        <TextArea fx:id="descriptionField" promptText="Entrez la description du cours"
-                  prefHeight="100" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        <VBox GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <TextArea fx:id="descriptionField" promptText="Entrez la description du cours (10-500 caractères)"
+                      prefHeight="100"/>
+            <Label fx:id="descriptionErrorLabel" style="-fx-text-fill: red; -fx-font-size: 11px;" visible="false"/>
+        </VBox>
 
         <!-- Image URL -->
         <Label text="Image URL :" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-        <HBox spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="2">
-            <TextField fx:id="imageField" promptText="URL de l'image" HBox.hgrow="ALWAYS"/>
-            <Button text="Parcourir..." onAction="#handleBrowseImage"/>
-        </HBox>
+        <VBox GridPane.columnIndex="1" GridPane.rowIndex="2">
+            <HBox spacing="10">
+                <TextField fx:id="imageField" promptText="URL de l'image (jpg, png, gif, webp)" HBox.hgrow="ALWAYS"/>
+                <Button text="Parcourir..." onAction="#handleBrowseImage"/>
+            </HBox>
+            <Label fx:id="imageErrorLabel" style="-fx-text-fill: orange; -fx-font-size: 11px;" visible="false"/>
+        </VBox>
 
         <!-- Image Preview -->
         <Label text="Aperçu :" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
