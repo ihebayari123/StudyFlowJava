@@ -139,8 +139,17 @@ public class CoursController {
     }
 
     private void handleUpdateCourse(Course course) {
-        System.out.println("Modification du cours: " + course.getTitre());
-        openCourseForm(course.getEntity());
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Modification");
+        confirm.setHeaderText("Modifier le cours");
+        confirm.setContentText("Voulez-vous modifier le cours \"" + course.getTitre() + "\" ?");
+
+        confirm.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                System.out.println("Modification du cours: " + course.getTitre());
+                openCourseForm(course.getEntity());
+            }
+        });
     }
 
     private void handleDeleteCourse(Course course) {
