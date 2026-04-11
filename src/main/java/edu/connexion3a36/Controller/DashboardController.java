@@ -28,8 +28,9 @@ public class DashboardController {
 
     @FXML
     public void initialize() {
+        System.out.println("DashboardController initialisé");
         setupNavigation();
-        loadView("cours");  // Charge cours.fxml par défaut
+        loadView("cours");
     }
 
     private void setupNavigation() {
@@ -55,46 +56,68 @@ public class DashboardController {
             resetActiveStyles();
             setActiveStyle(viewName);
 
-            // Éviter de recharger studyflow.fxml
-            if (viewName.equals("studyflow")) {
-                System.out.println("Ignorer studyflow.fxml");
-                return;
-            }
-
+            // Correction du chemin - les ressources sont à la racine
             String resourcePath = "/" + viewName + ".fxml";
+            System.out.println("Tentative de chargement: " + resourcePath);
+
             URL resourceUrl = getClass().getResource(resourcePath);
 
             if (resourceUrl == null) {
-                System.err.println("Fichier non trouvé: " + resourcePath);
+                System.err.println("❌ Fichier non trouvé: " + resourcePath);
+
+                // Afficher tous les fichiers disponibles dans les ressources (debug)
+                System.err.println("📁 Vérifiez que ces fichiers existent dans src/main/resources/ :");
+                System.err.println("   - cours.fxml");
+                System.err.println("   - add_course.fxml");
+                System.err.println("   - chapitres.fxml");
+                System.err.println("   - quiz.fxml");
+                System.err.println("   - exercices.fxml");
+                System.err.println("   - progression.fxml");
+                System.err.println("   - settings.fxml");
+
                 showErrorView(viewName);
                 return;
             }
 
-            System.out.println("Chargement: " + resourcePath);
+            System.out.println("✅ Fichier trouvé: " + resourceUrl);
             FXMLLoader loader = new FXMLLoader(resourceUrl);
             Node view = loader.load();
+            System.out.println("✅ Vue chargée avec succès: " + viewName);
 
             // Passer la référence du dashboard au contrôleur si nécessaire
             Object controller = loader.getController();
-            if (controller instanceof CoursController) {
-                ((CoursController) controller).setDashboardController(this);
+            if (controller != null) {
+                System.out.println("Contrôleur chargé: " + controller.getClass().getSimpleName());
+                try {
+                    java.lang.reflect.Method method = controller.getClass().getMethod("setDashboardController", DashboardController.class);
+                    method.invoke(controller, this);
+                    System.out.println("✅ DashboardController injecté");
+                } catch (NoSuchMethodException e) {
+                    System.out.println("ℹ️ Pas de méthode setDashboardController");
+                } catch (Exception e) {
+                    LOGGER.log(Level.WARNING, "Erreur injection", e);
+                }
             }
 
             contentArea.getChildren().clear();
             contentArea.getChildren().add(view);
 
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Erreur chargement: " + viewName, e);
+            LOGGER.log(Level.SEVERE, "❌ Erreur chargement: " + viewName, e);
             showErrorView(viewName);
         }
     }
 
     private void showErrorView(String viewName) {
         VBox errorBox = new VBox();
-        errorBox.setStyle("-fx-alignment: center; -fx-padding: 40;");
-        Label errorLabel = new Label("⚠️ Vue non trouvée: " + viewName + ".fxml\n\nVérifiez que le fichier existe dans resources/");
+        errorBox.setStyle("-fx-alignment: center; -fx-padding: 40; -fx-spacing: 10;");
+        Label errorLabel = new Label("⚠️ Vue non trouvée: " + viewName + ".fxml");
+        Label infoLabel1 = new Label("Le fichier doit être dans: src/main/resources/");
+        Label infoLabel2 = new Label("Vérifiez que le nom du fichier est correct (cours.fxml, chapitres.fxml, etc.)");
+        infoLabel1.setStyle("-fx-text-fill: #757575; -fx-font-size: 12;");
+        infoLabel2.setStyle("-fx-text-fill: #757575; -fx-font-size: 12;");
         errorLabel.setStyle("-fx-text-fill: #F44336; -fx-font-size: 14;");
-        errorBox.getChildren().add(errorLabel);
+        errorBox.getChildren().addAll(errorLabel, infoLabel1, infoLabel2);
         contentArea.getChildren().clear();
         contentArea.getChildren().add(errorBox);
     }
