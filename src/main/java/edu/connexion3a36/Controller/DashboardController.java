@@ -21,7 +21,8 @@ public class DashboardController {
     @FXML private HBox chapitresItem;
     @FXML private HBox quizItem;
     @FXML private HBox exercicesItem;
-    @FXML private HBox categorieItem; // ✅ ajouté
+    @FXML private HBox categorieItem;
+    @FXML private HBox produitItem;       // ✅ ajouté
     @FXML private HBox progressionItem;
     @FXML private HBox settingsItem;
 
@@ -39,7 +40,8 @@ public class DashboardController {
         chapitresItem.setOnMouseClicked(event -> loadView("chapitres"));
         quizItem.setOnMouseClicked(event -> loadView("quiz"));
         exercicesItem.setOnMouseClicked(event -> loadView("exercices"));
-        categorieItem.setOnMouseClicked(event -> loadView("categorieMenu")); // ✅ ajouté
+        categorieItem.setOnMouseClicked(event -> loadView("categorieMenu"));
+        produitItem.setOnMouseClicked(event -> loadView("produitMenu")); // ✅ ajouté
         progressionItem.setOnMouseClicked(event -> loadView("progression"));
         settingsItem.setOnMouseClicked(event -> loadView("settings"));
 
@@ -48,7 +50,8 @@ public class DashboardController {
         addHoverEffect(chapitresItem);
         addHoverEffect(quizItem);
         addHoverEffect(exercicesItem);
-        addHoverEffect(categorieItem); // ✅ ajouté
+        addHoverEffect(categorieItem);
+        addHoverEffect(produitItem);       // ✅ ajouté
         addHoverEffect(progressionItem);
         addHoverEffect(settingsItem);
     }
@@ -79,8 +82,11 @@ public class DashboardController {
             if (controller instanceof CoursController) {
                 ((CoursController) controller).setDashboardController(this);
             }
-            if (controller instanceof CategorieMenuController) { // ✅ ajouté
+            if (controller instanceof CategorieMenuController) {
                 ((CategorieMenuController) controller).setDashboardController(this);
+            }
+            if (controller instanceof ProduitMenuController) { // ✅ ajouté
+                ((ProduitMenuController) controller).setDashboardController(this);
             }
 
             contentArea.getChildren().clear();
@@ -103,7 +109,7 @@ public class DashboardController {
     }
 
     private void resetActiveStyles() {
-        HBox[] items = {homeItem, coursItem, chapitresItem, quizItem, exercicesItem, categorieItem, progressionItem, settingsItem};
+        HBox[] items = {homeItem, coursItem, chapitresItem, quizItem, exercicesItem, categorieItem, produitItem, progressionItem, settingsItem}; // ✅ ajouté
         for (HBox item : items) {
             if (item != null) {
                 item.setStyle("-fx-background-color: transparent; -fx-background-radius: 8; -fx-padding: 0 12 0 12;");
@@ -111,7 +117,7 @@ public class DashboardController {
                     if (node instanceof Label) {
                         Label label = (Label) node;
                         String text = label.getText();
-                        if (text != null && !text.matches("🏠|📚|📖|❓|✏️|🏷️|📊|⚙️")) {
+                        if (text != null && !text.matches("🏠|📚|📖|❓|✏️|🏷️|🛒|📊|⚙️")) { // ✅ ajouté 🛒
                             label.setStyle("-fx-font-size: 13; -fx-text-fill: #757575; -fx-font-weight: normal;");
                         }
                     }
@@ -128,7 +134,8 @@ public class DashboardController {
             case "chapitres": activeItem = chapitresItem; break;
             case "quiz": activeItem = quizItem; break;
             case "exercices": activeItem = exercicesItem; break;
-            case "categorieMenu": activeItem = categorieItem; break; // ✅ ajouté
+            case "categorieMenu": activeItem = categorieItem; break;
+            case "produitMenu": activeItem = produitItem; break; // ✅ ajouté
             case "progression": activeItem = progressionItem; break;
             case "settings": activeItem = settingsItem; break;
             default: break;
@@ -140,7 +147,7 @@ public class DashboardController {
                 if (node instanceof Label) {
                     Label label = (Label) node;
                     String text = label.getText();
-                    if (text != null && !text.matches("🏠|📚|📖|❓|✏️|🏷️|📊|⚙️")) {
+                    if (text != null && !text.matches("🏠|📚|📖|❓|✏️|🏷️|🛒|📊|⚙️")) { // ✅ ajouté 🛒
                         label.setStyle("-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #2979FF;");
                     }
                 }

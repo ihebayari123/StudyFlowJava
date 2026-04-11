@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="16" style="-fx-padding: 24; -fx-background-color: #F5F6FA;"
+      xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="edu.connexion3a36.Controller.AfficherProduitController">
+
+    <HBox alignment="CENTER_LEFT" spacing="12">
+        <Label style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #1A1A2E;" text="📋 Liste des Produits" />
+        <Button fx:id="refreshBtn" style="-fx-background-color: #2979FF; -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand;" text="🔄 Actualiser" />
+        <Button fx:id="triBtn" style="-fx-background-color: #FF9800; -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand;" text="🔼 Tri A→Z" />
+    </HBox>
+
+    <!-- ✅ Barre de recherche -->
+    <HBox spacing="10" style="-fx-background-color: #FFFFFF; -fx-background-radius: 10; -fx-padding: 10 16;">
+        <Label text="🔍" style="-fx-font-size: 14;" />
+        <TextField fx:id="searchField"
+                   promptText="Rechercher par nom..."
+                   style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-font-size: 13;"
+                   HBox.hgrow="ALWAYS" />
+    </HBox>
+
+    <TableView fx:id="tableView" VBox.vgrow="ALWAYS"
+               style="-fx-background-color: #FFFFFF; -fx-background-radius: 12;">
+        <columns>
+            <TableColumn fx:id="colId" prefWidth="50" text="ID" />
+            <TableColumn fx:id="colNom" prefWidth="120" text="Nom" />
+            <TableColumn fx:id="colDescription" prefWidth="180" text="Description" />
+            <TableColumn fx:id="colPrix" prefWidth="70" text="Prix" />
+            <TableColumn fx:id="colImage" prefWidth="100" text="Image" />
+            <TableColumn fx:id="colTypeCategorie" prefWidth="120" text="Catégorie" />
+            <TableColumn fx:id="colUser" prefWidth="80" text="User ID" />
+            <TableColumn fx:id="colActions" prefWidth="180" text="Actions" />
+        </columns>
+    </TableView>
+
+    <Label fx:id="statusLabel" style="-fx-text-fill: #2979FF; -fx-font-size: 13;" text="" />
+
+</VBox>

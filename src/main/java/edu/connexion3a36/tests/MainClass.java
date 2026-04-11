@@ -1,8 +1,10 @@
 package edu.connexion3a36.tests;
 
 import edu.connexion3a36.entities.Personne;
+import edu.connexion3a36.entities.Produit;
 import edu.connexion3a36.entities.TypeCategorie;
 import edu.connexion3a36.services.PersonneService;
+import edu.connexion3a36.services.ProduitService;
 import edu.connexion3a36.services.TypeCategorieService;
 import edu.connexion3a36.tools.MyConnection;
 
@@ -31,6 +33,22 @@ public class MainClass {
         }catch (Exception e){
             System.out.println(e.getMessage());
         }
+
+
+        Produit produit = new Produit("chatgpt" , "outils fait des resume" , 70 , "https://www.the-intl.com/post/chatgbt" , 1 , 1);
+        ProduitService produitService = new ProduitService( );
+        try {
+            produitService.addP(produit);
+            System.out.println(produitService.getData());
+            MyConnection mc1 = MyConnection.getInstance();
+            MyConnection mc2 = MyConnection.getInstance();
+            System.out.println(mc1.hashCode()+" - "+mc2.hashCode());
+
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+
+
 
 
 
