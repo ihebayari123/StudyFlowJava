@@ -1,7 +1,7 @@
 package edu.connexion3a36.services;
 
-import edu.connexion3a36.interfaces.IService;
 import edu.connexion3a36.entities.Question;
+import edu.connexion3a36.interfaces.IService;
 import edu.connexion3a36.tools.MyConnection;
 
 import java.sql.*;
@@ -12,21 +12,20 @@ public class QuestionService implements IService<Question> {
 
     private final Connection cnx = MyConnection.getInstance().getCnx();
 
-    // ── Constantes de validation métier ───────────────────────
-    private static final int TEXTE_MIN  = 10;
-    private static final int TEXTE_MAX  = 500;
-    private static final int INDICE_MAX = 200;
-    private static final int CHOIX_MIN  = 2;
-    private static final int CHOIX_MAX  = 200;
-    private static final int REP_MIN    = 2;
+    private static final int    TEXTE_MIN  = 10;
+    private static final int    TEXTE_MAX  = 500;
+    private static final int    INDICE_MAX = 200;
+    private static final int    CHOIX_MIN  = 2;
+    private static final int    CHOIX_MAX  = 200;
+    private static final int    REP_MIN    = 2;
 
-    private static final List<String> NIVEAUX_VALIDES = List.of("facile", "moyen", "difficile");
-    private static final List<String> TYPES_VALIDES   = List.of("choix_multiple", "vrai_faux", "texte");
+    private static final List<String> NIVEAUX = List.of("facile", "moyen", "difficile");
+    private static final List<String> TYPES   = List.of("choix_multiple", "vrai_faux", "texte");
 
     // ── CREATE ────────────────────────────────────────────────
 
     @Override
-    public void add(Question q) throws Exception {
+    public void addEntity(Question q) throws SQLException {
         valider(q);
         String sql = """
             INSERT INTO question
@@ -44,40 +43,16 @@ public class QuestionService implements IService<Question> {
     // ── READ ALL ──────────────────────────────────────────────
 
     @Override
-    public List<Question> getAll() throws Exception {
+    public List<Question> getData() throws SQLException {
         return executeQuery("SELECT * FROM question ORDER BY quiz_id, id");
-    }
-
-    // ── READ BY ID ────────────────────────────────────────────
-
-    @Override
-    public Question getById(int id) throws Exception {
-        if (id <= 0) throw new Exception("L'ID de la question doit être un entier positif.");
-        try (PreparedStatement ps = cnx.prepareStatement("SELECT * FROM question WHERE id=?")) {
-            ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) return mapRow(rs);
-        }
-        return null;
-    }
-
-    // ── READ BY QUIZ ──────────────────────────────────────────
-
-    public List<Question> getByQuizId(int quizId) throws Exception {
-        if (quizId <= 0) throw new Exception("L'ID du quiz est invalide.");
-        try (PreparedStatement ps = cnx.prepareStatement(
-                "SELECT * FROM question WHERE quiz_id=? ORDER BY id")) {
-            ps.setInt(1, quizId);
-            return mapList(ps.executeQuery());
-        }
     }
 
     // ── UPDATE ────────────────────────────────────────────────
 
     @Override
-    public void update(Question q) throws Exception {
-        if (q.getId() <= 0)
-            throw new Exception("ID de la question invalide pour la mise à jour.");
+    public void updateEntity(int id, Question q) throws SQLException {
+        if (id <= 0)
+            throw new SQLException("ID de la question invalide pour la mise à jour.");
         valider(q);
         String sql = """
             UPDATE question SET
@@ -88,7 +63,7 @@ public class QuestionService implements IService<Question> {
             """;
         try (PreparedStatement ps = cnx.prepareStatement(sql)) {
             remplirPS(ps, q);
-            ps.setInt(13, q.getId());
+            ps.setInt(13, id);
             ps.executeUpdate();
         }
     }
@@ -96,19 +71,44 @@ public class QuestionService implements IService<Question> {
     // ── DELETE ────────────────────────────────────────────────
 
     @Override
-    public void delete(int id) throws Exception {
-        if (id <= 0) throw new Exception("L'ID de la question à supprimer est invalide.");
-        try (PreparedStatement ps = cnx.prepareStatement("DELETE FROM question WHERE id=?")) {
-            ps.setInt(1, id);
+    public void deleteEntity(Question q) throws SQLException {
+        if (q.getId() <= 0)
+            throw new SQLException("L'ID de la question à supprimer est invalide.");
+        try (PreparedStatement ps = cnx.prepareStatement(
+                "DELETE FROM question WHERE id=?")) {
+            ps.setInt(1, q.getId());
             ps.executeUpdate();
         }
     }
 
+    // ── READ BY QUIZ ID ───────────────────────────────────────
+
+    public List<Question> getByQuizId(int quizId) throws SQLException {
+        if (quizId <= 0) throw new SQLException("L'ID du quiz est invalide.");
+        try (PreparedStatement ps = cnx.prepareStatement(
+                "SELECT * FROM question WHERE quiz_id=? ORDER BY id")) {
+            ps.setInt(1, quizId);
+            return mapList(ps.executeQuery());
+        }
+    }
+
+    // ── GET BY ID (utilitaire) ────────────────────────────────
+
+    public Question getById(int id) throws SQLException {
+        if (id <= 0) throw new SQLException("L'ID de la question doit être positif.");
+        try (PreparedStatement ps = cnx.prepareStatement(
+                "SELECT * FROM question WHERE id=?")) {
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) return mapRow(rs);
+        }
+        return null;
+    }
+
     // ── SEARCH ────────────────────────────────────────────────
 
-    public List<Question> search(String keyword) throws Exception {
-        if (keyword == null || keyword.trim().isEmpty())
-            return getAll();
+    public List<Question> search(String keyword) throws SQLException {
+        if (keyword == null || keyword.trim().isEmpty()) return getData();
         try (PreparedStatement ps = cnx.prepareStatement(
                 "SELECT * FROM question WHERE texte LIKE ? ORDER BY id")) {
             ps.setString(1, "%" + keyword.trim() + "%");
@@ -118,9 +118,9 @@ public class QuestionService implements IService<Question> {
 
     // ── FILTRE PAR NIVEAU ─────────────────────────────────────
 
-    public List<Question> getByNiveau(String niveau) throws Exception {
-        if (niveau == null || !NIVEAUX_VALIDES.contains(niveau))
-            throw new Exception("Niveau invalide. Valeurs acceptées : " + NIVEAUX_VALIDES);
+    public List<Question> getByNiveau(String niveau) throws SQLException {
+        if (niveau == null || !NIVEAUX.contains(niveau))
+            throw new SQLException("Niveau invalide. Valeurs acceptées : " + NIVEAUX);
         try (PreparedStatement ps = cnx.prepareStatement(
                 "SELECT * FROM question WHERE niveau=? ORDER BY id")) {
             ps.setString(1, niveau);
@@ -130,9 +130,9 @@ public class QuestionService implements IService<Question> {
 
     // ── FILTRE PAR TYPE ───────────────────────────────────────
 
-    public List<Question> getByType(String type) throws Exception {
-        if (type == null || !TYPES_VALIDES.contains(type))
-            throw new Exception("Type invalide. Valeurs acceptées : " + TYPES_VALIDES);
+    public List<Question> getByType(String type) throws SQLException {
+        if (type == null || !TYPES.contains(type))
+            throw new SQLException("Type invalide. Valeurs acceptées : " + TYPES);
         try (PreparedStatement ps = cnx.prepareStatement(
                 "SELECT * FROM question WHERE type=? ORDER BY id")) {
             ps.setString(1, type);
@@ -142,55 +142,54 @@ public class QuestionService implements IService<Question> {
 
     // ── TRI ───────────────────────────────────────────────────
 
-    public List<Question> getAllSortedByNiveau() throws Exception {
+    public List<Question> getAllSortedByNiveau() throws SQLException {
         return executeQuery("""
             SELECT * FROM question
             ORDER BY FIELD(niveau,'facile','moyen','difficile')
             """);
     }
 
-    public List<Question> getAllSortedByType() throws Exception {
+    public List<Question> getAllSortedByType() throws SQLException {
         return executeQuery("SELECT * FROM question ORDER BY type ASC");
     }
 
     // ── VALIDATION MÉTIER ─────────────────────────────────────
 
-    /**
-     * Validation complète d'un objet Question.
-     * Couvre les champs communs et les champs conditionnels selon le type.
-     */
-    private void valider(Question q) throws Exception {
-
-        // --- Texte ---
+    private void valider(Question q) throws SQLException {
+        // Texte
         if (q.getTexte() == null || q.getTexte().trim().isEmpty())
-            throw new Exception("Le texte de la question est obligatoire.");
+            throw new SQLException("Le texte de la question est obligatoire.");
         String texte = q.getTexte().trim();
         if (texte.length() < TEXTE_MIN)
-            throw new Exception("Le texte doit contenir au moins " + TEXTE_MIN + " caractères.");
+            throw new SQLException(
+                "Le texte doit contenir au moins " + TEXTE_MIN + " caractères.");
         if (texte.length() > TEXTE_MAX)
-            throw new Exception("Le texte ne peut pas dépasser " + TEXTE_MAX + " caractères.");
+            throw new SQLException(
+                "Le texte ne peut pas dépasser " + TEXTE_MAX + " caractères.");
 
-        // --- Niveau ---
+        // Niveau
         if (q.getNiveau() == null || q.getNiveau().trim().isEmpty())
-            throw new Exception("Le niveau est obligatoire.");
-        if (!NIVEAUX_VALIDES.contains(q.getNiveau()))
-            throw new Exception("Niveau invalide. Valeurs acceptées : " + NIVEAUX_VALIDES);
+            throw new SQLException("Le niveau est obligatoire.");
+        if (!NIVEAUX.contains(q.getNiveau()))
+            throw new SQLException("Niveau invalide. Valeurs acceptées : " + NIVEAUX);
 
-        // --- Type ---
+        // Type
         if (q.getType() == null || q.getType().trim().isEmpty())
-            throw new Exception("Le type de question est obligatoire.");
-        if (!TYPES_VALIDES.contains(q.getType()))
-            throw new Exception("Type invalide. Valeurs acceptées : " + TYPES_VALIDES);
+            throw new SQLException("Le type de question est obligatoire.");
+        if (!TYPES.contains(q.getType()))
+            throw new SQLException("Type invalide. Valeurs acceptées : " + TYPES);
 
-        // --- Quiz ID ---
+        // Quiz ID
         if (q.getQuizId() <= 0)
-            throw new Exception("L'identifiant du quiz associé est invalide (doit être > 0).");
+            throw new SQLException(
+                "L'identifiant du quiz associé est invalide (doit être > 0).");
 
-        // --- Indice (optionnel mais limité) ---
+        // Indice (optionnel)
         if (q.getIndice() != null && q.getIndice().trim().length() > INDICE_MAX)
-            throw new Exception("L'indice ne peut pas dépasser " + INDICE_MAX + " caractères.");
+            throw new SQLException(
+                "L'indice ne peut pas dépasser " + INDICE_MAX + " caractères.");
 
-        // --- Champs conditionnels selon le type ---
+        // Champs conditionnels
         switch (q.getType()) {
             case "choix_multiple" -> validerChoixMultiple(q);
             case "vrai_faux"      -> validerVraiFaux(q);
@@ -198,73 +197,55 @@ public class QuestionService implements IService<Question> {
         }
     }
 
-    /**
-     * Règles pour le type choix_multiple :
-     * - A et B obligatoires, C et D optionnels
-     * - Chaque choix renseigné : entre CHOIX_MIN et CHOIX_MAX caractères
-     * - La bonne réponse doit être parmi {a, b, c, d}
-     */
-    private void validerChoixMultiple(Question q) throws Exception {
-        // Choix A — obligatoire
+    private void validerChoixMultiple(Question q) throws SQLException {
         if (q.getChoixA() == null || q.getChoixA().trim().isEmpty())
-            throw new Exception("Le choix A est obligatoire.");
-        validerLongueurChoix(q.getChoixA(), "A", true);
+            throw new SQLException("Le choix A est obligatoire.");
+        validerLongueurChoix(q.getChoixA(), "A");
 
-        // Choix B — obligatoire
         if (q.getChoixB() == null || q.getChoixB().trim().isEmpty())
-            throw new Exception("Le choix B est obligatoire.");
-        validerLongueurChoix(q.getChoixB(), "B", true);
+            throw new SQLException("Le choix B est obligatoire.");
+        validerLongueurChoix(q.getChoixB(), "B");
 
-        // Choix C — optionnel
         if (q.getChoixC() != null && !q.getChoixC().trim().isEmpty())
-            validerLongueurChoix(q.getChoixC(), "C", false);
-
-        // Choix D — optionnel
+            validerLongueurChoix(q.getChoixC(), "C");
         if (q.getChoixD() != null && !q.getChoixD().trim().isEmpty())
-            validerLongueurChoix(q.getChoixD(), "D", false);
+            validerLongueurChoix(q.getChoixD(), "D");
 
-        // Bonne réponse
         if (q.getBonneReponseChoix() == null)
-            throw new Exception("La bonne réponse est obligatoire pour le type choix_multiple.");
-        if (!List.of("a", "b", "c", "d").contains(q.getBonneReponseChoix()))
-            throw new Exception("La bonne réponse doit être 'a', 'b', 'c' ou 'd'.");
+            throw new SQLException(
+                "La bonne réponse est obligatoire pour le type choix_multiple.");
+        if (!List.of("a","b","c","d").contains(q.getBonneReponseChoix()))
+            throw new SQLException("La bonne réponse doit être 'a', 'b', 'c' ou 'd'.");
 
-        // Cohérence : la bonne réponse ne peut pas pointer vers un choix vide
-        if ("c".equals(q.getBonneReponseChoix()) && (q.getChoixC() == null || q.getChoixC().trim().isEmpty()))
-            throw new Exception("La bonne réponse est 'c' mais le choix C est vide.");
-        if ("d".equals(q.getBonneReponseChoix()) && (q.getChoixD() == null || q.getChoixD().trim().isEmpty()))
-            throw new Exception("La bonne réponse est 'd' mais le choix D est vide.");
+        if ("c".equals(q.getBonneReponseChoix()) &&
+            (q.getChoixC() == null || q.getChoixC().trim().isEmpty()))
+            throw new SQLException("La bonne réponse est 'c' mais le choix C est vide.");
+        if ("d".equals(q.getBonneReponseChoix()) &&
+            (q.getChoixD() == null || q.getChoixD().trim().isEmpty()))
+            throw new SQLException("La bonne réponse est 'd' mais le choix D est vide.");
     }
 
-    /**
-     * Règles pour le type vrai_faux :
-     * - La valeur booléenne de la bonne réponse est obligatoire.
-     */
-    private void validerVraiFaux(Question q) throws Exception {
+    private void validerVraiFaux(Question q) throws SQLException {
         if (q.getBonneReponseBool() == null)
-            throw new Exception("Vous devez choisir Vrai ou Faux comme bonne réponse.");
+            throw new SQLException("Vous devez choisir Vrai ou Faux.");
     }
 
-    /**
-     * Règles pour le type texte libre :
-     * - La réponse attendue est obligatoire et doit avoir au moins REP_MIN caractères.
-     */
-    private void validerTexteLibre(Question q) throws Exception {
+    private void validerTexteLibre(Question q) throws SQLException {
         if (q.getReponseAttendue() == null || q.getReponseAttendue().trim().isEmpty())
-            throw new Exception("La réponse attendue est obligatoire pour le type texte.");
+            throw new SQLException("La réponse attendue est obligatoire pour le type texte.");
         if (q.getReponseAttendue().trim().length() < REP_MIN)
-            throw new Exception("La réponse attendue doit contenir au moins " + REP_MIN + " caractères.");
+            throw new SQLException(
+                "La réponse attendue doit contenir au moins " + REP_MIN + " caractères.");
     }
 
-    /**
-     * Vérifie la longueur d'un choix (min et max).
-     */
-    private void validerLongueurChoix(String choix, String lettre, boolean obligatoire) throws Exception {
+    private void validerLongueurChoix(String choix, String lettre) throws SQLException {
         String c = choix.trim();
-        if (obligatoire && c.length() < CHOIX_MIN)
-            throw new Exception("Le choix " + lettre + " doit contenir au moins " + CHOIX_MIN + " caractères.");
+        if (c.length() < CHOIX_MIN)
+            throw new SQLException(
+                "Le choix " + lettre + " doit contenir au moins " + CHOIX_MIN + " caractères.");
         if (c.length() > CHOIX_MAX)
-            throw new Exception("Le choix " + lettre + " ne peut pas dépasser " + CHOIX_MAX + " caractères.");
+            throw new SQLException(
+                "Le choix " + lettre + " ne peut pas dépasser " + CHOIX_MAX + " caractères.");
     }
 
     // ── HELPERS ───────────────────────────────────────────────
@@ -284,10 +265,11 @@ public class QuestionService implements IService<Question> {
             ps.setBoolean(11, q.getBonneReponseBool());
         else
             ps.setNull(11, Types.BOOLEAN);
-        ps.setString(12, q.getReponseAttendue() != null ? q.getReponseAttendue().trim() : null);
+        ps.setString(12, q.getReponseAttendue() != null ?
+                         q.getReponseAttendue().trim() : null);
     }
 
-    private List<Question> executeQuery(String sql) throws Exception {
+    private List<Question> executeQuery(String sql) throws SQLException {
         try (Statement st = cnx.createStatement();
              ResultSet rs = st.executeQuery(sql)) {
             return mapList(rs);

@@ -13,16 +13,15 @@ public class QuizService implements IService<Quiz> {
 
     private final Connection cnx = MyConnection.getInstance().getCnx();
 
-    // ── Constantes de validation métier ───────────────────────
-    private static final int TITRE_MIN  = 3;
-    private static final int TITRE_MAX  = 100;
-    private static final int DUREE_MIN  = 1;
-    private static final int DUREE_MAX  = 180;
+    private static final int TITRE_MIN = 3;
+    private static final int TITRE_MAX = 100;
+    private static final int DUREE_MIN = 1;
+    private static final int DUREE_MAX = 180;
 
     // ── CREATE ────────────────────────────────────────────────
 
     @Override
-    public void add(Quiz q) throws Exception {
+    public void addEntity(Quiz q) throws SQLException {
         valider(q);
         String sql = "INSERT INTO quiz (titre, duree, date_creation, course_id) VALUES (?,?,?,?)";
         try (PreparedStatement ps = cnx.prepareStatement(sql)) {
@@ -37,37 +36,23 @@ public class QuizService implements IService<Quiz> {
     // ── READ ALL ──────────────────────────────────────────────
 
     @Override
-    public List<Quiz> getAll() throws Exception {
+    public List<Quiz> getData() throws SQLException {
         return executeQuery("SELECT * FROM quiz ORDER BY date_creation DESC");
-    }
-
-    // ── READ BY ID ────────────────────────────────────────────
-
-    @Override
-    public Quiz getById(int id) throws Exception {
-        if (id <= 0) throw new Exception("L'ID doit être un entier positif.");
-        String sql = "SELECT * FROM quiz WHERE id=?";
-        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
-            ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) return mapRow(rs);
-        }
-        return null;
     }
 
     // ── UPDATE ────────────────────────────────────────────────
 
     @Override
-    public void update(Quiz q) throws Exception {
-        if (q.getId() <= 0)
-            throw new Exception("ID du quiz invalide pour la mise à jour.");
+    public void updateEntity(int id, Quiz q) throws SQLException {
+        if (id <= 0)
+            throw new SQLException("ID du quiz invalide pour la mise à jour.");
         valider(q);
         String sql = "UPDATE quiz SET titre=?, duree=?, course_id=? WHERE id=?";
         try (PreparedStatement ps = cnx.prepareStatement(sql)) {
             ps.setString(1, q.getTitre().trim());
             ps.setInt   (2, q.getDuree());
             ps.setInt   (3, q.getCourseId());
-            ps.setInt   (4, q.getId());
+            ps.setInt   (4, id);
             ps.executeUpdate();
         }
     }
@@ -75,24 +60,27 @@ public class QuizService implements IService<Quiz> {
     // ── DELETE ────────────────────────────────────────────────
 
     @Override
-    public void delete(int id) throws Exception {
-        if (id <= 0) throw new Exception("L'ID du quiz à supprimer est invalide.");
-        // Supprimer d'abord les questions liées
-        try (PreparedStatement ps = cnx.prepareStatement("DELETE FROM question WHERE quiz_id=?")) {
-            ps.setInt(1, id);
+    public void deleteEntity(Quiz q) throws SQLException {
+        if (q.getId() <= 0)
+            throw new SQLException("L'ID du quiz à supprimer est invalide.");
+        // Cascade : supprimer les questions liées d'abord
+        try (PreparedStatement ps = cnx.prepareStatement(
+                "DELETE FROM question WHERE quiz_id=?")) {
+            ps.setInt(1, q.getId());
             ps.executeUpdate();
         }
-        try (PreparedStatement ps = cnx.prepareStatement("DELETE FROM quiz WHERE id=?")) {
-            ps.setInt(1, id);
+        try (PreparedStatement ps = cnx.prepareStatement(
+                "DELETE FROM quiz WHERE id=?")) {
+            ps.setInt(1, q.getId());
             ps.executeUpdate();
         }
     }
 
     // ── SEARCH ────────────────────────────────────────────────
 
-    public List<Quiz> search(String keyword) throws Exception {
+    public List<Quiz> search(String keyword) throws SQLException {
         if (keyword == null || keyword.trim().isEmpty())
-            return getAll();
+            return getData();
         String sql = "SELECT * FROM quiz WHERE titre LIKE ? ORDER BY date_creation DESC";
         try (PreparedStatement ps = cnx.prepareStatement(sql)) {
             ps.setString(1, "%" + keyword.trim() + "%");
@@ -102,50 +90,55 @@ public class QuizService implements IService<Quiz> {
 
     // ── TRI ───────────────────────────────────────────────────
 
-    public List<Quiz> getAllSortedByTitre() throws Exception {
+    public List<Quiz> getAllSortedByTitre() throws SQLException {
         return executeQuery("SELECT * FROM quiz ORDER BY titre ASC");
     }
 
-    public List<Quiz> getAllSortedByDuree() throws Exception {
+    public List<Quiz> getAllSortedByDuree() throws SQLException {
         return executeQuery("SELECT * FROM quiz ORDER BY duree ASC");
     }
 
-    public List<Quiz> getAllSortedByDate() throws Exception {
+    public List<Quiz> getAllSortedByDate() throws SQLException {
         return executeQuery("SELECT * FROM quiz ORDER BY date_creation DESC");
+    }
+
+    // ── GET BY ID (utilitaire) ────────────────────────────────
+
+    public Quiz getById(int id) throws SQLException {
+        if (id <= 0) throw new SQLException("L'ID doit être un entier positif.");
+        try (PreparedStatement ps = cnx.prepareStatement(
+                "SELECT * FROM quiz WHERE id=?")) {
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) return mapRow(rs);
+        }
+        return null;
     }
 
     // ── VALIDATION MÉTIER ─────────────────────────────────────
 
-    /**
-     * Validation complète d'un objet Quiz.
-     * Les règles sont regroupées ici (côté service) pour être
-     * indépendantes du Controller (API, tests, etc.).
-     */
-    private void valider(Quiz q) throws Exception {
-
-        // --- Titre ---
+    private void valider(Quiz q) throws SQLException {
         if (q.getTitre() == null || q.getTitre().trim().isEmpty())
-            throw new Exception("Le titre du quiz est obligatoire.");
+            throw new SQLException("Le titre du quiz est obligatoire.");
         String titre = q.getTitre().trim();
         if (titre.length() < TITRE_MIN)
-            throw new Exception("Le titre doit contenir au moins " + TITRE_MIN + " caractères.");
+            throw new SQLException(
+                "Le titre doit contenir au moins " + TITRE_MIN + " caractères.");
         if (titre.length() > TITRE_MAX)
-            throw new Exception("Le titre ne peut pas dépasser " + TITRE_MAX + " caractères.");
-
-        // --- Durée ---
+            throw new SQLException(
+                "Le titre ne peut pas dépasser " + TITRE_MAX + " caractères.");
         if (q.getDuree() < DUREE_MIN || q.getDuree() > DUREE_MAX)
-            throw new Exception(
-                "La durée doit être comprise entre " + DUREE_MIN + " et " + DUREE_MAX + " minutes."
-            );
-
-        // --- Course ID ---
+            throw new SQLException(
+                "La durée doit être comprise entre " + DUREE_MIN +
+                " et " + DUREE_MAX + " minutes.");
         if (q.getCourseId() <= 0)
-            throw new Exception("L'identifiant du cours associé est invalide (doit être > 0).");
+            throw new SQLException(
+                "L'identifiant du cours associé est invalide (doit être > 0).");
     }
 
     // ── HELPERS ───────────────────────────────────────────────
 
-    private List<Quiz> executeQuery(String sql) throws Exception {
+    private List<Quiz> executeQuery(String sql) throws SQLException {
         try (Statement st = cnx.createStatement();
              ResultSet rs = st.executeQuery(sql)) {
             return mapList(rs);
@@ -160,11 +153,11 @@ public class QuizService implements IService<Quiz> {
 
     private Quiz mapRow(ResultSet rs) throws SQLException {
         return new Quiz(
-            rs.getInt   ("id"),
-            rs.getString("titre"),
-            rs.getInt   ("duree"),
+            rs.getInt      ("id"),
+            rs.getString   ("titre"),
+            rs.getInt      ("duree"),
             rs.getTimestamp("date_creation").toLocalDateTime(),
-            rs.getInt   ("course_id")
+            rs.getInt      ("course_id")
         );
     }
 }

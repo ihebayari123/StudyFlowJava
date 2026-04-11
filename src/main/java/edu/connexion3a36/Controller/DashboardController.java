@@ -1,5 +1,6 @@
 package edu.connexion3a36.Controller;
 
+import edu.connexion3a36.entities.Utilisateur;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -15,6 +16,7 @@ import java.util.logging.Logger;
 public class DashboardController {
 
     private static final Logger LOGGER = Logger.getLogger(DashboardController.class.getName());
+    private Utilisateur utilisateurConnecte;
 
     @FXML private HBox homeItem;
     @FXML private HBox coursItem;
@@ -22,14 +24,16 @@ public class DashboardController {
     @FXML private HBox quizItem;
     @FXML private HBox exercicesItem;
     @FXML private HBox progressionItem;
+    @FXML private HBox administrationItem;
     @FXML private HBox settingsItem;
+    @FXML private HBox utilisateursItem;
 
     @FXML private StackPane contentArea;
 
     @FXML
     public void initialize() {
         setupNavigation();
-        loadView("cours");  // Charge cours.fxml par défaut
+        loadView("cours");  // Load default view
     }
 
     private void setupNavigation() {
@@ -38,8 +42,12 @@ public class DashboardController {
         chapitresItem.setOnMouseClicked(event -> loadView("chapitres"));
         quizItem.setOnMouseClicked(event -> loadView("QuizView"));
         exercicesItem.setOnMouseClicked(event -> loadView("exercices"));
-        progressionItem.setOnMouseClicked(event -> loadView("progression"));
+        // Change progressionItem to load admin view when clicked (Anti-Stresse button)
+        progressionItem.setOnMouseClicked(event -> loadView("admin"));
+        administrationItem.setOnMouseClicked(event -> loadView("settings"));
         settingsItem.setOnMouseClicked(event -> loadView("settings"));
+        utilisateursItem.setOnMouseClicked(event -> loadView("gestionUtilisateurs"));
+        addHoverEffect(utilisateursItem);
 
         addHoverEffect(homeItem);
         addHoverEffect(coursItem);
@@ -47,6 +55,7 @@ public class DashboardController {
         addHoverEffect(quizItem);
         addHoverEffect(exercicesItem);
         addHoverEffect(progressionItem);
+        addHoverEffect(administrationItem);
         addHoverEffect(settingsItem);
     }
 
@@ -55,7 +64,13 @@ public class DashboardController {
             resetActiveStyles();
             setActiveStyle(viewName);
 
-            String resourcePath = "/views/" + viewName + ".fxml";
+            // Avoid reloading studyflow.fxml
+            if (viewName.equals("studyflow")) {
+                System.out.println("Ignorer studyflow.fxml");
+                return;
+            }
+
+            String resourcePath = "/" + viewName + ".fxml";
             URL resourceUrl = getClass().getResource(resourcePath);
 
             if (resourceUrl == null) {
@@ -64,8 +79,15 @@ public class DashboardController {
                 return;
             }
 
+            System.out.println("Chargement: " + resourcePath);
             FXMLLoader loader = new FXMLLoader(resourceUrl);
             Node view = loader.load();
+
+            // Pass dashboard reference to controller if needed
+            Object controller = loader.getController();
+            if (controller instanceof CoursController) {
+                ((CoursController) controller).setDashboardController(this);
+            }
 
             contentArea.getChildren().clear();
             contentArea.getChildren().add(view);
@@ -87,7 +109,7 @@ public class DashboardController {
     }
 
     private void resetActiveStyles() {
-        HBox[] items = {homeItem, coursItem, chapitresItem, quizItem, exercicesItem, progressionItem, settingsItem};
+        HBox[] items = {homeItem, coursItem, chapitresItem, quizItem, exercicesItem, progressionItem, administrationItem, settingsItem, utilisateursItem};
         for (HBox item : items) {
             if (item != null) {
                 item.setStyle("-fx-background-color: transparent; -fx-background-radius: 8; -fx-padding: 0 12 0 12;");
@@ -95,7 +117,7 @@ public class DashboardController {
                     if (node instanceof Label) {
                         Label label = (Label) node;
                         String text = label.getText();
-                        if (text != null && !text.matches("🏠|📚|📖|❓|✏️|📊|⚙️")) {
+                        if (text != null && !text.matches("🏠|📚|📖|❓|✏️|📊|🏛️|⚙️")) {
                             label.setStyle("-fx-font-size: 13; -fx-text-fill: #757575; -fx-font-weight: normal;");
                         }
                     }
@@ -112,8 +134,10 @@ public class DashboardController {
             case "chapitres": activeItem = chapitresItem; break;
             case "quiz": activeItem = quizItem; break;
             case "exercices": activeItem = exercicesItem; break;
-            case "progression": activeItem = progressionItem; break;
+            // When admin view is loaded, highlight progressionItem (Anti-Stresse button)
+            case "admin": activeItem = progressionItem; break;
             case "settings": activeItem = settingsItem; break;
+            case "gestionUtilisateurs": activeItem = utilisateursItem; break;
             default: break;
         }
 
@@ -147,5 +171,10 @@ public class DashboardController {
 
     public void navigateTo(String viewName) {
         loadView(viewName);
+    }
+    public void setUtilisateurConnecte(Utilisateur u) {
+        this.utilisateurConnecte = u;
+        // Afficher le nom dans le dashboard si tu veux
+        System.out.println("Bienvenue " + u.getNom() + " !");
     }
 }

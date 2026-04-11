@@ -26,7 +26,7 @@ public class QuizController {
     @FXML private TextField tfCourseId;
     @FXML private Label     lblErreurTitre;
     @FXML private Label     lblErreurDuree;
-    @FXML private Label     lblErreurCourseId;   // ← nouveau label (à ajouter dans le FXML)
+    @FXML private Label     lblErreurCourseId;
 
     // ── Recherche & Tri ───────────────────────────────────────
     @FXML private TextField        tfRecherche;
@@ -36,11 +36,11 @@ public class QuizController {
     @FXML private Label lblTotalQuiz;
     @FXML private Label lblMoyenneDuree;
 
-    // ── Constantes de validation ──────────────────────────────
-    private static final int TITRE_MIN   = 3;
-    private static final int TITRE_MAX   = 100;
-    private static final int DUREE_MIN   = 1;
-    private static final int DUREE_MAX   = 180;
+    // ── Constantes ────────────────────────────────────────────
+    private static final int TITRE_MIN = 3;
+    private static final int TITRE_MAX = 100;
+    private static final int DUREE_MIN = 1;
+    private static final int DUREE_MAX = 180;
 
     // ── Service ───────────────────────────────────────────────
     private final QuizService service = new QuizService();
@@ -60,15 +60,17 @@ public class QuizController {
 
         chargerQuiz();
 
+        // Remplissage formulaire au clic sur une ligne
         tableQuiz.getSelectionModel().selectedItemProperty().addListener(
             (obs, old, sel) -> { if (sel != null) remplirFormulaire(sel); }
         );
 
-        // Validation en temps réel sur chaque champ
-        tfTitre.textProperty().addListener((obs, old, val) -> validerTitre(val));
-        tfDuree.textProperty().addListener((obs, old, val) -> validerDuree(val));
+        // Validation en temps réel
+        tfTitre.textProperty()   .addListener((obs, old, val) -> validerTitre(val));
+        tfDuree.textProperty()   .addListener((obs, old, val) -> validerDuree(val));
         tfCourseId.textProperty().addListener((obs, old, val) -> validerCourseId(val));
 
+        // Recherche & Tri
         tfRecherche.textProperty().addListener((obs, old, val) -> filtrer(val));
         cbTri.setOnAction(e -> trierQuiz());
     }
@@ -84,7 +86,7 @@ public class QuizController {
                 Integer.parseInt(tfDuree.getText().trim()),
                 Integer.parseInt(tfCourseId.getText().trim())
             );
-            service.add(q);
+            service.addEntity(q);           // ← addEntity
             chargerQuiz();
             viderFormulaire();
             succes("Quiz ajouté avec succès !");
@@ -99,10 +101,12 @@ public class QuizController {
         if (sel == null) { erreur("Sélectionnez un quiz dans le tableau."); return; }
         if (!validerFormulaire()) return;
         try {
-            sel.setTitre   (tfTitre.getText().trim());
-            sel.setDuree   (Integer.parseInt(tfDuree.getText().trim()));
-            sel.setCourseId(Integer.parseInt(tfCourseId.getText().trim()));
-            service.update(sel);
+            Quiz updated = new Quiz(
+                tfTitre.getText().trim(),
+                Integer.parseInt(tfDuree.getText().trim()),
+                Integer.parseInt(tfCourseId.getText().trim())
+            );
+            service.updateEntity(sel.getId(), updated);  // ← updateEntity(id, objet)
             chargerQuiz();
             viderFormulaire();
             succes("Quiz modifié !");
@@ -123,7 +127,7 @@ public class QuizController {
         confirm.showAndWait().ifPresent(r -> {
             if (r == ButtonType.OK) {
                 try {
-                    service.delete(sel.getId());
+                    service.deleteEntity(sel);           // ← deleteEntity(objet)
                     chargerQuiz();
                     viderFormulaire();
                     succes("Quiz supprimé !");
@@ -138,7 +142,7 @@ public class QuizController {
         if (sel == null) { erreur("Sélectionnez un quiz dans le tableau."); return; }
         try {
             FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/views/QuestionView.fxml")
+                getClass().getResource("/QuestionView.fxml")
             );
             Node vue = loader.load();
             QuestionController qc = loader.getController();
@@ -153,104 +157,78 @@ public class QuizController {
 
     // ── Validation en temps réel ───────────────────────────────
 
-    /**
-     * Valide le titre : non vide, entre TITRE_MIN et TITRE_MAX caractères,
-     * pas uniquement des espaces, pas de caractères spéciaux dangereux.
-     */
     private boolean validerTitre(String val) {
-        String v = (val == null) ? "" : val.trim();
+        String v = val == null ? "" : val.trim();
         if (v.isEmpty()) {
-            setErreur(lblErreurTitre, "Le titre est obligatoire.");
-            return false;
+            setErreur(lblErreurTitre, "Le titre est obligatoire."); return false;
         }
         if (v.length() < TITRE_MIN) {
-            setErreur(lblErreurTitre, "Le titre doit avoir au moins " + TITRE_MIN + " caractères.");
-            return false;
+            setErreur(lblErreurTitre, "Minimum " + TITRE_MIN + " caractères."); return false;
         }
         if (v.length() > TITRE_MAX) {
-            setErreur(lblErreurTitre, "Le titre ne peut pas dépasser " + TITRE_MAX + " caractères.");
-            return false;
+            setErreur(lblErreurTitre, "Maximum " + TITRE_MAX + " caractères."); return false;
         }
         clearErreur(lblErreurTitre);
         return true;
     }
 
-    /**
-     * Valide la durée : doit être un entier entre DUREE_MIN et DUREE_MAX.
-     */
     private boolean validerDuree(String val) {
-        String v = (val == null) ? "" : val.trim();
+        String v = val == null ? "" : val.trim();
         if (v.isEmpty()) {
-            setErreur(lblErreurDuree, "La durée est obligatoire.");
-            return false;
+            setErreur(lblErreurDuree, "La durée est obligatoire."); return false;
         }
-        // Accepter uniquement des chiffres
         if (!v.matches("\\d+")) {
-            setErreur(lblErreurDuree, "La durée doit être un nombre entier positif.");
-            return false;
+            setErreur(lblErreurDuree, "Entier positif requis."); return false;
         }
         try {
             int d = Integer.parseInt(v);
             if (d < DUREE_MIN || d > DUREE_MAX) {
                 setErreur(lblErreurDuree,
-                    "La durée doit être entre " + DUREE_MIN + " et " + DUREE_MAX + " min.");
+                    "Durée entre " + DUREE_MIN + " et " + DUREE_MAX + " min.");
                 return false;
             }
         } catch (NumberFormatException e) {
-            setErreur(lblErreurDuree, "Valeur numérique trop grande.");
-            return false;
+            setErreur(lblErreurDuree, "Valeur trop grande."); return false;
         }
         clearErreur(lblErreurDuree);
         return true;
     }
 
-    /**
-     * Valide le courseId : doit être un entier strictement positif.
-     */
     private boolean validerCourseId(String val) {
-        if (lblErreurCourseId == null) return true; // label optionnel dans le FXML
-        String v = (val == null) ? "" : val.trim();
+        if (lblErreurCourseId == null) return true;
+        String v = val == null ? "" : val.trim();
         if (v.isEmpty()) {
-            setErreur(lblErreurCourseId, "L'ID du cours est obligatoire.");
-            return false;
+            setErreur(lblErreurCourseId, "ID du cours obligatoire."); return false;
         }
         if (!v.matches("\\d+")) {
-            setErreur(lblErreurCourseId, "L'ID du cours doit être un nombre entier positif.");
-            return false;
+            setErreur(lblErreurCourseId, "Entier positif requis."); return false;
         }
         try {
-            int id = Integer.parseInt(v);
-            if (id <= 0) {
-                setErreur(lblErreurCourseId, "L'ID du cours doit être supérieur à 0.");
-                return false;
+            if (Integer.parseInt(v) <= 0) {
+                setErreur(lblErreurCourseId, "L'ID doit être > 0."); return false;
             }
         } catch (NumberFormatException e) {
-            setErreur(lblErreurCourseId, "Valeur numérique trop grande.");
-            return false;
+            setErreur(lblErreurCourseId, "Valeur trop grande."); return false;
         }
         clearErreur(lblErreurCourseId);
         return true;
     }
 
-    /**
-     * Validation globale avant soumission : vérifie tous les champs ensemble.
-     */
     private boolean validerFormulaire() {
-        boolean titre    = validerTitre   (tfTitre.getText());
-        boolean duree    = validerDuree   (tfDuree.getText());
-        boolean courseId = validerCourseId(tfCourseId.getText());
-        return titre && duree && courseId;
+        return validerTitre   (tfTitre.getText())
+            && validerDuree   (tfDuree.getText())
+            && validerCourseId(tfCourseId.getText());
     }
 
     // ── Recherche & Tri ───────────────────────────────────────
 
     private void filtrer(String keyword) {
         try {
-            if (keyword == null || keyword.trim().isEmpty()) {
-                quizList.setAll(service.getAll());
-            } else {
-                quizList.setAll(service.search(keyword.trim()));
-            }
+            quizList.setAll(
+                (keyword == null || keyword.trim().isEmpty())
+                    ? service.getData()                     // ← getData()
+                    : service.search(keyword.trim())
+            );
             tableQuiz.setItems(quizList);
             mettreAJourStats();
         } catch (Exception e) { erreur(e.getMessage()); }
@@ -259,7 +237,7 @@ public class QuizController {
     private void trierQuiz() {
         try {
             String tri = cbTri.getValue();
-            if      (tri == null)              quizList.setAll(service.getAll());
+            if      (tri == null)              quizList.setAll(service.getData());
             else if (tri.startsWith("Titre"))  quizList.setAll(service.getAllSortedByTitre());
             else if (tri.startsWith("Durée"))  quizList.setAll(service.getAllSortedByDuree());
             else                               quizList.setAll(service.getAllSortedByDate());
@@ -272,15 +250,14 @@ public class QuizController {
 
     private void chargerQuiz() {
         try {
-            quizList.setAll(service.getAll());
+            quizList.setAll(service.getData());              // ← getData()
             tableQuiz.setItems(quizList);
             mettreAJourStats();
         } catch (Exception e) { erreur(e.getMessage()); }
     }
 
     private void mettreAJourStats() {
-        if (lblTotalQuiz != null)
-            lblTotalQuiz.setText(String.valueOf(quizList.size()));
+        if (lblTotalQuiz    != null) lblTotalQuiz.setText(String.valueOf(quizList.size()));
         if (lblMoyenneDuree != null) {
             double moy = quizList.stream().mapToInt(Quiz::getDuree).average().orElse(0);
             lblMoyenneDuree.setText(String.format("%.0f min", moy));
@@ -304,21 +281,8 @@ public class QuizController {
         tableQuiz.getSelectionModel().clearSelection();
     }
 
-    // ── Utilitaires d'affichage d'erreurs ─────────────────────
-
-    private void setErreur(Label lbl, String msg) {
-        if (lbl != null) { lbl.setText(msg); lbl.setStyle("-fx-text-fill: red;"); }
-    }
-
-    private void clearErreur(Label lbl) {
-        if (lbl != null) { lbl.setText(""); lbl.setStyle(""); }
-    }
-
-    private void succes(String msg) {
-        new Alert(Alert.AlertType.INFORMATION, msg).show();
-    }
-
-    private void erreur(String msg) {
-        new Alert(Alert.AlertType.ERROR, msg).show();
-    }
+    private void setErreur  (Label l, String m) { if (l != null) { l.setText(m); l.setStyle("-fx-text-fill: red;"); } }
+    private void clearErreur(Label l)            { if (l != null) { l.setText(""); l.setStyle(""); } }
+    private void succes(String m) { new Alert(Alert.AlertType.INFORMATION, m).show(); }
+    private void erreur(String m) { new Alert(Alert.AlertType.ERROR,       m).show(); }
 }

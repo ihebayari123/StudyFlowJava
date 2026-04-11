@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="15" style="-fx-background-color: #eef2eb; -fx-padding: 30;"
+      xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="edu.connexion3a36.Controller.AjouterConsultationController">
+
+    <Label text="Ajouter une Consultation"
+           style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2d6a4f;"/>
+
+    <Label text="Date de consultation"/>
+    <DatePicker fx:id="datePicker" prefWidth="300"/>
+
+    <Label text="Motif"/>
+    <TextField fx:id="motifTF" promptText="Ex : Stress, anxiété..."/>
+
+    <Label text="Genre"/>
+    <TextField fx:id="genreTF" promptText="Ex : Homme, Femme, Autre..." prefWidth="300"/>
+
+    <Label text="Niveau d'étude"/>
+    <TextField fx:id="niveauTF" promptText="Ex : L1, L2, L3, M1, M2..." prefWidth="300"/>
+
+    <Label text="Médecin"/>
+    <ComboBox fx:id="medecinCB" prefWidth="300"/>
+
+    <Label text="Stress Survey"/>
+    <ComboBox fx:id="surveyCB" prefWidth="300"/>
+
+    <HBox spacing="12">
+        <Button text="✦ Enregistrer" onAction="#ajouter"
+                style="-fx-background-color: #2d6a4f; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 4; -fx-padding: 10 20;"/>
+        <Button text="↺ Réinitialiser" onAction="#reinitialiser"
+                style="-fx-background-color: transparent; -fx-border-color: #2d6a4f; -fx-border-radius: 4; -fx-padding: 10 20;"/>
+    </HBox>
+</VBox>
