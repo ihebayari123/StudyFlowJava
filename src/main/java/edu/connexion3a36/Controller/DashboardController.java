@@ -40,7 +40,7 @@ public class DashboardController {
         homeItem.setOnMouseClicked(event -> loadView("dashboard"));
         coursItem.setOnMouseClicked(event -> loadView("cours"));
         chapitresItem.setOnMouseClicked(event -> loadView("chapitres"));
-        quizItem.setOnMouseClicked(event -> loadView("quiz"));
+        quizItem.setOnMouseClicked(event -> loadView("QuizView"));
         exercicesItem.setOnMouseClicked(event -> loadView("exercices"));
         // Change progressionItem to load admin view when clicked (Anti-Stresse button)
         progressionItem.setOnMouseClicked(event -> loadView("admin"));

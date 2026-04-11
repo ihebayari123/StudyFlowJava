@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="edu.connexion3a36.Controller.QuestionController"
+      spacing="0" style="-fx-background-color: #F5F6FA;">
+
+    <!-- ── HEADER ── -->
+    <HBox alignment="CENTER_LEFT" spacing="12"
+          style="-fx-background-color: #FFFFFF; -fx-padding: 14 24; -fx-border-color: #E8EAED; -fx-border-width: 0 0 1 0;">
+        <Button text="← Retour" onAction="#retourQuiz"
+                style="-fx-background-color: transparent; -fx-border-color: #DADCE0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 6 14; -fx-text-fill: #5F6368;"/>
+        <VBox>
+            <Label fx:id="lblTitreQuiz" text="Questions du Quiz"
+                   style="-fx-font-size: 17; -fx-font-weight: bold; -fx-text-fill: #1A1A2E;"/>
+            <Label text="CRUD complet + Recherche + Filtre + Tri"
+                   style="-fx-font-size: 11; -fx-text-fill: #9E9E9E;"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <VBox alignment="CENTER" style="-fx-background-color: #E8F5E9; -fx-background-radius: 8; -fx-padding: 6 14;">
+            <Label fx:id="lblTotalQuestions" text="0"
+                   style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #2E7D32;"/>
+            <Label text="Questions" style="-fx-font-size: 11; -fx-text-fill: #757575;"/>
+        </VBox>
+    </HBox>
+
+    <!-- ── CORPS ── -->
+    <HBox spacing="0" VBox.vgrow="ALWAYS">
+
+        <!-- GAUCHE : Table + Filtres -->
+        <VBox spacing="10" HBox.hgrow="ALWAYS" style="-fx-padding: 14;">
+
+            <!-- Filtres & Recherche -->
+            <HBox spacing="8" alignment="CENTER_LEFT" style="-fx-padding: 0 0 4 0;">
+                <TextField fx:id="tfRecherche" promptText="🔍  Rechercher..."
+                           prefWidth="200"
+                           style="-fx-background-radius: 20; -fx-border-radius: 20; -fx-border-color: #DADCE0; -fx-padding: 7 12;"/>
+                <Label text="Niveau :" style="-fx-font-size: 12; -fx-text-fill: #757575;"/>
+                <ComboBox fx:id="cbFiltreNiveau" prefWidth="120"/>
+                <Label text="Type :" style="-fx-font-size: 12; -fx-text-fill: #757575;"/>
+                <ComboBox fx:id="cbFiltreType" prefWidth="140"/>
+                <Label text="Tri :" style="-fx-font-size: 12; -fx-text-fill: #757575;"/>
+                <ComboBox fx:id="cbTri" prefWidth="100"/>
+            </HBox>
+
+            <!-- TableView -->
+            <TableView fx:id="tableQuestion" VBox.vgrow="ALWAYS"
+                       style="-fx-background-color: white; -fx-background-radius: 10; -fx-border-color: #E8EAED; -fx-border-radius: 10;">
+                <columns>
+                    <TableColumn fx:id="colId"     text="ID"       prefWidth="55"/>
+                    <TableColumn fx:id="colTexte"  text="Question" prefWidth="310"/>
+                    <TableColumn fx:id="colNiveau" text="Niveau"   prefWidth="100"/>
+                    <TableColumn fx:id="colType"   text="Type"     prefWidth="130"/>
+                </columns>
+                <placeholder>
+                    <Label text="Aucune question" style="-fx-text-fill: #BDBDBD;"/>
+                </placeholder>
+            </TableView>
+
+            <!-- Boutons table -->
+            <HBox spacing="10">
+                <Button text="✏ Modifier"   onAction="#modifierQuestion"
+                        style="-fx-background-color: #FB8C00; -fx-text-fill: white; -fx-background-radius: 8; -fx-padding: 8 16; -fx-font-weight: bold;"/>
+                <Button text="🗑 Supprimer" onAction="#supprimerQuestion"
+                        style="-fx-background-color: #E53935; -fx-text-fill: white; -fx-background-radius: 8; -fx-padding: 8 16; -fx-font-weight: bold;"/>
+            </HBox>
+        </VBox>
+
+        <!-- DROITE : Formulaire dynamique -->
+        <ScrollPane fitToWidth="true" prefWidth="310"
+                    style="-fx-border-color: #E8EAED; -fx-border-width: 0 0 0 1; -fx-background: #FFFFFF;">
+            <VBox spacing="12" style="-fx-background-color: #FFFFFF; -fx-padding: 18;">
+
+                <Label text="Ajouter / Modifier"
+                       style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #1A1A2E;"/>
+
+                <!-- Texte -->
+                <VBox spacing="3">
+                    <Label text="Question *" style="-fx-font-size: 12; -fx-text-fill: #757575;"/>
+                    <TextArea fx:id="taTexte" promptText="Saisissez la question..."
+                              prefRowCount="3" wrapText="true"
+                              style="-fx-border-color: #DADCE0; -fx-border-radius: 6; -fx-background-radius: 6;"/>
+                    <Label fx:id="lblErreurTexte" text="" style="-fx-text-fill: #E53935; -fx-font-size: 11;"/>
+                </VBox>
+
+                <!-- Niveau + Type sur une ligne -->
+                <HBox spacing="8">
+                    <VBox spacing="3" HBox.hgrow="ALWAYS">
+                        <Label text="Niveau *" style="-fx-font-size: 12; -fx-text-fill: #757575;"/>
+                        <ComboBox fx:id="cbNiveau" maxWidth="Infinity"/>
+                    </VBox>
+                    <VBox spacing="3" HBox.hgrow="ALWAYS">
+                        <Label text="Type *" style="-fx-font-size: 12; -fx-text-fill: #757575;"/>
+                        <ComboBox fx:id="cbType" maxWidth="Infinity"/>
+                    </VBox>
+                </HBox>
+                <Label fx:id="lblErreurType" text="" style="-fx-text-fill: #E53935; -fx-font-size: 11;"/>
+
+                <!-- Indice -->
+                <VBox spacing="3">
+                    <Label text="Indice (optionnel)" style="-fx-font-size: 12; -fx-text-fill: #757575;"/>
+                    <TextField fx:id="tfIndice" promptText="Aide pour l'étudiant..."
+                               style="-fx-border-color: #DADCE0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 7 10;"/>
+                </VBox>
+
+                <!-- PANNEAU : Choix Multiple -->
+                <VBox fx:id="vboxChoix" spacing="8" visible="false" managed="false"
+                      style="-fx-background-color: #E8F0FE; -fx-padding: 12; -fx-background-radius: 8;">
+                    <Label text="Choix Multiple" style="-fx-font-weight: bold; -fx-text-fill: #1565C0;"/>
+                    <TextField fx:id="tfChoixA" promptText="Choix A"
+                               style="-fx-border-color: #90CAF9; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 7 10;"/>
+                    <TextField fx:id="tfChoixB" promptText="Choix B"
+                               style="-fx-border-color: #90CAF9; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 7 10;"/>
+                    <TextField fx:id="tfChoixC" promptText="Choix C (optionnel)"
+                               style="-fx-border-color: #90CAF9; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 7 10;"/>
+                    <TextField fx:id="tfChoixD" promptText="Choix D (optionnel)"
+                               style="-fx-border-color: #90CAF9; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 7 10;"/>
+                    <HBox spacing="8" alignment="CENTER_LEFT">
+                        <Label text="Bonne réponse :" style="-fx-font-size: 12; -fx-text-fill: #757575;"/>
+                        <ComboBox fx:id="cbBonneReponse" prefWidth="80"/>
+                    </HBox>
+                </VBox>
+
+                <!-- PANNEAU : Vrai / Faux -->
+                <VBox fx:id="vboxVraiFaux" spacing="8" visible="false" managed="false"
+                      style="-fx-background-color: #E8F5E9; -fx-padding: 12; -fx-background-radius: 8;">
+                    <Label text="Vrai / Faux" style="-fx-font-weight: bold; -fx-text-fill: #2E7D32;"/>
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="Bonne réponse :" style="-fx-font-size: 12; -fx-text-fill: #757575;"/>
+                        <ComboBox fx:id="cbVraiFaux" prefWidth="100"/>
+                    </HBox>
+                </VBox>
+
+                <!-- PANNEAU : Texte Libre -->
+                <VBox fx:id="vboxTexteLibre" spacing="8" visible="false" managed="false"
+                      style="-fx-background-color: #FFF8E1; -fx-padding: 12; -fx-background-radius: 8;">
+                    <Label text="Texte Libre" style="-fx-font-weight: bold; -fx-text-fill: #E65100;"/>
+                    <TextField fx:id="tfReponseAttendue" promptText="Réponse attendue..."
+                               style="-fx-border-color: #FFCC80; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 7 10;"/>
+                </VBox>
+
+                <!-- Bouton Ajouter -->
+                <Button text="✚  Ajouter la Question" onAction="#ajouterQuestion"
+                        maxWidth="Infinity"
+                        style="-fx-background-color: #2979FF; -fx-text-fill: white; -fx-background-radius: 8; -fx-padding: 10 0; -fx-font-weight: bold; -fx-font-size: 13;"/>
+
+            </VBox>
+        </ScrollPane>
+    </HBox>
+</VBox>
