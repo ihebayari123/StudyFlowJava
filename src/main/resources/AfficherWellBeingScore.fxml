@@ -1,55 +1,111 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.control.Separator?>
 
-<VBox spacing="15" style="-fx-background-color: #eef2eb; -fx-padding: 20;"
+<VBox spacing="20" style="-fx-background-color: #F5F6FA; -fx-padding: 25;"
       xmlns="http://javafx.com/javafx/21"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="edu.connexion3a36.Controller.AfficherWellBeingScoreController">
 
-    <Label text="Liste des Scores de Bien-Être"
-           style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2d6a4f;"/>
-
-    <!-- Filtre, Recherche et Tri -->
-    <HBox spacing="12" alignment="CENTER_LEFT">
-        <Label text="Recherche :"/>
-        <TextField fx:id="rechercheTF" prefWidth="180" promptText="Rechercher commentaire/rec..."/>
-        <Label text="Trier par :"/>
-        <ComboBox fx:id="triCB" prefWidth="120" promptText="Champ"/>
-        <ComboBox fx:id="ordreCB" prefWidth="80" promptText="Ordre"/>
-        <Button fx:id="btnReset" text="🔄" onAction="#resetFiltre"
-                style="-fx-background-color: #6c757d; -fx-text-fill: white; -fx-padding: 6 10;"/>
+    <!-- Header avec icône et titre -->
+    <HBox alignment="CENTER_LEFT" spacing="12">
+        <Rectangle height="30" width="5" style="-fx-fill: #2979FF; -fx-arc-width: 3; -fx-arc-height: 3;" />
+        <Label text="Liste des Scores de Bien-Être"
+               style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #1A1A2E; -fx-font-family: 'Segoe UI';"/>
     </HBox>
 
-    <TableView fx:id="tableView" prefHeight="250">
+    <Separator style="-fx-background-color: #E0E0E0;" />
+
+    <!-- Filtre, Recherche et Tri - Style moderne -->
+    <VBox spacing="12">
+        <Label text="🔍 Filtres et recherche"
+               style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #2979FF; -fx-font-family: 'Segoe UI';"/>
+
+        <HBox spacing="12" alignment="CENTER_LEFT">
+            <Label text="Recherche :" style="-fx-text-fill: #757575; -fx-font-size: 13px;"/>
+            <TextField fx:id="rechercheTF" prefWidth="180" promptText="Rechercher commentaire/rec..."
+                       style="-fx-background-color: white; -fx-border-color: #E0E0E0; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8 12; -fx-font-family: 'Segoe UI'; -fx-font-size: 12px;"/>
+
+            <Label text="Trier par :" style="-fx-text-fill: #757575; -fx-font-size: 13px;"/>
+            <ComboBox fx:id="triCB" prefWidth="120" promptText="Champ"
+                      style="-fx-background-color: white; -fx-background-radius: 8; -fx-border-color: #E0E0E0; -fx-border-radius: 8; -fx-font-family: 'Segoe UI'; -fx-font-size: 12px;"/>
+            <ComboBox fx:id="ordreCB" prefWidth="80" promptText="Ordre"
+                      style="-fx-background-color: white; -fx-background-radius: 8; -fx-border-color: #E0E0E0; -fx-border-radius: 8; -fx-font-family: 'Segoe UI'; -fx-font-size: 12px;"/>
+
+            <Button fx:id="btnReset" text="🔄 Réinitialiser" onAction="#resetFiltre"
+                    style="-fx-background-color: #F5F5F5; -fx-text-fill: #757575; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 6 15; -fx-cursor: hand; -fx-font-family: 'Segoe UI';"/>
+        </HBox>
+    </VBox>
+
+    <!-- TableView - Style moderne -->
+    <TableView fx:id="tableView" prefHeight="250"
+               style="-fx-background-color: white; -fx-background-radius: 12; -fx-border-color: #E0E0E0; -fx-border-radius: 12; -fx-border-width: 1;">
         <columns>
-            <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
-            <TableColumn fx:id="colSurveyId" text="Survey ID" prefWidth="90"/>
-            <TableColumn fx:id="colRecommendation" text="Recommandation" prefWidth="160"/>
-            <TableColumn fx:id="colActionPlan" text="Plan d'action" prefWidth="150"/>
-            <TableColumn fx:id="colComment" text="Commentaire" prefWidth="150"/>
-            <TableColumn fx:id="colScore" text="Score" prefWidth="70"/>
+            <TableColumn fx:id="colId" text="ID" prefWidth="50"
+                         style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #2979FF; -fx-alignment: CENTER;"/>
+            <TableColumn fx:id="colSurveyId" text="Survey ID" prefWidth="90"
+                         style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #2979FF; -fx-alignment: CENTER;"/>
+            <TableColumn fx:id="colRecommendation" text="Recommandation" prefWidth="160"
+                         style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #2979FF; -fx-alignment: CENTER_LEFT;"/>
+            <TableColumn fx:id="colActionPlan" text="Plan d'action" prefWidth="150"
+                         style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #2979FF; -fx-alignment: CENTER_LEFT;"/>
+            <TableColumn fx:id="colComment" text="Commentaire" prefWidth="150"
+                         style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #2979FF; -fx-alignment: CENTER_LEFT;"/>
+            <TableColumn fx:id="colScore" text="Score" prefWidth="70"
+                         style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #2979FF; -fx-alignment: CENTER;"/>
         </columns>
     </TableView>
 
-    <Label text="Modifier le score sélectionné :"
-           style="-fx-font-weight: bold; -fx-text-fill: #2d6a4f;"/>
+    <!-- Section modification -->
+    <VBox spacing="10">
+        <HBox alignment="CENTER_LEFT" spacing="10">
+            <Rectangle height="18" width="3" style="-fx-fill: #2979FF; -fx-arc-width: 2; -fx-arc-height: 2;" />
+            <Label text="Modifier le score sélectionné"
+                   style="-fx-font-weight: bold; -fx-text-fill: #1A1A2E; -fx-font-size: 14px; -fx-font-family: 'Segoe UI';"/>
+        </HBox>
 
-    <HBox spacing="10">
-        <VBox spacing="5"><Label text="Recommandation"/><TextField fx:id="recommendationTF" prefWidth="180"/></VBox>
-        <VBox spacing="5"><Label text="Plan d'action"/><TextField fx:id="actionPlanTF" prefWidth="180"/></VBox>
-    </HBox>
-    <HBox spacing="10">
-        <VBox spacing="5"><Label text="Commentaire"/><TextField fx:id="commentTF" prefWidth="180"/></VBox>
-        <VBox spacing="5"><Label text="Score (0-100)"/><TextField fx:id="scoreTF" prefWidth="100"/></VBox>
-    </HBox>
+        <VBox spacing="15" style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 15; -fx-border-color: #E0E0E0; -fx-border-radius: 12;">
 
-    <HBox spacing="12">
+            <!-- Ligne 1 -->
+            <HBox spacing="20">
+                <VBox spacing="5">
+                    <Label text="Recommandation" style="-fx-text-fill: #757575; -fx-font-size: 12px; -fx-font-weight: bold; -fx-font-family: 'Segoe UI';"/>
+                    <TextField fx:id="recommendationTF" prefWidth="220"
+                               style="-fx-background-color: #F8F9FA; -fx-background-radius: 8; -fx-border-color: #E0E0E0; -fx-border-radius: 8; -fx-padding: 8 12; -fx-font-family: 'Segoe UI'; -fx-font-size: 12px;"/>
+                </VBox>
+                <VBox spacing="5">
+                    <Label text="Plan d'action" style="-fx-text-fill: #757575; -fx-font-size: 12px; -fx-font-weight: bold; -fx-font-family: 'Segoe UI';"/>
+                    <TextField fx:id="actionPlanTF" prefWidth="220"
+                               style="-fx-background-color: #F8F9FA; -fx-background-radius: 8; -fx-border-color: #E0E0E0; -fx-border-radius: 8; -fx-padding: 8 12; -fx-font-family: 'Segoe UI'; -fx-font-size: 12px;"/>
+                </VBox>
+            </HBox>
+
+            <!-- Ligne 2 -->
+            <HBox spacing="20">
+                <VBox spacing="5">
+                    <Label text="Commentaire" style="-fx-text-fill: #757575; -fx-font-size: 12px; -fx-font-weight: bold; -fx-font-family: 'Segoe UI';"/>
+                    <TextField fx:id="commentTF" prefWidth="280"
+                               style="-fx-background-color: #F8F9FA; -fx-background-radius: 8; -fx-border-color: #E0E0E0; -fx-border-radius: 8; -fx-padding: 8 12; -fx-font-family: 'Segoe UI'; -fx-font-size: 12px;"/>
+                </VBox>
+                <VBox spacing="5">
+                    <Label text="Score (0-100)" style="-fx-text-fill: #757575; -fx-font-size: 12px; -fx-font-weight: bold; -fx-font-family: 'Segoe UI';"/>
+                    <TextField fx:id="scoreTF" prefWidth="120"
+                               style="-fx-background-color: #F8F9FA; -fx-background-radius: 8; -fx-border-color: #E0E0E0; -fx-border-radius: 8; -fx-padding: 8 12; -fx-font-family: 'Segoe UI'; -fx-font-size: 12px;"/>
+                </VBox>
+            </HBox>
+        </VBox>
+    </VBox>
+
+    <!-- Boutons d'action -->
+    <HBox spacing="15" alignment="CENTER_RIGHT">
         <Button text="✏ Modifier" onAction="#modifier"
-                style="-fx-background-color: #c8a84b; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 4; -fx-padding: 10 20;"/>
+                style="-fx-background-color: #2979FF; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 10 25; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(41,121,255,0.25), 8, 0, 0, 2); -fx-font-family: 'Segoe UI'; -fx-font-size: 12px;"/>
         <Button text="🗑 Supprimer" onAction="#supprimer"
-                style="-fx-background-color: #c0392b; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 4; -fx-padding: 10 20;"/>
+                style="-fx-background-color: #FF5252; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 10 25; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(255,82,82,0.25), 8, 0, 0, 2); -fx-font-family: 'Segoe UI'; -fx-font-size: 12px;"/>
         <Button text="↺ Actualiser" onAction="#actualiser"
-                style="-fx-background-color: #2d6a4f; -fx-text-fill: white; -fx-background-radius: 4; -fx-padding: 10 20;"/>
+                style="-fx-background-color: #F5F5F5; -fx-text-fill: #757575; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 10 25; -fx-cursor: hand; -fx-font-family: 'Segoe UI'; -fx-font-size: 12px;"/>
     </HBox>
 </VBox>
