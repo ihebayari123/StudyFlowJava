@@ -40,9 +40,13 @@ public class AfficherConsultationController {
     @FXML private ComboBox<WellBeingScore> surveyCB;
 
     // Composants filtre et tri
+    @FXML private TextField rechercheTF;
     @FXML private ComboBox<String> triCB;
     @FXML private ComboBox<String> ordreCB;
     @FXML private DatePicker filtreDatePicker;
+    @FXML private ComboBox<String> filtreGenreCB;
+    @FXML private ComboBox<String> filtreNiveauCB;
+    @FXML private Label resultatsLabel;
 
     private final ConsultationService service = new ConsultationService();
     private final MedecinService medecinService = new MedecinService();
@@ -55,6 +59,7 @@ public class AfficherConsultationController {
 
     @FXML
     public void initialize() {
+        // Configuration des colonnes
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colDate.setCellValueFactory(new PropertyValueFactory<>("date_de_consultation"));
         colMotif.setCellValueFactory(new PropertyValueFactory<>("motif"));
@@ -63,6 +68,7 @@ public class AfficherConsultationController {
         colMedecinId.setCellValueFactory(new PropertyValueFactory<>("medecin_id"));
         colSurveyId.setCellValueFactory(new PropertyValueFactory<>("stress_survey_id"));
 
+        // Configuration des ComboBox de saisie
         genreCB.getItems().addAll("Homme", "Femme");
         niveauCB.getItems().addAll("L1", "L2", "L3", "M1", "M2", "Doctorat");
 
@@ -73,6 +79,7 @@ public class AfficherConsultationController {
             showAlert(Alert.AlertType.ERROR, "Erreur", e.getMessage());
         }
 
+        // Sélection dans le tableau
         tableView.getSelectionModel().selectedItemProperty().addListener((obs, old, c) -> {
             if (c != null) {
                 selected = c;
@@ -91,20 +98,41 @@ public class AfficherConsultationController {
             }
         });
 
-        // Configuration Filtre et Tri
-        triCB.getItems().addAll("ID", "Date");
-        ordreCB.getItems().addAll("Croissant", "Décroissant");
+        // Configuration des filtres
+        if (filtreGenreCB != null) {
+            filtreGenreCB.getItems().addAll("Tous", "Homme", "Femme");
+            filtreGenreCB.setValue("Tous");
+            filtreGenreCB.valueProperty().addListener((obs, oldVal, newVal) -> appliquerFiltres());
+        }
 
-        triCB.setOnAction(e -> appliquerTri());
-        ordreCB.setOnAction(e -> appliquerTri());
+        if (filtreNiveauCB != null) {
+            filtreNiveauCB.getItems().addAll("Tous", "L1", "L2", "L3", "M1", "M2", "Doctorat");
+            filtreNiveauCB.setValue("Tous");
+            filtreNiveauCB.valueProperty().addListener((obs, oldVal, newVal) -> appliquerFiltres());
+        }
 
-        filtreDatePicker.valueProperty().addListener((obs, oldVal, newVal) -> {
-            filteredData.setPredicate(consultation -> {
-                if (newVal == null) return true;
-                LocalDate dateConsultation = consultation.getDate_de_consultation().toLocalDateTime().toLocalDate();
-                return dateConsultation.equals(newVal);
-            });
-        });
+        // Configuration du tri
+        if (triCB != null) {
+            triCB.getItems().addAll("ID", "Date", "Motif", "Genre", "Niveau");
+            triCB.setValue("ID");
+            triCB.valueProperty().addListener((obs, oldVal, newVal) -> appliquerTri());
+        }
+
+        if (ordreCB != null) {
+            ordreCB.getItems().addAll("Croissant", "Décroissant");
+            ordreCB.setValue("Croissant");
+            ordreCB.valueProperty().addListener((obs, oldVal, newVal) -> appliquerTri());
+        }
+
+        // Filtre par date
+        if (filtreDatePicker != null) {
+            filtreDatePicker.valueProperty().addListener((obs, oldVal, newVal) -> appliquerFiltres());
+        }
+
+        // Recherche textuelle
+        if (rechercheTF != null) {
+            rechercheTF.textProperty().addListener((obs, oldVal, newVal) -> appliquerFiltres());
+        }
 
         loadData();
     }
@@ -114,10 +142,118 @@ public class AfficherConsultationController {
             masterData = FXCollections.observableArrayList(service.getData());
             filteredData = new FilteredList<>(masterData, p -> true);
             sortedData = new SortedList<>(filteredData);
-            sortedData.comparatorProperty().bind(tableView.comparatorProperty());
+
+            // Appliquer les filtres initiaux
+            appliquerFiltres();
+
+            // Appliquer le tri initial
+            appliquerTri();
+
+            // Lier à la TableView
             tableView.setItems(sortedData);
+
+            // Mettre à jour le label des résultats
+            updateResultatsLabel();
+
         } catch (SQLException e) {
             showAlert(Alert.AlertType.ERROR, "Erreur", e.getMessage());
+        }
+    }
+
+    private void appliquerFiltres() {
+        if (filteredData == null) return;
+
+        String recherche = rechercheTF != null && rechercheTF.getText() != null ?
+                rechercheTF.getText().trim().toLowerCase() : "";
+        LocalDate dateFiltre = filtreDatePicker != null ? filtreDatePicker.getValue() : null;
+        String genreFiltre = filtreGenreCB != null ? filtreGenreCB.getValue() : "Tous";
+        String niveauFiltre = filtreNiveauCB != null ? filtreNiveauCB.getValue() : "Tous";
+
+        filteredData.setPredicate(consultation -> {
+            // Filtre de recherche textuelle (motif)
+            if (!recherche.isEmpty()) {
+                boolean matchMotif = consultation.getMotif() != null &&
+                        consultation.getMotif().toLowerCase().contains(recherche);
+                if (!matchMotif) {
+                    return false;
+                }
+            }
+
+            // Filtre par date
+            if (dateFiltre != null) {
+                LocalDate dateConsultation = consultation.getDate_de_consultation().toLocalDateTime().toLocalDate();
+                if (!dateConsultation.equals(dateFiltre)) {
+                    return false;
+                }
+            }
+
+            // Filtre par genre
+            if (!"Tous".equals(genreFiltre)) {
+                if (!genreFiltre.equals(consultation.getGenre())) {
+                    return false;
+                }
+            }
+
+            // Filtre par niveau
+            if (!"Tous".equals(niveauFiltre)) {
+                if (!niveauFiltre.equals(consultation.getNiveau())) {
+                    return false;
+                }
+            }
+
+            return true;
+        });
+
+        updateResultatsLabel();
+    }
+
+    private void appliquerTri() {
+        if (sortedData == null) return;
+
+        String champTri = triCB != null ? triCB.getValue() : "ID";
+        String ordre = ordreCB != null ? ordreCB.getValue() : "Croissant";
+
+        if (champTri == null || ordre == null) {
+            sortedData.setComparator(null);
+            return;
+        }
+
+        Comparator<Consultation> comparator = null;
+
+        switch (champTri) {
+            case "ID":
+                comparator = Comparator.comparingInt(Consultation::getId);
+                break;
+            case "Date":
+                comparator = Comparator.comparing(Consultation::getDate_de_consultation);
+                break;
+            case "Motif":
+                comparator = Comparator.comparing(Consultation::getMotif,
+                        Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER));
+                break;
+            case "Genre":
+                comparator = Comparator.comparing(Consultation::getGenre,
+                        Comparator.nullsLast(String::compareTo));
+                break;
+            case "Niveau":
+                comparator = Comparator.comparing(Consultation::getNiveau,
+                        Comparator.nullsLast(String::compareTo));
+                break;
+        }
+
+        if (comparator != null) {
+            if ("Décroissant".equals(ordre)) {
+                comparator = comparator.reversed();
+            }
+            sortedData.setComparator(comparator);
+        }
+    }
+
+    private void updateResultatsLabel() {
+        if (resultatsLabel != null && filteredData != null && masterData != null) {
+            int total = masterData.size();
+            int affiches = filteredData.size();
+            resultatsLabel.setText("Affichage de " + affiches + " consultation(s) sur " + total);
         }
     }
 
@@ -143,9 +279,21 @@ public class AfficherConsultationController {
             service.updateEntity(selected.getId(), selected);
             showAlert(Alert.AlertType.INFORMATION, "Succès", "Consultation modifiée !");
             loadData();
+            clearSelection();
         } catch (SQLException e) {
             showAlert(Alert.AlertType.ERROR, "Erreur BDD", e.getMessage());
         }
+    }
+
+    private void clearSelection() {
+        selected = null;
+        datePicker.setValue(null);
+        motifTF.clear();
+        genreCB.setValue(null);
+        niveauCB.setValue(null);
+        medecinCB.setValue(null);
+        surveyCB.setValue(null);
+        tableView.getSelectionModel().clearSelection();
     }
 
     @FXML
@@ -162,7 +310,7 @@ public class AfficherConsultationController {
                     service.deleteEntity(selected);
                     showAlert(Alert.AlertType.INFORMATION, "Succès", "Consultation supprimée !");
                     loadData();
-                    selected = null;
+                    clearSelection();
                 } catch (SQLException e) {
                     showAlert(Alert.AlertType.ERROR, "Erreur BDD", e.getMessage());
                 }
@@ -171,45 +319,42 @@ public class AfficherConsultationController {
     }
 
     @FXML
-    void actualiser(ActionEvent event) { loadData(); }
-
-    private void appliquerTri() {
-        String champTri = triCB.getValue();
-        String ordre = ordreCB.getValue();
-
-        if (champTri == null || ordre == null) {
-            sortedData.setComparator(null);
-            return;
-        }
-
-        Comparator<Consultation> comparator = null;
-
-        if ("ID".equals(champTri)) {
-            comparator = Comparator.comparingInt(Consultation::getId);
-        } else if ("Date".equals(champTri)) {
-            comparator = Comparator.comparing(Consultation::getDate_de_consultation);
-        }
-
-        if (comparator != null) {
-            if ("Décroissant".equals(ordre)) {
-                comparator = comparator.reversed();
-            }
-            sortedData.setComparator(comparator);
-        }
+    void actualiser(ActionEvent event) {
+        loadData();
+        resetFiltre(event);
     }
 
     @FXML
     void resetFiltre(ActionEvent event) {
-        triCB.setValue(null);
-        ordreCB.setValue(null);
-        filtreDatePicker.setValue(null);
-        filteredData.setPredicate(p -> true);
-        sortedData.setComparator(null);
+        // Réinitialiser les ComboBox de tri
+        if (triCB != null) triCB.setValue("ID");
+        if (ordreCB != null) ordreCB.setValue("Croissant");
+
+        // Réinitialiser les filtres
+        if (filtreDatePicker != null) filtreDatePicker.setValue(null);
+        if (rechercheTF != null) rechercheTF.clear();
+        if (filtreGenreCB != null) filtreGenreCB.setValue("Tous");
+        if (filtreNiveauCB != null) filtreNiveauCB.setValue("Tous");
+
+        // Réinitialiser les prédicats
+        if (filteredData != null) {
+            filteredData.setPredicate(p -> true);
+        }
+
+        // Réappliquer le tri par défaut
+        appliquerTri();
+
+        updateResultatsLabel();
+
+        showAlert(Alert.AlertType.INFORMATION, "Filtres réinitialisés",
+                "Tous les filtres ont été réinitialisés.");
     }
 
     private void showAlert(Alert.AlertType type, String titre, String msg) {
         Alert a = new Alert(type);
-        a.setTitle(titre); a.setHeaderText(null); a.setContentText(msg);
+        a.setTitle(titre);
+        a.setHeaderText(null);
+        a.setContentText(msg);
         a.showAndWait();
     }
 }
