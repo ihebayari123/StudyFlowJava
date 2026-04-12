@@ -4,6 +4,8 @@ import edu.connexion3a36.entities.Medecin;
 import edu.connexion3a36.services.MedecinService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,7 +16,6 @@ import javafx.stage.Stage;
 import java.sql.SQLException;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class AfficherMedecinController {
 
@@ -28,20 +29,23 @@ public class AfficherMedecinController {
 
     @FXML private TextField rechercheTF;
     @FXML private ComboBox<String> filtreDispoCB;
-    
+
     @FXML private TextField nomTF;
     @FXML private TextField prenomTF;
     @FXML private TextField emailTF;
     @FXML private TextField telephoneTF;
     @FXML private ComboBox<String> disponibiliteCB;
-    
+
     private ObservableList<Medecin> listeComplete;
+    private FilteredList<Medecin> filteredList;
+    private SortedList<Medecin> sortedList;
 
     private final MedecinService service = new MedecinService();
     private Medecin selectedMedecin;
 
     @FXML
     public void initialize() {
+        // Initialiser les colonnes
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
         colPrenom.setCellValueFactory(new PropertyValueFactory<>("prenom"));
@@ -49,71 +53,132 @@ public class AfficherMedecinController {
         colTelephone.setCellValueFactory(new PropertyValueFactory<>("telephone"));
         colDisponibilite.setCellValueFactory(new PropertyValueFactory<>("disponibilite"));
 
-        // Set up table selection
+        // Gestion de la sélection
         tableView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            if (newSelection != null) {
-                selectedMedecin = newSelection;
-                // Update the fields in the sidebar with selected doctor's info if needed
+            selectedMedecin = newSelection;
+            if (newSelection != null && nomTF != null) {
                 updateSidebarInfo(selectedMedecin);
             }
         });
 
         // Initialiser les filtres
-        filtreDispoCB.getItems().addAll("Tous", "Disponible", "Indisponible");
-        filtreDispoCB.setValue("Tous");
+        if (filtreDispoCB != null) {
+            filtreDispoCB.getItems().addAll("Tous", "Disponible", "Indisponible");
+            filtreDispoCB.setValue("Tous");
+        }
 
-        // Listener recherche dynamique
-        rechercheTF.textProperty().addListener((obs, oldVal, newVal) -> appliquerFiltres());
-
-        // Listener filtre disponibilité
-        filtreDispoCB.valueProperty().addListener((obs, oldVal, newVal) -> appliquerFiltres());
+        // Initialiser la ComboBox de disponibilité dans la sidebar
+        if (disponibiliteCB != null) {
+            disponibiliteCB.getItems().addAll("disponible", "indisponible");
+        }
 
         loadData();
     }
 
     private void updateSidebarInfo(Medecin medecin) {
-        // This could be used to display doctor info in the sidebar
-        // For now, we'll just store the selectedMedecin
+        if (medecin != null) {
+            if (nomTF != null) nomTF.setText(medecin.getNom());
+            if (prenomTF != null) prenomTF.setText(medecin.getPrenom());
+            if (emailTF != null) emailTF.setText(medecin.getEmail());
+            if (telephoneTF != null) telephoneTF.setText(medecin.getTelephone());
+            if (disponibiliteCB != null) disponibiliteCB.setValue(medecin.getDisponibilite());
+        }
     }
 
     private void loadData() {
         try {
             List<Medecin> list = service.getData();
             listeComplete = FXCollections.observableArrayList(list);
-            tableView.setItems(listeComplete);
-            updateSummaryStats();
+
+            // Créer une FilteredList
+            filteredList = new FilteredList<>(listeComplete, p -> true);
+
+            // Configurer les filtres
+            setupFilters();
+
+            // Créer une SortedList
+            sortedList = new SortedList<>(filteredList);
+
+            // Lier le comparateur
+            sortedList.comparatorProperty().bind(tableView.comparatorProperty());
+
+            // Afficher dans la TableView
+            tableView.setItems(sortedList);
+
         } catch (SQLException e) {
             showAlert(Alert.AlertType.ERROR, "Erreur", e.getMessage());
         }
     }
 
+    private void setupFilters() {
+        if (rechercheTF != null) {
+            rechercheTF.textProperty().addListener((observable, oldValue, newValue) -> {
+                applyFilters();
+            });
+        }
+
+        if (filtreDispoCB != null) {
+            filtreDispoCB.valueProperty().addListener((observable, oldValue, newValue) -> {
+                applyFilters();
+            });
+        }
+    }
+
+    private void applyFilters() {
+        String rechercheTexte = rechercheTF != null && rechercheTF.getText() != null ?
+                rechercheTF.getText().trim().toLowerCase() : "";
+        String filtreDispo = filtreDispoCB != null ? filtreDispoCB.getValue() : "Tous";
+
+        filteredList.setPredicate(medecin -> {
+            // Filtre de recherche
+            boolean matchRecherche = true;
+            if (!rechercheTexte.isEmpty()) {
+                matchRecherche = (medecin.getNom() != null && medecin.getNom().toLowerCase().contains(rechercheTexte)) ||
+                        (medecin.getPrenom() != null && medecin.getPrenom().toLowerCase().contains(rechercheTexte));
+            }
+
+            // Filtre de disponibilité
+            boolean matchDispo = true;
+            if (filtreDispo != null && !"Tous".equals(filtreDispo)) {
+                if ("Disponible".equals(filtreDispo)) {
+                    matchDispo = "disponible".equalsIgnoreCase(medecin.getDisponibilite());
+                } else if ("Indisponible".equals(filtreDispo)) {
+                    matchDispo = "indisponible".equalsIgnoreCase(medecin.getDisponibilite());
+                }
+            }
+
+            return matchRecherche && matchDispo;
+        });
+    }
+
     @FXML
     void trierCroissant(ActionEvent event) {
-        ObservableList<Medecin> listeActuelle = tableView.getItems();
-        listeActuelle.sort(Comparator.comparing(Medecin::getNom, String.CASE_INSENSITIVE_ORDER));
+        // Créer une nouvelle liste triée
+        List<Medecin> sorted = filteredList.stream()
+                .sorted(Comparator.comparing(Medecin::getNom, String.CASE_INSENSITIVE_ORDER))
+                .collect(java.util.stream.Collectors.toList());
+
+        // Mettre à jour la liste filtrée
+        filteredList = new FilteredList<>(FXCollections.observableArrayList(sorted), p -> true);
+        applyFilters(); // Réappliquer les filtres
+        sortedList = new SortedList<>(filteredList);
+        sortedList.comparatorProperty().bind(tableView.comparatorProperty());
+        tableView.setItems(sortedList);
     }
 
     @FXML
     void trierDecroissant(ActionEvent event) {
-        ObservableList<Medecin> listeActuelle = tableView.getItems();
-        listeActuelle.sort(Comparator.comparing(Medecin::getNom, String.CASE_INSENSITIVE_ORDER).reversed());
-    }
+        // Créer une nouvelle liste triée
+        List<Medecin> sorted = filteredList.stream()
+                .sorted(Comparator.comparing(Medecin::getNom, String.CASE_INSENSITIVE_ORDER).reversed())
+                .collect(java.util.stream.Collectors.toList());
 
-    private void appliquerFiltres() {
-        String recherche = rechercheTF.getText().trim().toLowerCase();
-        String filtreDispo = filtreDispoCB.getValue();
-
-        List<Medecin> resultat = listeComplete.stream()
-                .filter(m -> m.getNom().toLowerCase().contains(recherche) || m.getPrenom().toLowerCase().contains(recherche))
-                .filter(m -> {
-                    if ("Tous".equals(filtreDispo)) return true;
-                    if ("Disponible".equals(filtreDispo)) return "disponible".equalsIgnoreCase(m.getDisponibilite());
-                    if ("Indisponible".equals(filtreDispo)) return "indisponible".equalsIgnoreCase(m.getDisponibilite());
-                    return true;
-                })
-                .collect(Collectors.toList());
-
-        tableView.setItems(FXCollections.observableArrayList(resultat));
+        // Mettre à jour la liste filtrée
+        filteredList = new FilteredList<>(FXCollections.observableArrayList(sorted), p -> true);
+        applyFilters(); // Réappliquer les filtres
+        sortedList = new SortedList<>(filteredList);
+        sortedList.comparatorProperty().bind(tableView.comparatorProperty());
+        tableView.setItems(sortedList);
     }
 
     @FXML
@@ -124,17 +189,21 @@ public class AfficherMedecinController {
         }
 
         try {
-            // Load the modifier form
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ModifierMedecin.fxml"));
             javafx.scene.Parent root = loader.load();
             ModifierMedecinController controller = loader.getController();
-            controller.setMedecin(selectedMedecin); // Pass the selected doctor
+            controller.setMedecin(selectedMedecin);
 
-            javafx.stage.Stage stage = new javafx.stage.Stage();
+            Stage stage = new Stage();
             stage.setTitle("Modifier un Médecin");
             stage.setScene(new javafx.scene.Scene(root));
             stage.setResizable(false);
             stage.show();
+
+            // Optionnel : fermer la fenêtre actuelle
+            // Stage currentStage = (Stage) tableView.getScene().getWindow();
+            // currentStage.close();
+
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible d'ouvrir le formulaire de modification : " + e.getMessage());
         }
@@ -146,6 +215,7 @@ public class AfficherMedecinController {
             showAlert(Alert.AlertType.WARNING, "Sélection", "Veuillez sélectionner un médecin !");
             return;
         }
+
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
                 "Supprimer le médecin " + selectedMedecin.getNom() + " ?",
                 ButtonType.YES, ButtonType.NO);
@@ -154,8 +224,9 @@ public class AfficherMedecinController {
                 try {
                     service.deleteEntity(selectedMedecin);
                     showAlert(Alert.AlertType.INFORMATION, "Succès", "Médecin supprimé !");
-                    loadData();
+                    loadData(); // Recharger les données
                     selectedMedecin = null;
+                    clearSidebarInfo();
                 } catch (SQLException e) {
                     showAlert(Alert.AlertType.ERROR, "Erreur BDD", e.getMessage());
                 }
@@ -163,39 +234,31 @@ public class AfficherMedecinController {
         });
     }
 
-    @FXML
-    void actualiser(ActionEvent event) { 
-        loadData(); 
+    private void clearSidebarInfo() {
+        if (nomTF != null) nomTF.clear();
+        if (prenomTF != null) prenomTF.clear();
+        if (emailTF != null) emailTF.clear();
+        if (telephoneTF != null) telephoneTF.clear();
+        if (disponibiliteCB != null) disponibiliteCB.setValue(null);
     }
 
-    private void updateSummaryStats() {
-        // Update the summary labels in the sidebar
-        // This would require adding fx:id to the labels in the FXML
-        // For simplicity, we'll leave them as "0" for now
+    @FXML
+    void actualiser(ActionEvent event) {
+        loadData();
+        if (rechercheTF != null) rechercheTF.clear();
+        if (filtreDispoCB != null) filtreDispoCB.setValue("Tous");
     }
 
     private void showAlert(Alert.AlertType type, String titre, String msg) {
         Alert a = new Alert(type);
-        a.setTitle(titre); a.setHeaderText(null); a.setContentText(msg);
+        a.setTitle(titre);
+        a.setHeaderText(null);
+        a.setContentText(msg);
         a.showAndWait();
     }
 
-    public void fermer(javafx.event.ActionEvent actionEvent) {
-        // Close the current window
-        try {
-            javafx.stage.Stage stage = (javafx.stage.Stage) ((javafx.scene.Node)actionEvent.getSource()).getScene().getWindow();
-            stage.close();
-        } catch (Exception e) {
-            // Fallback: just hide the table view if we can't get the stage
-            if (actionEvent.getSource() instanceof javafx.scene.Node) {
-                javafx.scene.Node source = (javafx.scene.Node) actionEvent.getSource();
-                javafx.stage.Window window = source.getScene().getWindow();
-                if (window instanceof javafx.stage.Stage) {
-                    ((javafx.stage.Stage) window).close();
-                } else {
-                    window.hide();
-                }
-            }
-        }
+    public void fermer(ActionEvent actionEvent) {
+        Stage stage = (Stage) tableView.getScene().getWindow();
+        stage.close();
     }
 }

@@ -1,627 +1,711 @@
 package edu.connexion3a36.Controller;
 
+import javafx.animation.FadeTransition;
+import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.chart.CategoryAxis;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
+import javafx.scene.chart.*;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
-import java.io.IOException;
+import java.net.URL;
+import java.time.LocalTime;
+import java.util.*;
 
-public class FitnessDashboardController {
+public class FitnessDashboardController implements Initializable {
 
-    // === Navigation Views ===
-    @FXML private VBox viewHome;
-    @FXML private VBox viewProfile;
-    @FXML private VBox viewMessages;
-    @FXML private VBox viewSettings;
-    @FXML private VBox viewCourses;
+    // ═══════════════════════════════════════════════════════════════════
+    //  FXML INJECTIONS — SIDEBAR
+    // ═══════════════════════════════════════════════════════════════════
 
-    // === Sidebar Buttons ===
     @FXML private Button btnHome;
     @FXML private Button btnCourses;
     @FXML private Button btnProfile;
     @FXML private Button btnMessages;
     @FXML private Button btnSettings;
+    @FXML private Button btnRelax;      // ← nouveau bouton relaxation
     @FXML private Button btnLogout;
 
-    // === Home View Elements ===
-    @FXML private Label lblGreeting;
-    @FXML private Label lblCompleted;
-    @FXML private Label lblInProgress;
-    @FXML private Label lblHours;
-    @FXML private Label lblBadges;
-    @FXML private TextField searchField;
-    @FXML private Button btnNotif;
-    @FXML private Circle avatarCircle;
+    // ═══════════════════════════════════════════════════════════════════
+    //  FXML INJECTIONS — VUES
+    // ═══════════════════════════════════════════════════════════════════
 
-    // Current course
-    @FXML private HBox currentCourseBox;
-    @FXML private Label currentCourseEmoji;
-    @FXML private Label currentCourseName;
-    @FXML private Label currentCourseAuthor;
-    @FXML private Label lblProgress;
+    @FXML private VBox viewHome;
+    @FXML private VBox viewProfile;
+    @FXML private VBox viewMessages;
+    @FXML private VBox viewSettings;
+    @FXML private VBox viewCourses;
+    @FXML private VBox viewRelax;       // ← nouvelle vue relaxation
+
+    // ═══════════════════════════════════════════════════════════════════
+    //  FXML INJECTIONS — VUE HOME
+    // ═══════════════════════════════════════════════════════════════════
+
+    @FXML private Label     lblGreeting;
+    @FXML private Label     lblCompleted;
+    @FXML private Label     lblInProgress;
+    @FXML private Label     lblHours;
+    @FXML private Label     lblBadges;
+    @FXML private TextField searchField;
+    @FXML private Circle    avatarCircle;
+    @FXML private Button    btnNotif;
+
+    // Cours en cours (carrousel)
+    @FXML private HBox   currentCourseBox;
+    @FXML private Label  currentCourseEmoji;
+    @FXML private Label  currentCourseName;
+    @FXML private Label  currentCourseAuthor;
+    @FXML private Label  lblProgress;
     @FXML private Button btnPrevCourse;
     @FXML private Button btnNextCourse;
 
-    // Course filters
-    @FXML private Button filterAll;
-    @FXML private Button filterNew;
-    @FXML private Button filterTop;
-    @FXML private Button filterPopular;
+    // Liste de cours + filtres
+    @FXML private VBox       courseList;
     @FXML private ScrollPane courseScrollPane;
-    @FXML private VBox courseList;
+    @FXML private Button     filterAll;
+    @FXML private Button     filterNew;
+    @FXML private Button     filterTop;
+    @FXML private Button     filterPopular;
 
-    // Chart
+    // Graphique
     @FXML private LineChart<String, Number> learningChart;
-    @FXML private CategoryAxis xAxis;
-    @FXML private NumberAxis yAxis;
-    @FXML private Button chartTabHours;
-    @FXML private Button chartTabCourses;
-    @FXML private ComboBox<String> weeklyFilter;
+    @FXML private CategoryAxis              xAxis;
+    @FXML private NumberAxis                yAxis;
+    @FXML private Button                    chartTabHours;
+    @FXML private Button                    chartTabCourses;
+    @FXML private ComboBox<String>          weeklyFilter;
+
+    // Premium
     @FXML private Button btnGoPremium;
 
-    // Profile View Elements
-    @FXML private Label profileFullName;
-    @FXML private Label profileCompleted;
-    @FXML private Label profileInProgress;
+    // ═══════════════════════════════════════════════════════════════════
+    //  FXML INJECTIONS — VUE PROFIL
+    // ═══════════════════════════════════════════════════════════════════
+
+    @FXML private Label     profileFullName;
+    @FXML private Label     profileCompleted;
+    @FXML private Label     profileInProgress;
     @FXML private TextField fieldFirstName;
     @FXML private TextField fieldLastName;
     @FXML private TextField fieldEmail;
     @FXML private TextField fieldBio;
 
-    // Messages View
+    // ═══════════════════════════════════════════════════════════════════
+    //  FXML INJECTIONS — VUE MESSAGES
+    // ═══════════════════════════════════════════════════════════════════
+
     @FXML private VBox messageList;
 
-    // Settings View
+    // ═══════════════════════════════════════════════════════════════════
+    //  FXML INJECTIONS — VUE PARAMÈTRES
+    // ═══════════════════════════════════════════════════════════════════
+
     @FXML private VBox settingsNotifList;
     @FXML private VBox settingsPrivacyList;
 
-    // All Courses View
+    // ═══════════════════════════════════════════════════════════════════
+    //  FXML INJECTIONS — VUE COURS
+    // ═══════════════════════════════════════════════════════════════════
+
     @FXML private FlowPane allCoursesGrid;
 
-    private String currentView = "home";
-    private int currentCourseIndex = 0;
-    private String currentChartTab = "hours";
-    private String currentPeriod = "Semaine";
+    // ═══════════════════════════════════════════════════════════════════
+    //  FXML INJECTIONS — VUE RELAXATION
+    // ═══════════════════════════════════════════════════════════════════
 
-    // Sample data
-    private final Course[] courses = {
-            new Course("🇪🇸", "Espagnol B2", "par Alejandro Velazquez", 83, "En cours"),
-            new Course("🇫🇷", "Français Avancé", "par Marie Dubois", 45, "En cours"),
-            new Course("🇩🇪", "Allemand A1", "par Hans Schmidt", 12, "Nouveau"),
-            new Course("🇮🇹", "Italien Culturel", "par Giovanni Rossi", 90, "Populaire"),
-            new Course("🇯🇵", "Japonais Débutant", "par Yuki Tanaka", 30, "Top noté"),
-            new Course("🇬🇧", "Business English", "par John Smith", 67, "Populaire")
-    };
+    @FXML private Button btnConsulterMedecin;
+    @FXML private Button btnCalculerScore;
 
-    private final Message[] messages = {
-            new Message("👨‍🏫", "Alejandro Velazquez", "Nouveau contenu ajouté !", "Il y a 2h"),
-            new Message("⭐", "Support Premium", "Votre abonnement expire dans 5 jours", "Hier"),
-            new Message("🎓", "Communauté", "Nouveau badge débloqué : Assidu", "Mercredi"),
-            new Message("📢", "Administration", "Maintenance prévue dimanche", "Lundi")
-    };
+    // ═══════════════════════════════════════════════════════════════════
+    //  DONNÉES MÉTIER
+    // ═══════════════════════════════════════════════════════════════════
 
-    @FXML
-    public void initialize() {
-        // Initialize combo box
-        weeklyFilter.getItems().addAll("Semaine", "Mois", "Année");
-        weeklyFilter.setValue("Semaine");
+    /** Modèle simplifié d'un cours */
+    private record Course(String emoji, String name, String author,
+                          int progress, double rating, boolean isNew, boolean isPopular) {}
 
-        // Initialize default view
-        showView("home");
-        updateActiveNavButton(btnHome);
+    private final List<Course> allCourses = new ArrayList<>();
+    private String currentFilter = "all";
+    private int    currentCourseIndex = 0;
 
-        // Load all data
-        loadStats();
-        loadCourses();
-        loadCurrentCourse();
-        loadMessages();
-        loadSettings();
-        loadChart();
-        loadAllCoursesGrid();
+    // Mapping bouton sidebar → vue correspondante
+    private Map<Button, VBox> navMap;
+    private Button activeNavButton;
+
+    // ═══════════════════════════════════════════════════════════════════
+    //  INITIALISATION
+    // ═══════════════════════════════════════════════════════════════════
+
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+        buildNavMap();
+        populateCourses();
+        initStats();
+        initGreeting();
+        initChart();
+        initMessages();
+        initSettings();
+        initAllCoursesGrid();
+        renderCourseList(currentFilter);
+        updateCurrentCourse();
+        setActiveNav(btnHome);
     }
 
-    // === Navigation Methods ===
+    // ───────────────────────────────────────────────────────────────────
+    //  Navigation (sidebar)
+    // ───────────────────────────────────────────────────────────────────
 
-    @FXML
-    private void handleNav(javafx.event.ActionEvent event) {
-        Button source = (Button) event.getSource();
-        String viewName = (String) source.getUserData();
-        showView(viewName);
-        updateActiveNavButton(source);
+    private void buildNavMap() {
+        navMap = new LinkedHashMap<>();
+        navMap.put(btnHome,     viewHome);
+        navMap.put(btnCourses,  viewCourses);
+        navMap.put(btnProfile,  viewProfile);
+        navMap.put(btnMessages, viewMessages);
+        navMap.put(btnSettings, viewSettings);
+        navMap.put(btnRelax,    viewRelax);
     }
 
     @FXML
-    private void handleLogout(javafx.event.ActionEvent event) {
-        try {
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/login.fxml"));
-            Parent root = loader.load();
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-            showAlert("Erreur", "Impossible de se déconnecter");
+    public void handleNav(ActionEvent e) {
+        Button src = (Button) e.getSource();
+        VBox   target = navMap.get(src);
+        if (target == null) return;
+        showView(target);
+        setActiveNav(src);
+    }
+
+    private void showView(VBox target) {
+        for (VBox v : navMap.values()) {
+            v.setVisible(false);
+            v.setManaged(false);
+        }
+        target.setVisible(true);
+        target.setManaged(true);
+
+        FadeTransition ft = new FadeTransition(Duration.millis(220), target);
+        ft.setFromValue(0);
+        ft.setToValue(1);
+        ft.play();
+    }
+
+    private void setActiveNav(Button active) {
+        activeNavButton = active;
+        String activeStyle   = "-fx-font-size: 20px; -fx-background-color: #333333;"
+                + " -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 10;";
+        String inactiveStyle = "-fx-font-size: 20px; -fx-background-color: transparent;"
+                + " -fx-text-fill: #888888; -fx-cursor: hand;";
+
+        for (Button b : navMap.keySet()) {
+            b.setStyle(b == active ? activeStyle : inactiveStyle);
         }
     }
 
-    @FXML
-    private void handleSearch(KeyEvent event) {
-        String searchText = searchField.getText().toLowerCase();
-        if (searchText.isEmpty()) {
-            loadCourses();
-        } else {
-            filterCoursesBySearch(searchText);
-        }
+    @FXML public void goHome(ActionEvent e)      { showView(viewHome);    setActiveNav(btnHome); }
+    @FXML public void goToProfile(javafx.scene.input.MouseEvent e) {
+        showView(viewProfile); setActiveNav(btnProfile);
     }
 
-    @FXML
-    private void handleNotif(javafx.event.ActionEvent event) {
-        showAlert("Notifications", "🔔 Aucune nouvelle notification");
+    // ═══════════════════════════════════════════════════════════════════
+    //  DONNÉES INITIALES
+    // ═══════════════════════════════════════════════════════════════════
+
+    private void populateCourses() {
+        allCourses.addAll(List.of(
+                new Course("🇪🇸", "Spanish B2",          "Alejandro Velazquez",  83, 4.8, false, true),
+                new Course("🐍", "Python Avancé",         "Sophie Martin",        60, 4.9, true,  true),
+                new Course("🎨", "UI/UX Design",          "Léa Bernard",          45, 4.7, true,  false),
+                new Course("📊", "Data Science",          "Marc Dupont",          30, 4.6, false, true),
+                new Course("🇬🇧", "English C1",           "Emily Watson",         92, 4.5, false, false),
+                new Course("🧠", "Machine Learning",      "Karim Bensalem",       15, 5.0, true,  true),
+                new Course("🎸", "Guitare Classique",     "Pierre Moreau",        70, 4.4, false, false),
+                new Course("📱", "Flutter Mobile",        "Amira Khalil",         50, 4.8, true,  false),
+                new Course("🔐", "Cybersécurité",         "Julien Roux",          25, 4.7, true,  true),
+                new Course("📸", "Photographie",          "Céline Petit",         80, 4.3, false, false),
+                new Course("🇩🇪", "Allemand A2",          "Hans Müller",          10, 4.2, true,  false),
+                new Course("🧮", "Algorithmique",         "Nadia Benali",         65, 4.9, false, true),
+                new Course("🌐", "Développement Web",     "Tom Leroy",            55, 4.6, false, true),
+                new Course("🎬", "Montage Vidéo",         "Clara Simon",          35, 4.5, true,  false),
+                new Course("📝", "Rédaction Web",         "Isabelle Gautier",     40, 4.4, false, false)
+        ));
     }
 
-    @FXML
-    private void goToProfile(MouseEvent event) {
-        showView("profile");
-        updateActiveNavButton(btnProfile);
+    private void initStats() {
+        long completed  = allCourses.stream().filter(c -> c.progress() == 100).count();
+        long inProgress = allCourses.stream().filter(c -> c.progress() > 0 && c.progress() < 100).count();
+        int  totalH     = allCourses.stream().mapToInt(c -> c.progress() / 2).sum();
+
+        lblCompleted.setText(String.valueOf(completed == 0 ? 11 : completed));
+        lblInProgress.setText(String.valueOf(inProgress == 0 ? 4  : inProgress));
+        lblHours.setText(totalH + "h");
+        lblBadges.setText("🏆 " + (completed + 1));
+
+        profileCompleted.setText(lblCompleted.getText());
+        profileInProgress.setText(lblInProgress.getText());
     }
 
-    @FXML
-    private void goHome(javafx.event.ActionEvent event) {
-        showView("home");
-        updateActiveNavButton(btnHome);
+    private void initGreeting() {
+        int hour = LocalTime.now().getHour();
+        String greet = hour < 12 ? "Bonjour" : hour < 18 ? "Bon après-midi" : "Bonsoir";
+        lblGreeting.setText(greet + ", Josh !");
     }
 
-    @FXML
-    private void handleContinue(javafx.event.ActionEvent event) {
-        showAlert("Continuer", "▶️ Reprise du cours : " + currentCourseName.getText());
-    }
+    // ═══════════════════════════════════════════════════════════════════
+    //  LISTE DE COURS (home)
+    // ═══════════════════════════════════════════════════════════════════
 
-    @FXML
-    private void handlePrevCourse(javafx.event.ActionEvent event) {
-        currentCourseIndex--;
-        if (currentCourseIndex < 0) {
-            currentCourseIndex = courses.length - 1;
-        }
-        updateCurrentCourseDisplay();
-    }
-
-    @FXML
-    private void handleNextCourse(javafx.event.ActionEvent event) {
-        currentCourseIndex++;
-        if (currentCourseIndex >= courses.length) {
-            currentCourseIndex = 0;
-        }
-        updateCurrentCourseDisplay();
-    }
-
-    @FXML
-    private void handleFilter(javafx.event.ActionEvent event) {
-        Button source = (Button) event.getSource();
-        String filter = (String) source.getUserData();
-
-        resetFilterButtons();
-        source.setStyle("-fx-background-color: transparent; -fx-text-fill: #111; " +
-                "-fx-font-weight: bold; -fx-cursor: hand; -fx-padding: 4 0; " +
-                "-fx-border-color: transparent transparent #111 transparent; " +
-                "-fx-border-width: 0 0 2 0;");
-
-        filterCourses(filter);
-    }
-
-    @FXML
-    private void handleChartTab(javafx.event.ActionEvent event) {
-        Button source = (Button) event.getSource();
-        currentChartTab = (String) source.getUserData();
-
-        chartTabHours.setStyle("-fx-background-color: transparent; -fx-font-size: 12px; " +
-                "-fx-text-fill: #aaa; -fx-cursor: hand;");
-        chartTabCourses.setStyle("-fx-background-color: transparent; -fx-font-size: 12px; " +
-                "-fx-text-fill: #aaa; -fx-cursor: hand;");
-
-        source.setStyle("-fx-background-color: transparent; -fx-font-weight: bold; " +
-                "-fx-font-size: 12px; -fx-text-fill: #111; -fx-cursor: hand; " +
-                "-fx-border-color: transparent transparent #111 transparent; " +
-                "-fx-border-width: 0 0 2 0;");
-
-        updateChart(currentChartTab);
-    }
-
-    @FXML
-    private void handlePeriodChange(javafx.event.ActionEvent event) {
-        currentPeriod = weeklyFilter.getValue();
-        updateChart(currentChartTab);
-    }
-
-    @FXML
-    private void handlePremium(javafx.event.ActionEvent event) {
-        showAlert("Premium", "⭐ Passer à l'offre Premium - 9,99€/mois");
-    }
-
-    @FXML
-    private void handleSaveProfile(javafx.event.ActionEvent event) {
-        String firstName = fieldFirstName.getText().trim();
-        String lastName = fieldLastName.getText().trim();
-
-        if (firstName.isEmpty() || lastName.isEmpty()) {
-            showAlert("Erreur", "Veuillez remplir le prénom et le nom");
-            return;
-        }
-
-        profileFullName.setText(firstName + " " + lastName);
-        lblGreeting.setText("Bonjour, " + firstName + " !");
-        showAlert("Succès", "✅ Profil mis à jour avec succès !");
-    }
-
-    @FXML
-    private void handleChangePassword(javafx.event.ActionEvent event) {
-        showAlert("Mot de passe", "🔒 Fonctionnalité à venir");
-    }
-
-    @FXML
-    private void handleDeleteAccount(javafx.event.ActionEvent event) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Confirmation");
-        alert.setHeaderText("Supprimer le compte");
-        alert.setContentText("Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.");
-        alert.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-                showAlert("Compte supprimé", "Votre compte a été supprimé");
-            }
-        });
-    }
-
-    // === Helper Methods ===
-
-    private void showView(String viewName) {
-        currentView = viewName;
-
-        viewHome.setVisible(false);
-        viewHome.setManaged(false);
-        viewProfile.setVisible(false);
-        viewProfile.setManaged(false);
-        viewMessages.setVisible(false);
-        viewMessages.setManaged(false);
-        viewSettings.setVisible(false);
-        viewSettings.setManaged(false);
-        viewCourses.setVisible(false);
-        viewCourses.setManaged(false);
-
-        switch (viewName) {
-            case "home":
-                viewHome.setVisible(true);
-                viewHome.setManaged(true);
-                break;
-            case "profile":
-                viewProfile.setVisible(true);
-                viewProfile.setManaged(true);
-                break;
-            case "messages":
-                viewMessages.setVisible(true);
-                viewMessages.setManaged(true);
-                break;
-            case "settings":
-                viewSettings.setVisible(true);
-                viewSettings.setManaged(true);
-                break;
-            case "courses":
-                viewCourses.setVisible(true);
-                viewCourses.setManaged(true);
-                break;
-        }
-    }
-
-    private void updateActiveNavButton(Button activeButton) {
-        Button[] buttons = {btnHome, btnCourses, btnProfile, btnMessages, btnSettings};
-
-        for (Button btn : buttons) {
-            if (btn == activeButton) {
-                btn.setStyle("-fx-font-size: 20px; -fx-background-color: #333333; " +
-                        "-fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 10;");
-            } else {
-                btn.setStyle("-fx-font-size: 20px; -fx-background-color: transparent; " +
-                        "-fx-text-fill: #888888; -fx-cursor: hand;");
-            }
-        }
-    }
-
-    private void resetFilterButtons() {
-        Button[] filters = {filterAll, filterNew, filterTop, filterPopular};
-        for (Button btn : filters) {
-            if (btn != null) {
-                btn.setStyle("-fx-background-color: transparent; -fx-text-fill: #888; " +
-                        "-fx-cursor: hand; -fx-padding: 4 0;");
-            }
-        }
-    }
-
-    private void showAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    private void updateCurrentCourseDisplay() {
-        Course course = courses[currentCourseIndex];
-        currentCourseEmoji.setText(course.emoji);
-        currentCourseName.setText(course.name);
-        currentCourseAuthor.setText(course.author);
-        lblProgress.setText(course.progress + "%");
-    }
-
-    // === Card Creation Methods ===
-
-    private HBox createCourseCard(Course course) {
-        HBox card = new HBox();
-        card.setSpacing(12);
-        card.setAlignment(Pos.CENTER_LEFT);
-        card.setPrefHeight(70);
-        card.setStyle("-fx-background-color: white; -fx-background-radius: 12; " +
-                "-fx-border-color: #eeeeee; -fx-border-radius: 12; -fx-padding: 10 14 10 14;");
-        card.setMaxWidth(Double.MAX_VALUE);
-        HBox.setHgrow(card, Priority.ALWAYS);
-
-        Label emojiLabel = new Label(course.emoji);
-        emojiLabel.setStyle("-fx-font-size: 28px;");
-
-        VBox infoBox = new VBox(4);
-        HBox.setHgrow(infoBox, Priority.ALWAYS);
-
-        Label nameLabel = new Label(course.name);
-        nameLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
-
-        Label authorLabel = new Label(course.author);
-        authorLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #888;");
-
-        infoBox.getChildren().addAll(nameLabel, authorLabel);
-
-        Label progressLabel = new Label(course.progress + "%");
-        progressLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; " +
-                "-fx-background-color: #f0f0f0; -fx-padding: 4 12; -fx-background-radius: 20;");
-
-        Button continueBtn = new Button("Continuer");
-        continueBtn.setStyle("-fx-background-color: #111111; -fx-text-fill: white; " +
-                "-fx-background-radius: 8; -fx-font-size: 11px; -fx-padding: 6 14; -fx-cursor: hand;");
-        continueBtn.setOnAction(e -> showAlert("Continuer", "Reprise du cours : " + course.name));
-
-        card.getChildren().addAll(emojiLabel, infoBox, progressLabel, continueBtn);
-        return card;
-    }
-
-    private HBox createMessageCard(Message msg) {
-        HBox card = new HBox();
-        card.setSpacing(12);
-        card.setAlignment(Pos.CENTER_LEFT);
-        card.setStyle("-fx-background-color: white; -fx-background-radius: 12; " +
-                "-fx-border-color: #eeeeee; -fx-border-radius: 12; -fx-padding: 12 16 12 16;");
-        card.setMaxWidth(Double.MAX_VALUE);
-
-        Label avatarLabel = new Label(msg.avatar);
-        avatarLabel.setStyle("-fx-font-size: 32px;");
-
-        VBox contentBox = new VBox(4);
-        HBox.setHgrow(contentBox, Priority.ALWAYS);
-
-        Label senderLabel = new Label(msg.sender);
-        senderLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
-
-        Label contentLabel = new Label(msg.content);
-        contentLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #555;");
-
-        contentBox.getChildren().addAll(senderLabel, contentLabel);
-
-        Label timeLabel = new Label(msg.time);
-        timeLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #aaa;");
-
-        card.getChildren().addAll(avatarLabel, contentBox, timeLabel);
-        return card;
-    }
-
-    // === Data Loading Methods ===
-
-    private void loadStats() {
-        lblCompleted.setText("11");
-        lblInProgress.setText("4");
-        lblHours.setText("47h");
-        lblBadges.setText("🏆 12");
-        profileCompleted.setText("11");
-        profileInProgress.setText("4");
-    }
-
-    private void loadCourses() {
+    private void renderCourseList(String filter) {
         courseList.getChildren().clear();
-        for (Course course : courses) {
-            courseList.getChildren().add(createCourseCard(course));
+        List<Course> filtered = allCourses.stream()
+                .filter(c -> switch (filter) {
+                    case "new"     -> c.isNew();
+                    case "top"     -> c.rating() >= 4.7;
+                    case "popular" -> c.isPopular();
+                    default        -> true;
+                })
+                .toList();
+
+        for (Course c : filtered) {
+            courseList.getChildren().add(buildCourseRow(c));
         }
     }
 
-    private void loadCurrentCourse() {
-        currentCourseIndex = 0;
-        updateCurrentCourseDisplay();
-    }
-
-    private void loadMessages() {
-        messageList.getChildren().clear();
-        for (Message msg : messages) {
-            messageList.getChildren().add(createMessageCard(msg));
-        }
-    }
-
-    private void loadSettings() {
-        settingsNotifList.getChildren().clear();
-        settingsPrivacyList.getChildren().clear();
-
-        // Notification settings
-        String[] notifSettings = {"Notifications push", "Notifications email", "Rappels de cours"};
-        boolean[] notifStates = {true, true, false};
-
-        for (int i = 0; i < notifSettings.length; i++) {
-            HBox row = createSettingRow(notifSettings[i], notifStates[i]);
-            settingsNotifList.getChildren().add(row);
-        }
-
-        // Privacy settings
-        String[] privacySettings = {"Profil public", "Partager la progression", "Visible dans les recherches"};
-        boolean[] privacyStates = {false, true, true};
-
-        for (int i = 0; i < privacySettings.length; i++) {
-            HBox row = createSettingRow(privacySettings[i], privacyStates[i]);
-            settingsPrivacyList.getChildren().add(row);
-        }
-    }
-
-    private HBox createSettingRow(String labelText, boolean defaultValue) {
-        HBox row = new HBox();
-        row.setSpacing(12);
+    private HBox buildCourseRow(Course c) {
+        HBox row = new HBox(10);
         row.setAlignment(Pos.CENTER_LEFT);
-        row.setPrefHeight(44);
-        row.setStyle("-fx-border-color: transparent transparent #f0f0f0 transparent; -fx-border-width: 0 0 1 0");
+        row.setPadding(new Insets(10, 14, 10, 14));
+        row.setStyle("-fx-background-color: white; -fx-background-radius: 12;"
+                + "-fx-border-color: #f0f0f0; -fx-border-radius: 12; -fx-cursor: hand;");
 
-        Label label = new Label(labelText);
-        label.setStyle("-fx-font-size: 13px");
-        HBox.setHgrow(label, Priority.ALWAYS);
+        row.setOnMouseEntered(e -> row.setStyle(
+                "-fx-background-color: #f8f8f8; -fx-background-radius: 12;"
+                        + "-fx-border-color: #e0e0e0; -fx-border-radius: 12; -fx-cursor: hand;"));
+        row.setOnMouseExited(e -> row.setStyle(
+                "-fx-background-color: white; -fx-background-radius: 12;"
+                        + "-fx-border-color: #f0f0f0; -fx-border-radius: 12; -fx-cursor: hand;"));
 
-        CheckBox checkBox = new CheckBox();
-        checkBox.setSelected(defaultValue);
+        Label emoji = new Label(c.emoji());
+        emoji.setStyle("-fx-font-size: 22px;");
 
-        row.getChildren().addAll(label, checkBox);
+        VBox info = new VBox(2);
+        Label name = new Label(c.name());
+        name.setStyle("-fx-font-weight: bold; -fx-font-size: 13px;");
+        Label author = new Label("par " + c.author());
+        author.setStyle("-fx-font-size: 11px; -fx-text-fill: #888;");
+        info.getChildren().addAll(name, author);
+        HBox.setHgrow(info, Priority.ALWAYS);
+
+        VBox progressBox = new VBox(3);
+        progressBox.setAlignment(Pos.CENTER_RIGHT);
+        Label pct = new Label(c.progress() + "%");
+        pct.setStyle("-fx-font-size: 12px; -fx-font-weight: bold;");
+        ProgressBar pb = new ProgressBar(c.progress() / 100.0);
+        pb.setPrefWidth(80);
+        pb.setStyle("-fx-accent: #111111;");
+        progressBox.getChildren().addAll(pct, pb);
+
+        Label rating = new Label("⭐ " + c.rating());
+        rating.setStyle("-fx-font-size: 11px; -fx-text-fill: #888;");
+
+        row.getChildren().addAll(emoji, info, rating, progressBox);
         return row;
     }
 
-    private void loadChart() {
-        updateChart("hours");
+    // ═══════════════════════════════════════════════════════════════════
+    //  CARROUSEL COURS EN COURS
+    // ═══════════════════════════════════════════════════════════════════
+
+    private List<Course> getInProgressCourses() {
+        return allCourses.stream()
+                .filter(c -> c.progress() > 0 && c.progress() < 100)
+                .toList();
     }
 
-    private void updateChart(String tab) {
+    private void updateCurrentCourse() {
+        List<Course> inProgress = getInProgressCourses();
+        if (inProgress.isEmpty()) return;
+        if (currentCourseIndex >= inProgress.size()) currentCourseIndex = 0;
+        Course c = inProgress.get(currentCourseIndex);
+        currentCourseEmoji.setText(c.emoji());
+        currentCourseName.setText(c.name());
+        currentCourseAuthor.setText("par " + c.author());
+        lblProgress.setText(c.progress() + "%");
+    }
+
+    @FXML public void handlePrevCourse(ActionEvent e) {
+        List<Course> list = getInProgressCourses();
+        currentCourseIndex = (currentCourseIndex - 1 + list.size()) % list.size();
+        updateCurrentCourse();
+    }
+
+    @FXML public void handleNextCourse(ActionEvent e) {
+        List<Course> list = getInProgressCourses();
+        currentCourseIndex = (currentCourseIndex + 1) % list.size();
+        updateCurrentCourse();
+    }
+
+    @FXML public void handleContinue(ActionEvent e) {
+        List<Course> list = getInProgressCourses();
+        if (list.isEmpty()) return;
+        Course c = list.get(currentCourseIndex);
+        showAlert("Continuer", "Reprise du cours : " + c.name() + " 🚀");
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    //  FILTRES
+    // ═══════════════════════════════════════════════════════════════════
+
+    @FXML public void handleFilter(ActionEvent e) {
+        Button src = (Button) e.getSource();
+        currentFilter = (String) src.getUserData();
+        renderCourseList(currentFilter);
+
+        String activeStyle   = "-fx-background-color: transparent; -fx-text-fill: #111;"
+                + " -fx-font-weight: bold; -fx-cursor: hand; -fx-padding: 4 0;"
+                + " -fx-border-color: transparent transparent #111 transparent;"
+                + " -fx-border-width: 0 0 2 0;";
+        String inactiveStyle = "-fx-background-color: transparent; -fx-text-fill: #888;"
+                + " -fx-cursor: hand; -fx-padding: 4 0;";
+
+        for (Button b : List.of(filterAll, filterNew, filterTop, filterPopular)) {
+            b.setStyle(b == src ? activeStyle : inactiveStyle);
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    //  GRAPHIQUE
+    // ═══════════════════════════════════════════════════════════════════
+
+    private void initChart() {
+        weeklyFilter.setItems(FXCollections.observableArrayList(
+                "Cette semaine", "Ce mois", "3 mois", "6 mois"
+        ));
+        weeklyFilter.getSelectionModel().selectFirst();
+        loadChartData("hours");
+    }
+
+    private void loadChartData(String type) {
         learningChart.getData().clear();
         XYChart.Series<String, Number> series = new XYChart.Series<>();
 
-        if (tab.equals("hours")) {
+        if ("hours".equals(type)) {
             series.setName("Heures d'apprentissage");
-            if (currentPeriod.equals("Semaine")) {
-                series.getData().add(new XYChart.Data<>("Lun", 2.5));
-                series.getData().add(new XYChart.Data<>("Mar", 3.0));
-                series.getData().add(new XYChart.Data<>("Mer", 1.5));
-                series.getData().add(new XYChart.Data<>("Jeu", 4.0));
-                series.getData().add(new XYChart.Data<>("Ven", 2.0));
-                series.getData().add(new XYChart.Data<>("Sam", 1.0));
-                series.getData().add(new XYChart.Data<>("Dim", 0.5));
-            } else if (currentPeriod.equals("Mois")) {
-                series.getData().add(new XYChart.Data<>("Sem 1", 12.5));
-                series.getData().add(new XYChart.Data<>("Sem 2", 15.0));
-                series.getData().add(new XYChart.Data<>("Sem 3", 10.5));
-                series.getData().add(new XYChart.Data<>("Sem 4", 18.0));
-            } else {
-                series.getData().add(new XYChart.Data<>("Jan", 45));
-                series.getData().add(new XYChart.Data<>("Fév", 52));
-                series.getData().add(new XYChart.Data<>("Mar", 48));
-                series.getData().add(new XYChart.Data<>("Avr", 60));
-            }
+            String[] days = {"Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"};
+            double[] vals = {1.5, 2.0, 0.5, 3.0, 2.5, 4.0, 1.0};
+            for (int i = 0; i < days.length; i++)
+                series.getData().add(new XYChart.Data<>(days[i], vals[i]));
+            yAxis.setUpperBound(5);
+            yAxis.setTickUnit(1);
         } else {
-            series.setName("Cours complétés");
-            if (currentPeriod.equals("Semaine")) {
-                series.getData().add(new XYChart.Data<>("Lun", 1));
-                series.getData().add(new XYChart.Data<>("Mar", 2));
-                series.getData().add(new XYChart.Data<>("Mer", 0));
-                series.getData().add(new XYChart.Data<>("Jeu", 1));
-                series.getData().add(new XYChart.Data<>("Ven", 3));
-                series.getData().add(new XYChart.Data<>("Sam", 0));
-                series.getData().add(new XYChart.Data<>("Dim", 0));
-            } else if (currentPeriod.equals("Mois")) {
-                series.getData().add(new XYChart.Data<>("Sem 1", 4));
-                series.getData().add(new XYChart.Data<>("Sem 2", 6));
-                series.getData().add(new XYChart.Data<>("Sem 3", 3));
-                series.getData().add(new XYChart.Data<>("Sem 4", 7));
-            } else {
-                series.getData().add(new XYChart.Data<>("Jan", 12));
-                series.getData().add(new XYChart.Data<>("Fév", 15));
-                series.getData().add(new XYChart.Data<>("Mar", 18));
-                series.getData().add(new XYChart.Data<>("Avr", 22));
-            }
+            series.setName("Cours suivis");
+            String[] weeks = {"S1", "S2", "S3", "S4"};
+            double[] vals  = {2, 4, 3, 5};
+            for (int i = 0; i < weeks.length; i++)
+                series.getData().add(new XYChart.Data<>(weeks[i], vals[i]));
+            yAxis.setUpperBound(7);
+            yAxis.setTickUnit(1);
         }
-
         learningChart.getData().add(series);
     }
 
-    private void filterCourses(String filter) {
-        courseList.getChildren().clear();
-        for (Course course : courses) {
-            boolean shouldShow = false;
-            switch (filter) {
-                case "all":
-                    shouldShow = true;
-                    break;
-                case "new":
-                    shouldShow = course.tag.equals("Nouveau");
-                    break;
-                case "top":
-                    shouldShow = course.tag.equals("Top noté");
-                    break;
-                case "popular":
-                    shouldShow = course.tag.equals("Populaire");
-                    break;
-            }
-            if (shouldShow) {
-                courseList.getChildren().add(createCourseCard(course));
-            }
-        }
+    @FXML public void handleChartTab(ActionEvent e) {
+        Button src = (Button) e.getSource();
+        String type = (String) src.getUserData();
+        loadChartData(type);
+
+        String activeStyle   = "-fx-background-color: transparent; -fx-font-weight: bold;"
+                + " -fx-font-size: 12px; -fx-text-fill: #111; -fx-cursor: hand;"
+                + " -fx-border-color: transparent transparent #111 transparent;"
+                + " -fx-border-width: 0 0 2 0;";
+        String inactiveStyle = "-fx-background-color: transparent; -fx-font-size: 12px;"
+                + " -fx-text-fill: #aaa; -fx-cursor: hand;";
+
+        chartTabHours.setStyle("hours".equals(type) ? activeStyle : inactiveStyle);
+        chartTabCourses.setStyle("courses".equals(type) ? activeStyle : inactiveStyle);
     }
 
-    private void filterCoursesBySearch(String searchText) {
-        courseList.getChildren().clear();
-        for (Course course : courses) {
-            if (course.name.toLowerCase().contains(searchText) ||
-                    course.author.toLowerCase().contains(searchText)) {
-                courseList.getChildren().add(createCourseCard(course));
-            }
-        }
+    @FXML public void handlePeriodChange(ActionEvent e) {
+        loadChartData("hours".equals(chartTabHours.getUserData()) ? "hours" : "courses");
     }
 
-    private void loadAllCoursesGrid() {
+    // ═══════════════════════════════════════════════════════════════════
+    //  RECHERCHE
+    // ═══════════════════════════════════════════════════════════════════
+
+    @FXML public void handleSearch(KeyEvent e) {
+        String query = searchField.getText().trim().toLowerCase();
+        if (query.isEmpty()) {
+            renderCourseList(currentFilter);
+            return;
+        }
+        courseList.getChildren().clear();
+        allCourses.stream()
+                .filter(c -> c.name().toLowerCase().contains(query)
+                        || c.author().toLowerCase().contains(query))
+                .forEach(c -> courseList.getChildren().add(buildCourseRow(c)));
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    //  MESSAGES
+    // ═══════════════════════════════════════════════════════════════════
+
+    private void initMessages() {
+        messageList.getChildren().clear();
+        List<String[]> msgs = List.of(
+                new String[]{"👩‍🏫", "Sophie Martin",    "Votre progression en Python est excellente !",         "Il y a 5 min", String.valueOf(true)},
+                new String[]{"🤖", "Système",           "Nouveau badge débloqué : ⚡ Rapide !",                  "Il y a 1 h", String.valueOf(true)},
+                new String[]{"👨‍💼", "Marc Dupont",      "Avez-vous terminé le module 4 en Data Science ?",      "Hier", String.valueOf(false)},
+                new String[]{"🎓", "Alejandro Velazquez","¡ Muy bien ! Continuez ainsi en espagnol.",             "Il y a 2 j", String.valueOf(false)},
+                new String[]{"🔔", "Système",           "Rappel : cours de Machine Learning demain à 10h.",     "Il y a 3 j", String.valueOf(false)}
+        );
+        msgs.forEach(m -> messageList.getChildren().add(buildMessageRow(m)));
+    }
+
+    private HBox buildMessageRow(String[] m) {
+        HBox row = new HBox(12);
+        row.setAlignment(Pos.CENTER_LEFT);
+        row.setPadding(new Insets(14, 16, 14, 16));
+        String bg = "true".equals(m[4]) ? "#f7f7ff" : "white";
+        row.setStyle("-fx-background-color: " + bg + "; -fx-background-radius: 14;"
+                + "-fx-border-color: #f0f0f0; -fx-border-radius: 14;");
+
+        Label avatar = new Label(m[0]);
+        avatar.setStyle("-fx-font-size: 26px; -fx-background-color: #eeeeee;"
+                + "-fx-background-radius: 50%; -fx-min-width: 46; -fx-min-height: 46;"
+                + "-fx-alignment: center;");
+
+        VBox body = new VBox(3);
+        HBox.setHgrow(body, Priority.ALWAYS);
+        Label sender = new Label(m[1]);
+        sender.setStyle("-fx-font-weight: bold; -fx-font-size: 13px;");
+        Label content = new Label(m[2]);
+        content.setStyle("-fx-font-size: 12px; -fx-text-fill: #555;");
+        body.getChildren().addAll(sender, content);
+
+        VBox right = new VBox(4);
+        right.setAlignment(Pos.TOP_RIGHT);
+        Label time = new Label(m[3]);
+        time.setStyle("-fx-font-size: 10px; -fx-text-fill: #aaa;");
+        right.getChildren().add(time);
+        if ("true".equals(m[4])) {
+            Label dot = new Label("●");
+            dot.setStyle("-fx-text-fill: #4f46e5; -fx-font-size: 10px;");
+            right.getChildren().add(dot);
+        }
+
+        row.getChildren().addAll(avatar, body, right);
+        return row;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    //  PARAMÈTRES
+    // ═══════════════════════════════════════════════════════════════════
+
+    private void initSettings() {
+        List<String[]> notifSettings = List.of(
+                new String[]{"Notifications push",       "true"},
+                new String[]{"Rappels de cours",         "true"},
+                new String[]{"Nouveaux badges",          "true"},
+                new String[]{"Messages des instructeurs","false"}
+        );
+        List<String[]> privacySettings = List.of(
+                new String[]{"Profil public",            "false"},
+                new String[]{"Partager ma progression",  "true"},
+                new String[]{"Afficher mes badges",      "true"}
+        );
+        notifSettings.forEach(s  -> settingsNotifList.getChildren().add(buildSettingRow(s[0], "true".equals(s[1]))));
+        privacySettings.forEach(s -> settingsPrivacyList.getChildren().add(buildSettingRow(s[0], "true".equals(s[1]))));
+    }
+
+    private HBox buildSettingRow(String label, boolean defaultVal) {
+        HBox row = new HBox();
+        row.setAlignment(Pos.CENTER_LEFT);
+        row.setPrefHeight(44);
+        row.setStyle("-fx-border-color: transparent transparent #f0f0f0 transparent;"
+                + "-fx-border-width: 0 0 1 0;");
+
+        Label lbl = new Label(label);
+        lbl.setStyle("-fx-font-size: 13px;");
+        HBox.setHgrow(lbl, Priority.ALWAYS);
+
+        CheckBox cb = new CheckBox();
+        cb.setSelected(defaultVal);
+        cb.setStyle("-fx-cursor: hand;");
+
+        row.getChildren().addAll(lbl, cb);
+        return row;
+    }
+
+    @FXML public void handleChangePassword(ActionEvent e) {
+        showAlert("Mot de passe", "Fonctionnalité de changement de mot de passe en cours de développement.");
+    }
+
+    @FXML public void handleDeleteAccount(ActionEvent e) {
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Supprimer le compte");
+        confirm.setHeaderText("Êtes-vous sûr de vouloir supprimer votre compte ?");
+        confirm.setContentText("Cette action est irréversible.");
+        confirm.showAndWait().ifPresent(r -> {
+            if (r == ButtonType.OK) showAlert("Compte supprimé", "Votre compte a été supprimé.");
+        });
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    //  VUE TOUS LES COURS
+    // ═══════════════════════════════════════════════════════════════════
+
+    private void initAllCoursesGrid() {
         allCoursesGrid.getChildren().clear();
-        for (Course course : courses) {
-            allCoursesGrid.getChildren().add(createCourseCard(course));
+        allCourses.forEach(c -> allCoursesGrid.getChildren().add(buildCourseCard(c)));
+    }
+
+    private VBox buildCourseCard(Course c) {
+        VBox card = new VBox(8);
+        card.setPrefWidth(200);
+        card.setPadding(new Insets(16));
+        card.setStyle("-fx-background-color: white; -fx-background-radius: 16;"
+                + "-fx-border-color: #f0f0f0; -fx-border-radius: 16; -fx-cursor: hand;");
+
+        card.setOnMouseEntered(e -> card.setStyle(
+                "-fx-background-color: #f8f8f8; -fx-background-radius: 16;"
+                        + "-fx-border-color: #ddd; -fx-border-radius: 16; -fx-cursor: hand;"));
+        card.setOnMouseExited(e -> card.setStyle(
+                "-fx-background-color: white; -fx-background-radius: 16;"
+                        + "-fx-border-color: #f0f0f0; -fx-border-radius: 16; -fx-cursor: hand;"));
+
+        Label emoji = new Label(c.emoji());
+        emoji.setStyle("-fx-font-size: 30px;");
+
+        Label name = new Label(c.name());
+        name.setStyle("-fx-font-weight: bold; -fx-font-size: 13px; -fx-wrap-text: true;");
+
+        Label author = new Label("par " + c.author());
+        author.setStyle("-fx-font-size: 11px; -fx-text-fill: #888;");
+
+        ProgressBar pb = new ProgressBar(c.progress() / 100.0);
+        pb.setPrefWidth(Double.MAX_VALUE);
+        pb.setStyle("-fx-accent: #111111;");
+
+        Label pct = new Label(c.progress() + "% terminé");
+        pct.setStyle("-fx-font-size: 11px; -fx-text-fill: #555;");
+
+        HBox tags = new HBox(6);
+        if (c.isNew()) {
+            Label n = new Label("Nouveau");
+            n.setStyle("-fx-background-color: #e8f5e9; -fx-text-fill: #2e7d32; -fx-padding: 2 7;"
+                    + "-fx-background-radius: 20; -fx-font-size: 10px;");
+            tags.getChildren().add(n);
+        }
+        if (c.isPopular()) {
+            Label p = new Label("🔥 Populaire");
+            p.setStyle("-fx-background-color: #fff3e0; -fx-text-fill: #e65100; -fx-padding: 2 7;"
+                    + "-fx-background-radius: 20; -fx-font-size: 10px;");
+            tags.getChildren().add(p);
+        }
+
+        card.getChildren().addAll(emoji, name, author, pb, pct, tags);
+        return card;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    //  VUE PROFIL
+    // ═══════════════════════════════════════════════════════════════════
+
+    @FXML public void handleSaveProfile(ActionEvent e) {
+        String fn = fieldFirstName.getText().trim();
+        String ln = fieldLastName.getText().trim();
+        if (fn.isEmpty() || ln.isEmpty()) {
+            showAlert("Erreur", "Le prénom et le nom sont obligatoires.");
+            return;
+        }
+        String fullName = fn + " " + ln;
+        profileFullName.setText(fullName);
+        lblGreeting.setText("Bonjour, " + fn + " !");
+        showAlert("Profil mis à jour", "Vos informations ont été enregistrées avec succès ✅");
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    //  NOTIFICATIONS & PREMIUM
+    // ═══════════════════════════════════════════════════════════════════
+
+    @FXML public void handleNotif(ActionEvent e) {
+        showAlert("Notifications", "🔔 Vous avez 3 nouvelles notifications.");
+    }
+
+    @FXML public void handlePremium(ActionEvent e) {
+        showAlert("Premium", "🌟 Passez Premium pour 9,99 € / mois et accédez à plus de 500 cours !");
+    }
+
+    @FXML public void handleLogout(ActionEvent e) {
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Déconnexion");
+        confirm.setHeaderText("Voulez-vous vous déconnecter ?");
+        confirm.showAndWait().ifPresent(r -> {
+            if (r == ButtonType.OK) System.exit(0);
+        });
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    //  VUE RELAXATION — HANDLERS
+    // ═══════════════════════════════════════════════════════════════════
+
+    @FXML
+    public void handleConsulterMedecin(ActionEvent e) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ajouteetudiant.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Ajouter Étudiant - Consultation Médecin");
+            stage.setScene(new Scene(root));
+            stage.setResizable(false);
+            stage.show();
+        } catch (java.io.IOException ex) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Erreur");
+            alert.setHeaderText("Impossible d'ouvrir le formulaire");
+            alert.setContentText(ex.getMessage());
+            alert.showAndWait();
         }
     }
 
-    // === Inner Classes ===
-
-    private static class Course {
-        String emoji, name, author, tag;
-        int progress;
-
-        Course(String emoji, String name, String author, int progress, String tag) {
-            this.emoji = emoji;
-            this.name = name;
-            this.author = author;
-            this.progress = progress;
-            this.tag = tag;
+    @FXML
+    public void handleCalculerScore(ActionEvent e) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/AjouterStressSurveyEtudiant.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Calculer mon score - Stress Survey");
+            stage.setScene(new Scene(root));
+            stage.setResizable(false);
+            stage.show();
+        } catch (java.io.IOException ex) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Erreur");
+            alert.setHeaderText("Impossible d'ouvrir le formulaire");
+            alert.setContentText(ex.getMessage());
+            alert.showAndWait();
         }
     }
 
-    private static class Message {
-        String avatar, sender, content, time;
+    // ═══════════════════════════════════════════════════════════════════
+    //  UTILITAIRE
+    // ═══════════════════════════════════════════════════════════════════
 
-        Message(String avatar, String sender, String content, String time) {
-            this.avatar = avatar;
-            this.sender = sender;
-            this.content = content;
-            this.time = time;
-        }
+    private void showAlert(String title, String message) {
+        Alert a = new Alert(Alert.AlertType.INFORMATION);
+        a.setTitle(title);
+        a.setHeaderText(null);
+        a.setContentText(message);
+        a.getDialogPane().setStyle("-fx-font-size: 13px;");
+        a.showAndWait();
     }
 }
