@@ -3,36 +3,70 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
-
 <?import javafx.scene.shape.Rectangle?>
-<AnchorPane prefHeight="620.0" prefWidth="580.0" style="-fx-background-color: #eef2eb;"
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.ProgressBar?>
+
+<AnchorPane prefHeight="620.0" prefWidth="580.0" style="-fx-background-color: #c8d8e8;"
             xmlns="http://javafx.com/javafx/21"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="edu.connexion3a36.Controller.ListeMedecinController">
 
     <children>
-        <AnchorPane prefHeight="620.0" prefWidth="580.0">
-            <children>
-                <!-- Top band -->
-                <Rectangle width="580" height="4" fill="#c8a84b"/>
+        <!-- Rectangle de fond avec dégradé bleu -->
+        <Rectangle height="620" style="-fx-fill: linear-gradient(to bottom right, #7BAFD4, #B0C9D8, #8A9BAA);" width="580" />
 
-                <!-- Table view -->
-                <TableView fx:id="tableView" prefHeight="620.0" prefWidth="580">
-                    <columns>
-                        <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
-                        <TableColumn fx:id="colNom" text="Nom" prefWidth="150"/>
-                        <TableColumn fx:id="colPrenom" text="Prénom" prefWidth="150"/>
-                        <TableColumn fx:id="colEmail" text="Email" prefWidth="150"/>
-                        <TableColumn fx:id="colTelephone" text="Téléphone" prefWidth="100"/>
-                        <TableColumn fx:id="colDisponibilite" text="Disponibilité" prefWidth="100"/>
-                    </columns>
-                </TableView>
+        <!-- Carte principale centrée -->
+        <VBox alignment="CENTER" layoutX="15" layoutY="15" prefWidth="550" prefHeight="590">
 
-                <!-- Footer with close button -->
-                <HBox layoutY="580" prefHeight="40" alignment="CENTER_RIGHT" spacing="10">
-                    <Button text="Fermer" onAction="#fermer" prefHeight="30" prefWidth="100"/>
-                </HBox>
-            </children>
-        </AnchorPane>
+            <VBox prefHeight="590" prefWidth="550"
+                  style="-fx-background-color: #F5F6FA; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 30, 0, 0, 8); -fx-padding: 0 0 0 0;">
+
+                <VBox spacing="0" VBox.vgrow="ALWAYS">
+
+                    <!-- Header avec titre -->
+                    <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-padding: 20 25 15 25;">
+                        <Rectangle height="30" width="5" style="-fx-fill: #2979FF; -fx-arc-width: 3; -fx-arc-height: 3;" />
+                        <Label text="Liste des Médecins"
+                               style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #1A1A2E; -fx-font-family: 'Segoe UI';"/>
+                    </HBox>
+
+                    <Separator style="-fx-background-color: #E0E0E0; -fx-padding: 0 0 0 0;" />
+
+                    <!-- Sous-titre -->
+                    <Label text="📋 Consultation — Service Médical"
+                           style="-fx-font-size: 12px; -fx-text-fill: #757575; -fx-font-family: 'Segoe UI'; -fx-padding: 15 25 0 25;"/>
+
+                    <!-- TableView moderne -->
+                    <TableView fx:id="tableView" prefHeight="480" prefWidth="550"
+                               style="-fx-background-color: white; -fx-background-radius: 12; -fx-border-color: #E0E0E0; -fx-border-radius: 12; -fx-border-width: 1; -fx-margin: 15 20 15 20;"
+                               VBox.vgrow="ALWAYS">
+                        <VBox.margin><Insets top="15" bottom="15" left="20" right="20"/></VBox.margin>
+                        <columns>
+                            <TableColumn fx:id="colId" text="ID" prefWidth="50"
+                                         style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #2979FF; -fx-alignment: CENTER;"/>
+                            <TableColumn fx:id="colNom" text="Nom" prefWidth="150"
+                                         style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #2979FF; -fx-alignment: CENTER_LEFT;"/>
+                            <TableColumn fx:id="colPrenom" text="Prénom" prefWidth="150"
+                                         style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #2979FF; -fx-alignment: CENTER_LEFT;"/>
+                            <TableColumn fx:id="colEmail" text="Email" prefWidth="150"
+                                         style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #2979FF; -fx-alignment: CENTER_LEFT;"/>
+                            <TableColumn fx:id="colTelephone" text="Téléphone" prefWidth="100"
+                                         style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #2979FF; -fx-alignment: CENTER;"/>
+                            <TableColumn fx:id="colDisponibilite" text="Disponibilité" prefWidth="100"
+                                         style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #2979FF; -fx-alignment: CENTER;"/>
+                        </columns>
+                    </TableView>
+
+                    <!-- Footer avec bouton Fermer -->
+                    <HBox alignment="CENTER_RIGHT" spacing="15" style="-fx-padding: 15 25 20 25;">
+                        <Button text="🔒 Fermer" onAction="#fermer" prefHeight="38" prefWidth="120"
+                                style="-fx-background-color: #F5F5F5; -fx-text-fill: #757575; -fx-font-size: 12px; -fx-font-weight: bold; -fx-font-family: 'Segoe UI'; -fx-background-radius: 10; -fx-cursor: hand;"/>
+                    </HBox>
+
+                </VBox>
+            </VBox>
+        </VBox>
     </children>
 </AnchorPane>

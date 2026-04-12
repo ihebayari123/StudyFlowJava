@@ -3,15 +3,73 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.geometry.Insets?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.connexion3a36.Controller.AjouterPersonneController">
-   <children>
-      <TextField fx:id="nomTF" layoutX="90.0" layoutY="67.0" prefHeight="30.0" prefWidth="227.0" />
-      <TextField fx:id="prenomTF" layoutX="90.0" layoutY="126.0" prefHeight="30.0" prefWidth="227.0" />
-      <Label layoutX="26.0" layoutY="74.0" text="nom" />
-      <Label layoutX="26.0" layoutY="132.0" text="prenom" />
-      <Button layoutX="265.0" layoutY="200.0" mnemonicParsing="false" onAction="#ajouter" text="ajouter" />
-      <Button layoutX="178.0" layoutY="200.0" mnemonicParsing="false" onAction="#afficher" text="afficher" />
-   </children>
+<AnchorPane prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #c8d8e8;"
+            xmlns="http://javafx.com/javafx/25"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="edu.connexion3a36.Controller.AjouterPersonneController">
+
+    <children>
+        <!-- Rectangle de fond avec dégradé bleu -->
+        <Rectangle height="400" style="-fx-fill: linear-gradient(to bottom right, #7BAFD4, #B0C9D8, #8A9BAA);" width="600" />
+
+        <!-- Carte principale centrée -->
+        <VBox alignment="CENTER" layoutX="50" layoutY="40" prefWidth="500" prefHeight="320">
+
+            <VBox prefHeight="320" prefWidth="500"
+                  style="-fx-background-color: #F5F6FA; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 30, 0, 0, 8); -fx-padding: 20 25 20 25;"
+                  spacing="15">
+
+                <!-- Header avec titre -->
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Rectangle height="24" width="4" style="-fx-fill: #2979FF; -fx-arc-width: 2; -fx-arc-height: 2;" />
+                    <Label text="Ajouter une Personne"
+                           style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1A1A2E; -fx-font-family: 'Segoe UI';"/>
+                </HBox>
+
+                <Separator style="-fx-background-color: #E0E0E0;" />
+
+                <Label text="📝 Informations personnelles"
+                       style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #2979FF; -fx-font-family: 'Segoe UI'; -fx-padding: 0 0 5 0;"/>
+
+                <!-- Formulaire -->
+                <VBox spacing="12" style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 15; -fx-border-color: #E0E0E0; -fx-border-radius: 12;">
+
+                    <!-- Champ Nom -->
+                    <VBox spacing="4">
+                        <Label text="Nom"
+                               style="-fx-text-fill: #1A1A2E; -fx-font-size: 13px; -fx-font-weight: bold; -fx-font-family: 'Segoe UI';"/>
+                        <TextField fx:id="nomTF" prefHeight="36" prefWidth="440"
+                                   style="-fx-background-color: #F8F9FA; -fx-background-radius: 8; -fx-border-color: #E0E0E0; -fx-border-radius: 8; -fx-padding: 8 12; -fx-font-family: 'Segoe UI'; -fx-font-size: 13px;"
+                                   promptText="Entrez le nom"/>
+                    </VBox>
+
+                    <!-- Champ Prénom -->
+                    <VBox spacing="4">
+                        <Label text="Prénom"
+                               style="-fx-text-fill: #1A1A2E; -fx-font-size: 13px; -fx-font-weight: bold; -fx-font-family: 'Segoe UI';"/>
+                        <TextField fx:id="prenomTF" prefHeight="36" prefWidth="440"
+                                   style="-fx-background-color: #F8F9FA; -fx-background-radius: 8; -fx-border-color: #E0E0E0; -fx-border-radius: 8; -fx-padding: 8 12; -fx-font-family: 'Segoe UI'; -fx-font-size: 13px;"
+                                   promptText="Entrez le prénom"/>
+                    </VBox>
+
+                </VBox>
+
+                <!-- Boutons d'action -->
+                <HBox spacing="15" alignment="CENTER_RIGHT">
+                    <Button text="📋 Afficher" onAction="#afficher"
+                            style="-fx-background-color: #F5F5F5; -fx-text-fill: #757575; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 8 25; -fx-cursor: hand; -fx-font-family: 'Segoe UI'; -fx-font-size: 12px;"/>
+                    <Button text="➕ Ajouter" onAction="#ajouter"
+                            style="-fx-background-color: #2979FF; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 8 25; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(41,121,255,0.25), 8, 0, 0, 2); -fx-font-family: 'Segoe UI'; -fx-font-size: 12px;"/>
+                </HBox>
+
+            </VBox>
+        </VBox>
+    </children>
 </AnchorPane>
