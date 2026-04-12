@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="edu.connexion3a36.Controller.UserResultsController"
+      spacing="0"
+      style="-fx-background-color:#F2F2F2; -fx-font-family:'Courier New';">
+
+    <!-- TOPBAR -->
+    <HBox alignment="CENTER_LEFT" spacing="0"
+          style="-fx-background-color:#FFFFFF; -fx-min-height:46;
+                 -fx-border-color:#1A1A1A; -fx-border-width:0 0 3 0;">
+        <HBox alignment="CENTER"
+              style="-fx-background-color:#C47A00; -fx-padding:0 16; -fx-min-height:46;
+                     -fx-border-color:#1A1A1A; -fx-border-width:0 3 0 0;">
+            <Label text="STUDYFLOW"
+                   style="-fx-font-family:'Courier New'; -fx-font-size:12; -fx-font-weight:bold;
+                          -fx-text-fill:#FFFFFF; -fx-letter-spacing:2;"/>
+        </HBox>
+        <Label text="// RESULTATS FINAUX"
+               style="-fx-font-family:'Courier New'; -fx-font-size:12; -fx-font-weight:bold;
+                      -fx-text-fill:#1A1A1A; -fx-padding:0 18; -fx-letter-spacing:1;"
+               HBox.hgrow="ALWAYS"/>
+        <HBox alignment="CENTER"
+              style="-fx-background-color:#0A5A8A; -fx-padding:0 14; -fx-min-height:46;
+                     -fx-border-color:#1A1A1A; -fx-border-width:0 0 0 3;">
+            <Label text="QUIZ TERMINE"
+                   style="-fx-font-family:'Courier New'; -fx-font-size:10; -fx-font-weight:bold;
+                          -fx-text-fill:#FFFFFF; -fx-letter-spacing:1;"/>
+        </HBox>
+    </HBox>
+
+    <!-- BODY -->
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                style="-fx-background:#F2F2F2; -fx-background-color:#F2F2F2; -fx-border-color:transparent;">
+        <VBox spacing="0" style="-fx-padding:20 26; -fx-max-width:660; -fx-background-color:#F2F2F2;">
+
+            <!-- SCORE HERO avec offset shadow -->
+            <StackPane style="-fx-padding:0 0 16 0;">
+                <VBox style="-fx-background-color:#C47A00;
+                             -fx-translate-x:7; -fx-translate-y:7; -fx-min-height:150;"/>
+                <VBox alignment="CENTER" spacing="8"
+                      style="-fx-background-color:#FFFFFF; -fx-border-color:#1A1A1A;
+                             -fx-border-width:4; -fx-padding:26 22;">
+                    <!-- Barre colorée top -->
+                    <HBox prefHeight="5" maxWidth="10000" style="-fx-background-color:#0A5A8A;"/>
+                    <!-- Score ring simulé -->
+                    <StackPane>
+                        <VBox alignment="CENTER"
+                              style="-fx-background-color:#F2F2F2; -fx-border-color:#1A1A1A;
+                                     -fx-border-width:4; -fx-min-width:120; -fx-min-height:120;
+                                     -fx-max-width:120; -fx-max-height:120;">
+                            <Label fx:id="lblScorePct" text="--"
+                                   style="-fx-font-family:'Courier New'; -fx-font-size:34;
+                                          -fx-font-weight:bold; -fx-text-fill:#C47A00;" alignment="CENTER"/>
+                            <Label text="SCORE"
+                                   style="-fx-font-family:'Courier New'; -fx-font-size:9;
+                                          -fx-font-weight:bold; -fx-text-fill:#888888; -fx-letter-spacing:2;"
+                                   alignment="CENTER"/>
+                        </VBox>
+                    </StackPane>
+                    <Label fx:id="lblResultTitle" text="QUIZ TERMINE"
+                           style="-fx-font-family:'Courier New'; -fx-font-size:17; -fx-font-weight:bold;
+                                  -fx-text-fill:#1A1A1A; -fx-letter-spacing:1;" alignment="CENTER"/>
+                    <Label fx:id="lblResultMsg" text="" wrapText="true"
+                           style="-fx-font-family:'Courier New'; -fx-font-size:11; -fx-text-fill:#888888;"
+                           alignment="CENTER"/>
+                </VBox>
+            </StackPane>
+
+            <!-- STATS -->
+            <HBox spacing="0" style="-fx-border-color:#1A1A1A; -fx-border-width:3;">
+                <VBox alignment="CENTER" spacing="3" HBox.hgrow="ALWAYS"
+                      style="-fx-background-color:#FFFFFF; -fx-border-color:#1A1A1A;
+                             -fx-border-width:0 2 0 0; -fx-padding:14;">
+                    <Label fx:id="lblTotal" text="--"
+                           style="-fx-font-family:'Courier New'; -fx-font-size:26;
+                                  -fx-font-weight:bold; -fx-text-fill:#0A5A8A;"/>
+                    <Label text="QUESTIONS"
+                           style="-fx-font-family:'Courier New'; -fx-font-size:8;
+                                  -fx-font-weight:bold; -fx-text-fill:#888888; -fx-letter-spacing:1;"/>
+                </VBox>
+                <VBox alignment="CENTER" spacing="3" HBox.hgrow="ALWAYS"
+                      style="-fx-background-color:#F5F5F5; -fx-border-color:#1A1A1A;
+                             -fx-border-width:0 2 0 0; -fx-padding:14;">
+                    <Label fx:id="lblCorrect" text="--"
+                           style="-fx-font-family:'Courier New'; -fx-font-size:26;
+                                  -fx-font-weight:bold; -fx-text-fill:#0A8A5A;"/>
+                    <Label text="CORRECTES"
+                           style="-fx-font-family:'Courier New'; -fx-font-size:8;
+                                  -fx-font-weight:bold; -fx-text-fill:#888888; -fx-letter-spacing:1;"/>
+                </VBox>
+                <VBox alignment="CENTER" spacing="3" HBox.hgrow="ALWAYS"
+                      style="-fx-background-color:#FFFFFF; -fx-border-color:#1A1A1A;
+                             -fx-border-width:0 2 0 0; -fx-padding:14;">
+                    <Label fx:id="lblWrong" text="--"
+                           style="-fx-font-family:'Courier New'; -fx-font-size:26;
+                                  -fx-font-weight:bold; -fx-text-fill:#C0222E;"/>
+                    <Label text="INCORRECTES"
+                           style="-fx-font-family:'Courier New'; -fx-font-size:8;
+                                  -fx-font-weight:bold; -fx-text-fill:#888888; -fx-letter-spacing:1;"/>
+                </VBox>
+                <VBox alignment="CENTER" spacing="3" HBox.hgrow="ALWAYS"
+                      style="-fx-background-color:#F5F5F5; -fx-padding:14;">
+                    <Label fx:id="lblPoints" text="--"
+                           style="-fx-font-family:'Courier New'; -fx-font-size:22;
+                                  -fx-font-weight:bold; -fx-text-fill:#C47A00;"/>
+                    <Label text="POINTS"
+                           style="-fx-font-family:'Courier New'; -fx-font-size:8;
+                                  -fx-font-weight:bold; -fx-text-fill:#888888; -fx-letter-spacing:1;"/>
+                </VBox>
+            </HBox>
+
+            <!-- RECAP LABEL -->
+            <HBox alignment="CENTER_LEFT"
+                  style="-fx-border-color:#1A1A1A; -fx-border-width:0 0 3 0; -fx-padding:14 0 8 0;">
+                <Label text="// RECAPITULATIF"
+                       style="-fx-font-family:'Courier New'; -fx-font-size:10; -fx-font-weight:bold;
+                              -fx-letter-spacing:2; -fx-text-fill:#888888;"/>
+            </HBox>
+
+            <!-- RECAP LIST -->
+            <VBox fx:id="reviewList"
+                  style="-fx-border-color:#1A1A1A; -fx-border-width:0 3 3 3;
+                         -fx-background-color:#FFFFFF; -fx-padding:0 16;"/>
+
+            <!-- BOUTONS -->
+            <HBox spacing="14" style="-fx-padding:16 0 0 0;">
+                <StackPane HBox.hgrow="ALWAYS">
+                    <VBox style="-fx-background-color:#888888; -fx-translate-x:5; -fx-translate-y:5;"/>
+                    <Button text="[X]  REJOUER" onAction="#rejouer" maxWidth="10000"
+                            style="-fx-font-family:'Courier New'; -fx-font-size:11; -fx-font-weight:bold;
+                                   -fx-letter-spacing:1; -fx-background-color:#FFFFFF;
+                                   -fx-text-fill:#C47A00; -fx-border-color:#C47A00; -fx-border-width:3;
+                                   -fx-background-radius:0; -fx-border-radius:0;
+                                   -fx-padding:12 0; -fx-cursor:hand;"/>
+                </StackPane>
+                <StackPane HBox.hgrow="ALWAYS">
+                    <VBox style="-fx-background-color:#005070; -fx-translate-x:5; -fx-translate-y:5;"/>
+                    <Button text="[~]  ACCUEIL" onAction="#retourHome" maxWidth="10000"
+                            style="-fx-font-family:'Courier New'; -fx-font-size:11; -fx-font-weight:bold;
+                                   -fx-letter-spacing:1; -fx-background-color:#0A5A8A;
+                                   -fx-text-fill:#FFFFFF; -fx-border-color:#1A1A1A; -fx-border-width:3;
+                                   -fx-background-radius:0; -fx-border-radius:0;
+                                   -fx-padding:12 0; -fx-cursor:hand;"/>
+                </StackPane>
+            </HBox>
+
+        </VBox>
+    </ScrollPane>
+</VBox>
