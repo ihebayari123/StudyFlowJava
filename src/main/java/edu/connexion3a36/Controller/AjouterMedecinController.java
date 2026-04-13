@@ -24,17 +24,17 @@ public class AjouterMedecinController {
     @FXML private Label drapeauLabel;
 
     private final MedecinService service = new MedecinService();
-    
+
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@gmail\\.com$");
     private static final Pattern PHONE_PATTERN = Pattern.compile("^\\+\\d{3}\\d{8}$");
-    
+
     private final Map<String, String> paysDrapeaux = new HashMap<>();
 
     @FXML
     public void initialize() {
         // Initialize combo box
         disponibiliteCB.getItems().addAll("disponible", "indisponible");
-        
+
         // Initialiser les codes pays et drapeaux
         paysDrapeaux.put("+212", "🇲🇦"); // Maroc
         paysDrapeaux.put("+337", "🇫🇷"); // France
@@ -42,21 +42,21 @@ public class AjouterMedecinController {
         paysDrapeaux.put("+346", "🇪🇸"); // Espagne
         paysDrapeaux.put("+447", "🇬🇧"); // Royaume Uni
         paysDrapeaux.put("+120", "🇺🇸"); // USA
-        
+
         // Convertir automatiquement nom en majuscule
         nomTF.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.equals(newValue.toUpperCase())) {
                 nomTF.setText(newValue.toUpperCase());
             }
         });
-        
+
         // Convertir automatiquement prenom en majuscule
         prenomTF.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.equals(newValue.toUpperCase())) {
                 prenomTF.setText(newValue.toUpperCase());
             }
         });
-        
+
         // Detection pays et affichage drapeau pour telephone
         telephoneTF.textProperty().addListener((observable, oldValue, newValue) -> {
             drapeauLabel.setText("");
@@ -75,19 +75,19 @@ public class AjouterMedecinController {
         String prenom = prenomTF.getText().trim();
         String email = emailTF.getText().trim();
         String telephone = telephoneTF.getText().trim();
-        
+
         if (nom.isEmpty() || prenom.isEmpty() || email.isEmpty() || telephone.isEmpty()) {
             showAlert(Alert.AlertType.WARNING, "Champ manquant", "Veuillez remplir tous les champs !");
             return;
         }
-        
+
         // Validation email
         if (!EMAIL_PATTERN.matcher(email).matches()) {
             showAlert(Alert.AlertType.WARNING, "Email invalide", "L'email doit se terminer par @gmail.com !");
             emailTF.requestFocus();
             return;
         }
-        
+
         // Validation telephone
         if (!PHONE_PATTERN.matcher(telephone).matches()) {
             showAlert(Alert.AlertType.WARNING, "Téléphone invalide", "Le numéro doit être au format +XXX followed by 8 chiffres !");
