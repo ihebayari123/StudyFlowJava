@@ -24,6 +24,8 @@ public class DashboardController {
     @FXML private HBox chapitresItem;
     @FXML private HBox quizItem;
     @FXML private HBox exercicesItem;
+    @FXML private HBox categorieItem;
+    @FXML private HBox produitItem;
     @FXML private HBox progressionItem;
     @FXML private HBox administrationItem;
     @FXML private HBox settingsItem;
@@ -44,8 +46,10 @@ public class DashboardController {
         chapitresItem.setOnMouseClicked(event -> loadView("chapitres"));
         quizItem.setOnMouseClicked(event -> loadView("QuizView"));
         exercicesItem.setOnMouseClicked(event -> loadView("exercices"));
-        progressionItem.setOnMouseClicked(event -> loadView("admin"));
-        administrationItem.setOnMouseClicked(event -> loadView("settings"));
+        categorieItem.setOnMouseClicked(event -> loadView("categorieMenu"));
+        produitItem.setOnMouseClicked(event -> loadView("produitMenu"));
+        progressionItem.setOnMouseClicked(event -> loadView("progression"));
+        administrationItem.setOnMouseClicked(event -> loadView("admin"));
         settingsItem.setOnMouseClicked(event -> loadView("settings"));
         utilisateursItem.setOnMouseClicked(event -> loadView("gestionUtilisateurs"));
 
@@ -54,6 +58,8 @@ public class DashboardController {
         addHoverEffect(chapitresItem);
         addHoverEffect(quizItem);
         addHoverEffect(exercicesItem);
+        addHoverEffect(categorieItem);
+        addHoverEffect(produitItem);
         addHoverEffect(progressionItem);
         addHoverEffect(administrationItem);
         addHoverEffect(settingsItem);
@@ -111,6 +117,12 @@ public class DashboardController {
                     LOGGER.log(Level.WARNING, "Erreur injection", e);
                 }
             }
+            if (controller instanceof CategorieMenuController) {
+                ((CategorieMenuController) controller).setDashboardController(this);
+            }
+            if (controller instanceof ProduitMenuController) {
+                ((ProduitMenuController) controller).setDashboardController(this);
+            }
 
             contentArea.getChildren().clear();
             contentArea.getChildren().add(view);
@@ -137,7 +149,8 @@ public class DashboardController {
 
     private void resetActiveStyles() {
         HBox[] items = {homeItem, coursItem, chapitresItem, quizItem, exercicesItem,
-                progressionItem, administrationItem, settingsItem, utilisateursItem};
+                categorieItem, produitItem, progressionItem, administrationItem,
+                settingsItem, utilisateursItem};
         for (HBox item : items) {
             if (item != null) {
                 item.setStyle("-fx-background-color: transparent; -fx-background-radius: 8; -fx-padding: 0 12 0 12;");
@@ -145,7 +158,7 @@ public class DashboardController {
                     if (node instanceof Label) {
                         Label label = (Label) node;
                         String text = label.getText();
-                        if (text != null && !text.matches("🏠|📚|📖|❓|✏️|📊|🏛️|⚙️|👥")) {
+                        if (text != null && !text.matches("🏠|📚|📖|❓|✏️|🏷️|🛒|📊|🏛️|⚙️|👥")) {
                             label.setStyle("-fx-font-size: 13; -fx-text-fill: #757575; -fx-font-weight: normal;");
                         }
                     }
@@ -162,6 +175,8 @@ public class DashboardController {
             case "chapitres":           activeItem = chapitresItem; break;
             case "quiz":                activeItem = quizItem; break;
             case "exercices":           activeItem = exercicesItem; break;
+            case "categorieMenu":       activeItem = categorieItem; break;
+            case "produitMenu":         activeItem = produitItem; break;
             case "progression":         activeItem = progressionItem; break;
             case "settings":            activeItem = settingsItem; break;
             case "gestionUtilisateurs": activeItem = utilisateursItem; break;
@@ -174,7 +189,7 @@ public class DashboardController {
                 if (node instanceof Label) {
                     Label label = (Label) node;
                     String text = label.getText();
-                    if (text != null && !text.matches("🏠|📚|📖|❓|✏️|📊|🏛️|⚙️|👥")) {
+                    if (text != null && !text.matches("🏠|📚|📖|❓|✏️|🏷️|🛒|📊|🏛️|⚙️|👥")) {
                         label.setStyle("-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #2979FF;");
                     }
                 }

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="16" style="-fx-padding: 32; -fx-background-color: #F5F6FA;"
+      prefWidth="420"
+      xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="edu.connexion3a36.Controller.ModifierProduitController">
+
+    <Label style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #1A1A2E;" text="✏️ Modifier le Produit" />
+
+    <VBox spacing="6">
+        <Label style="-fx-font-size: 13; -fx-text-fill: #757575;" text="Nom" />
+        <TextField fx:id="nomField" style="-fx-background-color: #FFFFFF; -fx-background-radius: 8; -fx-padding: 10;" />
+    </VBox>
+
+    <VBox spacing="6">
+        <Label style="-fx-font-size: 13; -fx-text-fill: #757575;" text="Description" />
+        <TextArea fx:id="descField" prefRowCount="2"
+                  style="-fx-background-color: #FFFFFF; -fx-background-radius: 8; -fx-padding: 10;" />
+    </VBox>
+
+    <VBox spacing="6">
+        <Label style="-fx-font-size: 13; -fx-text-fill: #757575;" text="Prix (DT)" />
+        <TextField fx:id="prixField" style="-fx-background-color: #FFFFFF; -fx-background-radius: 8; -fx-padding: 10;" />
+    </VBox>
+
+    <VBox spacing="6">
+        <Label style="-fx-font-size: 13; -fx-text-fill: #757575;" text="Image" />
+        <TextField fx:id="imageField" style="-fx-background-color: #FFFFFF; -fx-background-radius: 8; -fx-padding: 10;" />
+    </VBox>
+
+    <VBox spacing="6">
+        <Label style="-fx-font-size: 13; -fx-text-fill: #757575;" text="Type Catégorie" />
+        <ComboBox fx:id="typeCategorieCombo" maxWidth="Infinity"
+                  style="-fx-background-color: #FFFFFF; -fx-background-radius: 8;" />
+    </VBox>
+
+    <VBox spacing="6">
+        <Label style="-fx-font-size: 13; -fx-text-fill: #757575;" text="Utilisateur" />
+        <ComboBox fx:id="userCombo" maxWidth="Infinity"
+                  style="-fx-background-color: #FFFFFF; -fx-background-radius: 8;" />
+    </VBox>
+
+    <HBox spacing="12">
+        <Button fx:id="saveBtn" text="💾 Enregistrer" maxWidth="Infinity" HBox.hgrow="ALWAYS"
+                style="-fx-background-color: #2979FF; -fx-text-fill: white; -fx-background-radius: 8;
+                       -fx-padding: 10; -fx-font-weight: bold; -fx-cursor: hand;" />
+        <Button fx:id="cancelBtn" text="Annuler" maxWidth="Infinity" HBox.hgrow="ALWAYS"
+                style="-fx-background-color: #E0E0E0; -fx-text-fill: #757575; -fx-background-radius: 8;
+                       -fx-padding: 10; -fx-cursor: hand;" />
+    </HBox>
+
+    <Label fx:id="statusLabel" style="-fx-font-size: 13;" text="" />
+
+</VBox>
