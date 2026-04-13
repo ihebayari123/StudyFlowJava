@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+
+<AnchorPane prefHeight="820.0" prefWidth="980.0" style="-fx-background-color: #c8d8e8;"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="edu.connexion3a36.Controller.ListeMedecinController">
+
+    <children>
+        <!-- Rectangle de fond avec dégradé bleu -->
+        <Rectangle height="820" style="-fx-fill: linear-gradient(to bottom right, #7BAFD4, #B0C9D8, #8A9BAA);" width="980" />
+
+        <!-- Carte principale centrée -->
+        <VBox alignment="CENTER" layoutX="15" layoutY="15" prefWidth="950" prefHeight="790">
+
+            <VBox prefHeight="790" prefWidth="950"
+                  style="-fx-background-color: #F5F6FA; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 30, 0, 0, 8); -fx-padding: 0 0 0 0;">
+
+                <VBox spacing="0" VBox.vgrow="ALWAYS">
+
+                    <!-- Header avec titre -->
+                    <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-padding: 20 25 15 25;">
+                        <Rectangle height="30" width="5" style="-fx-fill: #2979FF; -fx-arc-width: 3; -fx-arc-height: 3;" />
+                        <Label text="Liste des Médecins"
+                               style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #1A1A2E; -fx-font-family: 'Segoe UI';"/>
+                    </HBox>
+
+                    <Separator style="-fx-background-color: #E0E0E0; -fx-padding: 0 0 0 0;" />
+
+                    <!-- Barre d'outils de recherche et filtrage -->
+                    <VBox spacing="10" style="-fx-padding: 15 25 0 25;">
+
+                        <!-- Ligne 1 : Recherche et filtres -->
+                        <HBox spacing="15" alignment="CENTER_LEFT">
+                            <!-- Champ de recherche -->
+                            <HBox spacing="8" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                                <Label text="🔍" style="-fx-font-size: 14px;"/>
+                                <TextField fx:id="rechercheTF" promptText="Rechercher par nom, prénom, email ou téléphone..."
+                                           prefHeight="35" HBox.hgrow="ALWAYS"
+                                           style="-fx-background-color: white; -fx-background-radius: 8; -fx-border-color: #E0E0E0; -fx-border-radius: 8; -fx-padding: 8 12; -fx-font-size: 13px;"/>
+                            </HBox>
+
+                            <!-- Filtre disponibilité -->
+                            <HBox spacing="8" alignment="CENTER_LEFT">
+                                <Label text="📊" style="-fx-font-size: 14px;"/>
+                                <ComboBox fx:id="filtreDisponibiliteCB" prefWidth="130" prefHeight="35"
+                                          style="-fx-background-color: white; -fx-background-radius: 8; -fx-border-color: #E0E0E0; -fx-border-radius: 8; -fx-font-size: 13px;"/>
+                            </HBox>
+                        </HBox>
+
+                        <!-- Ligne 2 : Options de tri et actions -->
+                        <HBox spacing="15" alignment="CENTER_LEFT">
+                            <!-- Tri par -->
+                            <HBox spacing="8" alignment="CENTER_LEFT">
+                                <Label text="📌 Trier par :" style="-fx-font-size: 12px; -fx-text-fill: #757575;"/>
+                                <ComboBox fx:id="triCB" prefWidth="120" prefHeight="35"
+                                          style="-fx-background-color: white; -fx-background-radius: 8; -fx-border-color: #E0E0E0; -fx-border-radius: 8; -fx-font-size: 13px;"/>
+                            </HBox>
+
+                            <!-- Ordre -->
+                            <HBox spacing="8" alignment="CENTER_LEFT">
+                                <Label text="📈 Ordre :" style="-fx-font-size: 12px; -fx-text-fill: #757575;"/>
+                                <ComboBox fx:id="ordreCB" prefWidth="120" prefHeight="35"
+                                          style="-fx-background-color: white; -fx-background-radius: 8; -fx-border-color: #E0E0E0; -fx-border-radius: 8; -fx-font-size: 13px;"/>
+                            </HBox>
+
+                            <!-- Boutons d'action -->
+                            <HBox spacing="10" alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
+                                <Button text="🔄 Réinitialiser" onAction="#resetFiltres" prefHeight="35" prefWidth="120"
+                                        style="-fx-background-color: #FF9800; -fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold; -fx-font-family: 'Segoe UI'; -fx-background-radius: 8; -fx-cursor: hand;"/>
+                                <Button text="⚡ Actualiser" onAction="#actualiser" prefHeight="35" prefWidth="100"
+                                        style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold; -fx-font-family: 'Segoe UI'; -fx-background-radius: 8; -fx-cursor: hand;"/>
+                            </HBox>
+                        </HBox>
+
+                        <!-- Label des résultats -->
+                        <HBox alignment="CENTER_RIGHT">
+                            <Label fx:id="resultatsLabel" text="Affichage de 0 médecin(s) sur 0"
+                                   style="-fx-font-size: 11px; -fx-text-fill: #757575; -fx-font-style: italic;"/>
+                        </HBox>
+                    </VBox>
+
+                    <!-- Sous-titre -->
+                    <Label text="📋 Consultation — Service Médical"
+                           style="-fx-font-size: 12px; -fx-text-fill: #757575; -fx-font-family: 'Segoe UI'; -fx-padding: 10 25 0 25;"/>
+
+                    <!-- TableView moderne -->
+                    <TableView fx:id="tableView" prefHeight="480" prefWidth="950"
+                               style="-fx-background-color: white; -fx-background-radius: 12; -fx-border-color: #E0E0E0; -fx-border-radius: 12; -fx-border-width: 1;"
+                               VBox.vgrow="ALWAYS">
+                        <VBox.margin><Insets top="15" bottom="15" left="20" right="20"/></VBox.margin>
+                        <columns>
+                            <TableColumn fx:id="colId" text="ID" prefWidth="60"
+                                         style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #2979FF; -fx-alignment: CENTER;"/>
+                            <TableColumn fx:id="colNom" text="Nom" prefWidth="150"
+                                         style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #2979FF; -fx-alignment: CENTER_LEFT;"/>
+                            <TableColumn fx:id="colPrenom" text="Prénom" prefWidth="150"
+                                         style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #2979FF; -fx-alignment: CENTER_LEFT;"/>
+                            <TableColumn fx:id="colEmail" text="Email" prefWidth="200"
+                                         style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #2979FF; -fx-alignment: CENTER_LEFT;"/>
+                            <TableColumn fx:id="colTelephone" text="Téléphone" prefWidth="130"
+                                         style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #2979FF; -fx-alignment: CENTER;"/>
+                            <TableColumn fx:id="colDisponibilite" text="Disponibilité" prefWidth="120"
+                                         style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #2979FF; -fx-alignment: CENTER;"/>
+                        </columns>
+                    </TableView>
+
+                    <!-- Footer avec bouton Fermer -->
+                    <HBox alignment="CENTER_RIGHT" spacing="15" style="-fx-padding: 15 25 20 25;">
+                        <Button text="🔒 Fermer" onAction="#fermer" prefHeight="38" prefWidth="120"
+                                style="-fx-background-color: #F5F5F5; -fx-text-fill: #757575; -fx-font-size: 12px; -fx-font-weight: bold; -fx-font-family: 'Segoe UI'; -fx-background-radius: 10; -fx-cursor: hand;"/>
+                    </HBox>
+
+                </VBox>
+            </VBox>
+        </VBox>
+    </children>
+</AnchorPane>

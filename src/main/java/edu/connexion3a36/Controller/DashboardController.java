@@ -1,5 +1,6 @@
 package edu.connexion3a36.Controller;
 
+import edu.connexion3a36.entities.Utilisateur;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -16,20 +17,25 @@ public class DashboardController {
 
     private static final Logger LOGGER = Logger.getLogger(DashboardController.class.getName());
 
+    private Utilisateur utilisateurConnecte;
+
     @FXML private HBox homeItem;
     @FXML private HBox coursItem;
     @FXML private HBox chapitresItem;
     @FXML private HBox quizItem;
     @FXML private HBox exercicesItem;
     @FXML private HBox categorieItem;
-    @FXML private HBox produitItem;       // ✅ ajouté
+    @FXML private HBox produitItem;
     @FXML private HBox progressionItem;
+    @FXML private HBox administrationItem;
     @FXML private HBox settingsItem;
+    @FXML private HBox utilisateursItem;
 
     @FXML private StackPane contentArea;
 
     @FXML
     public void initialize() {
+        System.out.println("DashboardController initialisé");
         setupNavigation();
         loadView("cours");
     }
@@ -38,12 +44,14 @@ public class DashboardController {
         homeItem.setOnMouseClicked(event -> loadView("dashboard"));
         coursItem.setOnMouseClicked(event -> loadView("cours"));
         chapitresItem.setOnMouseClicked(event -> loadView("chapitres"));
-        quizItem.setOnMouseClicked(event -> loadView("quiz"));
+        quizItem.setOnMouseClicked(event -> loadView("QuizView"));
         exercicesItem.setOnMouseClicked(event -> loadView("exercices"));
         categorieItem.setOnMouseClicked(event -> loadView("categorieMenu"));
-        produitItem.setOnMouseClicked(event -> loadView("produitMenu")); // ✅ ajouté
+        produitItem.setOnMouseClicked(event -> loadView("produitMenu"));
         progressionItem.setOnMouseClicked(event -> loadView("progression"));
+        administrationItem.setOnMouseClicked(event -> loadView("admin"));
         settingsItem.setOnMouseClicked(event -> loadView("settings"));
+        utilisateursItem.setOnMouseClicked(event -> loadView("gestionUtilisateurs"));
 
         addHoverEffect(homeItem);
         addHoverEffect(coursItem);
@@ -51,9 +59,11 @@ public class DashboardController {
         addHoverEffect(quizItem);
         addHoverEffect(exercicesItem);
         addHoverEffect(categorieItem);
-        addHoverEffect(produitItem);       // ✅ ajouté
+        addHoverEffect(produitItem);
         addHoverEffect(progressionItem);
+        addHoverEffect(administrationItem);
         addHoverEffect(settingsItem);
+        addHoverEffect(utilisateursItem);
     }
 
     private void loadView(String viewName) {
@@ -61,31 +71,56 @@ public class DashboardController {
             resetActiveStyles();
             setActiveStyle(viewName);
 
+            // Avoid reloading studyflow.fxml (main layout)
             if (viewName.equals("studyflow")) {
                 System.out.println("Ignorer studyflow.fxml");
                 return;
             }
 
             String resourcePath = "/" + viewName + ".fxml";
+            System.out.println("Tentative de chargement: " + resourcePath);
+
             URL resourceUrl = getClass().getResource(resourcePath);
 
             if (resourceUrl == null) {
-                System.err.println("Fichier non trouvé: " + resourcePath);
+                System.err.println("❌ Fichier non trouvé: " + resourcePath);
+                System.err.println("📁 Vérifiez que ces fichiers existent dans src/main/resources/ :");
+                System.err.println("   - cours.fxml");
+                System.err.println("   - add_course.fxml");
+                System.err.println("   - chapitres.fxml");
+                System.err.println("   - quiz.fxml");
+                System.err.println("   - exercices.fxml");
+                System.err.println("   - progression.fxml");
+                System.err.println("   - settings.fxml");
+                System.err.println("   - gestionUtilisateurs.fxml");
                 showErrorView(viewName);
                 return;
             }
 
+            System.out.println("✅ Fichier trouvé: " + resourceUrl);
             FXMLLoader loader = new FXMLLoader(resourceUrl);
             Node view = loader.load();
+            System.out.println("✅ Vue chargée avec succès: " + viewName);
 
+            // Pass dashboard reference to controller via reflection
             Object controller = loader.getController();
-            if (controller instanceof CoursController) {
-                ((CoursController) controller).setDashboardController(this);
+            if (controller != null) {
+                System.out.println("Contrôleur chargé: " + controller.getClass().getSimpleName());
+                try {
+                    java.lang.reflect.Method method = controller.getClass()
+                            .getMethod("setDashboardController", DashboardController.class);
+                    method.invoke(controller, this);
+                    System.out.println("✅ DashboardController injecté");
+                } catch (NoSuchMethodException e) {
+                    System.out.println("ℹ️ Pas de méthode setDashboardController");
+                } catch (Exception e) {
+                    LOGGER.log(Level.WARNING, "Erreur injection", e);
+                }
             }
             if (controller instanceof CategorieMenuController) {
                 ((CategorieMenuController) controller).setDashboardController(this);
             }
-            if (controller instanceof ProduitMenuController) { // ✅ ajouté
+            if (controller instanceof ProduitMenuController) {
                 ((ProduitMenuController) controller).setDashboardController(this);
             }
 
@@ -93,23 +128,29 @@ public class DashboardController {
             contentArea.getChildren().add(view);
 
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Erreur chargement: " + viewName, e);
+            LOGGER.log(Level.SEVERE, "❌ Erreur chargement: " + viewName, e);
             showErrorView(viewName);
         }
     }
 
     private void showErrorView(String viewName) {
         VBox errorBox = new VBox();
-        errorBox.setStyle("-fx-alignment: center; -fx-padding: 40;");
-        Label errorLabel = new Label("⚠️ Vue non trouvée: " + viewName + ".fxml\n\nVérifiez que le fichier existe dans resources/");
+        errorBox.setStyle("-fx-alignment: center; -fx-padding: 40; -fx-spacing: 10;");
+        Label errorLabel = new Label("⚠️ Vue non trouvée: " + viewName + ".fxml");
+        Label infoLabel1 = new Label("Le fichier doit être dans: src/main/resources/");
+        Label infoLabel2 = new Label("Vérifiez que le nom du fichier est correct (cours.fxml, chapitres.fxml, etc.)");
+        infoLabel1.setStyle("-fx-text-fill: #757575; -fx-font-size: 12;");
+        infoLabel2.setStyle("-fx-text-fill: #757575; -fx-font-size: 12;");
         errorLabel.setStyle("-fx-text-fill: #F44336; -fx-font-size: 14;");
-        errorBox.getChildren().add(errorLabel);
+        errorBox.getChildren().addAll(errorLabel, infoLabel1, infoLabel2);
         contentArea.getChildren().clear();
         contentArea.getChildren().add(errorBox);
     }
 
     private void resetActiveStyles() {
-        HBox[] items = {homeItem, coursItem, chapitresItem, quizItem, exercicesItem, categorieItem, produitItem, progressionItem, settingsItem}; // ✅ ajouté
+        HBox[] items = {homeItem, coursItem, chapitresItem, quizItem, exercicesItem,
+                categorieItem, produitItem, progressionItem, administrationItem,
+                settingsItem, utilisateursItem};
         for (HBox item : items) {
             if (item != null) {
                 item.setStyle("-fx-background-color: transparent; -fx-background-radius: 8; -fx-padding: 0 12 0 12;");
@@ -117,7 +158,7 @@ public class DashboardController {
                     if (node instanceof Label) {
                         Label label = (Label) node;
                         String text = label.getText();
-                        if (text != null && !text.matches("🏠|📚|📖|❓|✏️|🏷️|🛒|📊|⚙️")) { // ✅ ajouté 🛒
+                        if (text != null && !text.matches("🏠|📚|📖|❓|✏️|🏷️|🛒|📊|🏛️|⚙️|👥")) {
                             label.setStyle("-fx-font-size: 13; -fx-text-fill: #757575; -fx-font-weight: normal;");
                         }
                     }
@@ -129,15 +170,16 @@ public class DashboardController {
     private void setActiveStyle(String viewName) {
         HBox activeItem = null;
         switch (viewName) {
-            case "dashboard": activeItem = homeItem; break;
-            case "cours": activeItem = coursItem; break;
-            case "chapitres": activeItem = chapitresItem; break;
-            case "quiz": activeItem = quizItem; break;
-            case "exercices": activeItem = exercicesItem; break;
-            case "categorieMenu": activeItem = categorieItem; break;
-            case "produitMenu": activeItem = produitItem; break; // ✅ ajouté
-            case "progression": activeItem = progressionItem; break;
-            case "settings": activeItem = settingsItem; break;
+            case "dashboard":           activeItem = homeItem; break;
+            case "cours":               activeItem = coursItem; break;
+            case "chapitres":           activeItem = chapitresItem; break;
+            case "quiz":                activeItem = quizItem; break;
+            case "exercices":           activeItem = exercicesItem; break;
+            case "categorieMenu":       activeItem = categorieItem; break;
+            case "produitMenu":         activeItem = produitItem; break;
+            case "progression":         activeItem = progressionItem; break;
+            case "settings":            activeItem = settingsItem; break;
+            case "gestionUtilisateurs": activeItem = utilisateursItem; break;
             default: break;
         }
 
@@ -147,7 +189,7 @@ public class DashboardController {
                 if (node instanceof Label) {
                     Label label = (Label) node;
                     String text = label.getText();
-                    if (text != null && !text.matches("🏠|📚|📖|❓|✏️|🏷️|🛒|📊|⚙️")) { // ✅ ajouté 🛒
+                    if (text != null && !text.matches("🏠|📚|📖|❓|✏️|🏷️|🛒|📊|🏛️|⚙️|👥")) {
                         label.setStyle("-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #2979FF;");
                     }
                 }
@@ -171,5 +213,10 @@ public class DashboardController {
 
     public void navigateTo(String viewName) {
         loadView(viewName);
+    }
+
+    public void setUtilisateurConnecte(Utilisateur u) {
+        this.utilisateurConnecte = u;
+        System.out.println("Bienvenue " + u.getNom() + " !");
     }
 }

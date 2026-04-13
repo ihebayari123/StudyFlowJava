@@ -7,69 +7,51 @@ import edu.connexion3a36.services.PersonneService;
 import edu.connexion3a36.services.ProduitService;
 import edu.connexion3a36.services.TypeCategorieService;
 import edu.connexion3a36.tools.MyConnection;
-
 import java.sql.Connection;
 
 public class MainClass {
     public static void main(String[] args) {
-
-
-        Connection cnx = MyConnection.getInstance().getCnx();
-        if (cnx != null) {
-            System.out.println("Connexion réussie !");
-        } else {
-            System.out.println("Connexion échouée !");
-        }
-
-        TypeCategorie typeCategorie = new TypeCategorie("science" , "3ouloum");
+        // Test TypeCategorie
+        TypeCategorie typeCategorie = new TypeCategorie("science", "3ouloum");
         TypeCategorieService typeCategorieService = new TypeCategorieService();
         try {
             typeCategorieService.addCat(typeCategorie);
             System.out.println(typeCategorieService.getData());
-            MyConnection mc1 = MyConnection.getInstance();
-            MyConnection mc2 = MyConnection.getInstance();
-            System.out.println(mc1.hashCode()+" - "+mc2.hashCode());
-
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
 
-
-        Produit produit = new Produit("chatgpt" , "outils fait des resume" , 70 , "https://www.the-intl.com/post/chatgbt" , 1 , 1);
-        ProduitService produitService = new ProduitService( );
+        // Test Produit
+        Produit produit = new Produit("chatgpt", "outils fait des resume", 70, "https://www.the-intl.com/post/chatgbt", 1, 1);
+        ProduitService produitService = new ProduitService();
         try {
             produitService.addP(produit);
             System.out.println(produitService.getData());
-            MyConnection mc1 = MyConnection.getInstance();
-            MyConnection mc2 = MyConnection.getInstance();
-            System.out.println(mc1.hashCode()+" - "+mc2.hashCode());
-
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
 
-
-
-
-
-
-
-
-
-
-        //MyConnection mc = new MyConnection();
+        // Test Personne
         Personne p = new Personne("ali", "ali");
         PersonneService ps = new PersonneService();
         try {
-            //ps.addEntity2(p);
+            MyConnection.getInstance();
+            Connection cnx = MyConnection.getCnx();
+            if (cnx != null && !cnx.isClosed()) {
+                System.out.println("✅ Connexion à la base studyflow réussie !");
+            } else {
+                System.out.println("❌ Échec de la connexion à la base studyflow !");
+            }
+
             System.out.println(ps.getData());
+
+            // Vérifier le singleton
             MyConnection mc1 = MyConnection.getInstance();
             MyConnection mc2 = MyConnection.getInstance();
-            System.out.println(mc1.hashCode()+" - "+mc2.hashCode());
+            System.out.println(mc1.hashCode() + " - " + mc2.hashCode());
 
-        }
-        catch (Exception e) {
-            System.out.println(e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Erreur : " + e.getMessage());
         }
     }
 }

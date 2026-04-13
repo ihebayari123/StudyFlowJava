@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<StackPane xmlns="http://javafx.com/javafx/17"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="edu.connexion3a36.Controller.MainController"
+           style="-fx-background-color: #c8d8e8;">
+
+    <!-- Background image placeholder -->
+    <Rectangle width="1280" height="720" style="-fx-fill: linear-gradient(to bottom right, #7BAFD4, #B0C9D8, #8A9BAA);"/>
+
+    <!-- Main App Window Card -->
+    <HBox alignment="CENTER" style="-fx-background-color: transparent;">
+
+        <VBox prefWidth="1100" prefHeight="620"
+              style="-fx-background-color: #F5F6FA; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 30, 0, 0, 8);">
+
+            <HBox VBox.vgrow="ALWAYS">
+
+                <!-- ======================== SIDEBAR ======================== -->
+                <VBox prefWidth="160" spacing="0"
+                      style="-fx-background-color: #FFFFFF; -fx-background-radius: 16 0 0 16; -fx-padding: 24 0 24 0;">
+
+                    <!-- Logo & App Name -->
+                    <HBox alignment="CENTER_LEFT" style="-fx-padding: 0 16 20 20;">
+                        <Circle radius="16" style="-fx-fill: #2979FF;"/>
+                        <Label text="Mr.Doc" style="-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: #1A1A2E; -fx-padding: 0 0 0 8;"/>
+                    </HBox>
+
+                    <!-- Storage Usage -->
+                    <VBox style="-fx-padding: 0 16 24 20; -fx-spacing: 4;">
+                        <Label text="Used" style="-fx-font-size: 11; -fx-text-fill: #9E9E9E;"/>
+                        <HBox spacing="4" alignment="CENTER_LEFT">
+                            <Label text="45.5 GB" style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #2979FF;"/>
+                            <Label text="/ 50 GB" style="-fx-font-size: 11; -fx-text-fill: #9E9E9E;"/>
+                        </HBox>
+                        <ProgressBar progress="0.91" prefWidth="120" prefHeight="6"
+                                     style="-fx-accent: #2979FF; -fx-background-color: #E0E0E0; -fx-background-radius: 4; -fx-control-inner-background: #E0E0E0;"/>
+                    </VBox>
+
+                    <Separator style="-fx-background-color: #F0F0F0;"/>
+
+                    <!-- Navigation Items -->
+                    <VBox spacing="2" style="-fx-padding: 12 8 0 8;">
+
+                        <!-- Home (Active) -->
+                        <HBox alignment="CENTER_LEFT" spacing="10" prefHeight="40"
+                              style="-fx-background-color: #E8F0FE; -fx-background-radius: 8; -fx-padding: 0 12 0 12; -fx-cursor: hand;">
+                            <Label text="🏠" style="-fx-font-size: 14;"/>
+                            <Label text="Home" style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #2979FF;"/>
+                        </HBox>
+
+                        <!-- Folders -->
+                        <HBox alignment="CENTER_LEFT" spacing="10" prefHeight="40"
+                              style="-fx-background-radius: 8; -fx-padding: 0 12 0 12; -fx-cursor: hand;">
+                            <Label text="📁" style="-fx-font-size: 14;"/>
+                            <Label text="Folders" style="-fx-font-size: 13; -fx-text-fill: #757575;"/>
+                        </HBox>
+
+                        <!-- Documents -->
+                        <HBox alignment="CENTER_LEFT" spacing="10" prefHeight="40"
+                              style="-fx-background-radius: 8; -fx-padding: 0 12 0 12; -fx-cursor: hand;">
+                            <Label text="📄" style="-fx-font-size: 14;"/>
+                            <Label text="Documents" style="-fx-font-size: 13; -fx-text-fill: #757575;"/>
+                        </HBox>
+
+                        <!-- Recent -->
+                        <HBox alignment="CENTER_LEFT" spacing="10" prefHeight="40"
+                              style="-fx-background-radius: 8; -fx-padding: 0 12 0 12; -fx-cursor: hand;">
+                            <Label text="🕐" style="-fx-font-size: 14;"/>
+                            <Label text="Recent" style="-fx-font-size: 13; -fx-text-fill: #757575;"/>
+                        </HBox>
+
+                        <!-- Trash -->
+                        <HBox alignment="CENTER_LEFT" spacing="10" prefHeight="40"
+                              style="-fx-background-radius: 8; -fx-padding: 0 12 0 12; -fx-cursor: hand;">
+                            <Label text="🗑️" style="-fx-font-size: 14;"/>
+                            <Label text="Trash" style="-fx-font-size: 13; -fx-text-fill: #757575;"/>
+                        </HBox>
+
+                        <!-- Settings -->
+                        <HBox alignment="CENTER_LEFT" spacing="10" prefHeight="40"
+                              style="-fx-background-radius: 8; -fx-padding: 0 12 0 12; -fx-cursor: hand;">
+                            <Label text="⚙️" style="-fx-font-size: 14;"/>
+                            <Label text="Settings" style="-fx-font-size: 13; -fx-text-fill: #757575;"/>
+                        </HBox>
+                    </VBox>
+
+                    <Region VBox.vgrow="ALWAYS"/>
+
+                    <!-- Upload Button -->
+                    <VBox style="-fx-padding: 0 16 0 16;">
+                        <Button text="⬆  Upload File" prefWidth="130" prefHeight="40"
+                                style="-fx-background-color: #2979FF; -fx-text-fill: white; -fx-font-size: 13; -fx-font-weight: bold; -fx-background-radius: 10; -fx-cursor: hand;"/>
+                    </VBox>
+                </VBox>
+
+                <!-- ======================== MAIN CONTENT ======================== -->
+                <VBox HBox.hgrow="ALWAYS" style="-fx-padding: 24 24 24 24; -fx-background-color: #F5F6FA; -fx-spacing: 16;">
+
+                    <!-- Top Bar -->
+                    <HBox alignment="CENTER_LEFT" spacing="12">
+                        <VBox HBox.hgrow="ALWAYS">
+                            <Label text="Home" style="-fx-font-size: 22; -fx-font-weight: bold; -fx-text-fill: #1A1A2E;"/>
+                            <Label text="👋 Hello Amine, welcome!" style="-fx-font-size: 13; -fx-text-fill: #757575;"/>
+                        </VBox>
+                        <Label text="🔔" style="-fx-font-size: 18;"/>
+                        <Circle fx:id="userAvatar" radius="18"
+                                style="-fx-fill: #BDBDBD;"/>
+                    </HBox>
+
+                    <!-- Search Bar -->
+                    <HBox alignment="CENTER_LEFT" spacing="8"
+                          style="-fx-background-color: #FFFFFF; -fx-background-radius: 10; -fx-padding: 10 16 10 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 6, 0, 0, 2);">
+                        <Label text="🔍" style="-fx-font-size: 14; -fx-text-fill: #9E9E9E;"/>
+                        <TextField promptText="Search file..." HBox.hgrow="ALWAYS"
+                                   style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-font-size: 13; -fx-text-fill: #424242;"/>
+                    </HBox>
+
+                    <!-- Folders Section -->
+                    <VBox spacing="10">
+                        <HBox alignment="CENTER_LEFT">
+                            <Label text="Folders" style="-fx-font-size: 15; -fx-font-weight: bold; -fx-text-fill: #1A1A2E;" HBox.hgrow="ALWAYS"/>
+                            <Label text="View all" style="-fx-font-size: 12; -fx-text-fill: #2979FF; -fx-cursor: hand;"/>
+                        </HBox>
+
+                        <HBox spacing="12">
+                            <!-- Assets Folder -->
+                            <HBox HBox.hgrow="ALWAYS" alignment="CENTER_LEFT" spacing="12" prefHeight="70"
+                                  style="-fx-background-color: #FFFFFF; -fx-background-radius: 12; -fx-padding: 14 16 14 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 6, 0, 0, 2); -fx-cursor: hand;">
+                                <StackPane prefWidth="36" prefHeight="36"
+                                           style="-fx-background-color: #FFF3E0; -fx-background-radius: 8;">
+                                    <Label text="📂" style="-fx-font-size: 18;"/>
+                                </StackPane>
+                                <VBox HBox.hgrow="ALWAYS">
+                                    <Label text="Assets" style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #1A1A2E;"/>
+                                    <Label text="147 Files" style="-fx-font-size: 11; -fx-text-fill: #9E9E9E;"/>
+                                </VBox>
+                                <Label text="⋮" style="-fx-font-size: 16; -fx-text-fill: #9E9E9E;"/>
+                            </HBox>
+
+                            <!-- Analytics Folder -->
+                            <HBox HBox.hgrow="ALWAYS" alignment="CENTER_LEFT" spacing="12" prefHeight="70"
+                                  style="-fx-background-color: #FFFFFF; -fx-background-radius: 12; -fx-padding: 14 16 14 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 6, 0, 0, 2); -fx-cursor: hand;">
+                                <StackPane prefWidth="36" prefHeight="36"
+                                           style="-fx-background-color: #E8F5E9; -fx-background-radius: 8;">
+                                    <Label text="📊" style="-fx-font-size: 18;"/>
+                                </StackPane>
+                                <VBox HBox.hgrow="ALWAYS">
+                                    <Label text="Analytics" style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #1A1A2E;"/>
+                                    <Label text="17 Files" style="-fx-font-size: 11; -fx-text-fill: #9E9E9E;"/>
+                                </VBox>
+                                <Label text="⋮" style="-fx-font-size: 16; -fx-text-fill: #9E9E9E;"/>
+                            </HBox>
+
+                            <!-- Marketing Folder -->
+                            <HBox HBox.hgrow="ALWAYS" alignment="CENTER_LEFT" spacing="12" prefHeight="70"
+                                  style="-fx-background-color: #FFFFFF; -fx-background-radius: 12; -fx-padding: 14 16 14 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 6, 0, 0, 2); -fx-cursor: hand;">
+                                <StackPane prefWidth="36" prefHeight="36"
+                                           style="-fx-background-color: #F3E5F5; -fx-background-radius: 8;">
+                                    <Label text="🛒" style="-fx-font-size: 18;"/>
+                                </StackPane>
+                                <VBox HBox.hgrow="ALWAYS">
+                                    <Label text="Marketing" style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #1A1A2E;"/>
+                                    <Label text="57 Files" style="-fx-font-size: 11; -fx-text-fill: #9E9E9E;"/>
+                                </VBox>
+                                <Label text="⋮" style="-fx-font-size: 16; -fx-text-fill: #9E9E9E;"/>
+                            </HBox>
+
+                            <!-- Images Folder -->
+                            <HBox HBox.hgrow="ALWAYS" alignment="CENTER_LEFT" spacing="12" prefHeight="70"
+                                  style="-fx-background-color: #FFFFFF; -fx-background-radius: 12; -fx-padding: 14 16 14 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 6, 0, 0, 2); -fx-cursor: hand;">
+                                <StackPane prefWidth="36" prefHeight="36"
+                                           style="-fx-background-color: #E0F7FA; -fx-background-radius: 8;">
+                                    <Label text="🖼️" style="-fx-font-size: 18;"/>
+                                </StackPane>
+                                <VBox HBox.hgrow="ALWAYS">
+                                    <Label text="Images" style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #1A1A2E;"/>
+                                    <Label text="257 Files" style="-fx-font-size: 11; -fx-text-fill: #9E9E9E;"/>
+                                </VBox>
+                                <Label text="⋮" style="-fx-font-size: 16; -fx-text-fill: #9E9E9E;"/>
+                            </HBox>
+                        </HBox>
+                    </VBox>
+
+                    <!-- Recent Files Section -->
+                    <VBox spacing="10" VBox.vgrow="ALWAYS">
+                        <HBox alignment="CENTER_LEFT">
+                            <Label text="Recent Files" style="-fx-font-size: 15; -fx-font-weight: bold; -fx-text-fill: #1A1A2E;" HBox.hgrow="ALWAYS"/>
+                            <Label text="View all" style="-fx-font-size: 12; -fx-text-fill: #2979FF; -fx-cursor: hand;"/>
+                        </HBox>
+
+                        <!-- Table Header -->
+                        <HBox style="-fx-padding: 0 8 0 8;">
+                            <Label text="Name" HBox.hgrow="ALWAYS" style="-fx-font-size: 11; -fx-text-fill: #9E9E9E;"/>
+                            <Label text="Size" prefWidth="70" style="-fx-font-size: 11; -fx-text-fill: #9E9E9E;"/>
+                            <Label text="Last Edit" prefWidth="90" style="-fx-font-size: 11; -fx-text-fill: #9E9E9E;"/>
+                            <Label text="" prefWidth="24"/>
+                        </HBox>
+
+                        <!-- File Row 1 -->
+                        <HBox alignment="CENTER_LEFT" spacing="10" prefHeight="46"
+                              style="-fx-background-color: #FFFFFF; -fx-background-radius: 10; -fx-padding: 0 12 0 12; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.04), 4, 0, 0, 1);">
+                            <StackPane prefWidth="28" prefHeight="28"
+                                       style="-fx-background-color: #FFF3E0; -fx-background-radius: 6;">
+                                <Label text="🎨" style="-fx-font-size: 14;"/>
+                            </StackPane>
+                            <Label text="Gustavia entertainment productivity" HBox.hgrow="ALWAYS"
+                                   style="-fx-font-size: 12; -fx-text-fill: #424242;"/>
+                            <Label text="252 MB" prefWidth="70" style="-fx-font-size: 11; -fx-text-fill: #9E9E9E;"/>
+                            <Label text="Jun 10, 2021" prefWidth="90" style="-fx-font-size: 11; -fx-text-fill: #9E9E9E;"/>
+                            <Label text="⋮" style="-fx-font-size: 14; -fx-text-fill: #9E9E9E;"/>
+                        </HBox>
+
+                        <!-- File Row 2 -->
+                        <HBox alignment="CENTER_LEFT" spacing="10" prefHeight="46"
+                              style="-fx-background-color: #FFFFFF; -fx-background-radius: 10; -fx-padding: 0 12 0 12; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.04), 4, 0, 0, 1);">
+                            <StackPane prefWidth="28" prefHeight="28"
+                                       style="-fx-background-color: #E3F2FD; -fx-background-radius: 6;">
+                                <Label text="📘" style="-fx-font-size: 14;"/>
+                            </StackPane>
+                            <Label text="Nauru-6015 small fighter left gender" HBox.hgrow="ALWAYS"
+                                   style="-fx-font-size: 12; -fx-text-fill: #424242;"/>
+                            <Label text="5 MB" prefWidth="70" style="-fx-font-size: 11; -fx-text-fill: #9E9E9E;"/>
+                            <Label text="Jun 09, 2021" prefWidth="90" style="-fx-font-size: 11; -fx-text-fill: #9E9E9E;"/>
+                            <Label text="⋮" style="-fx-font-size: 14; -fx-text-fill: #9E9E9E;"/>
+                        </HBox>
+
+                        <!-- File Row 3 (Selected) -->
+                        <HBox alignment="CENTER_LEFT" spacing="10" prefHeight="46"
+                              style="-fx-background-color: #EEF3FF; -fx-background-radius: 10; -fx-padding: 0 12 0 12; -fx-border-color: #C5D5FB; -fx-border-radius: 10; -fx-border-width: 1;">
+                            <StackPane prefWidth="28" prefHeight="28"
+                                       style="-fx-background-color: #FFEBEE; -fx-background-radius: 6;">
+                                <Label text="📕" style="-fx-font-size: 14;"/>
+                            </StackPane>
+                            <Label text="Licence Agreement on Waterfall INC" HBox.hgrow="ALWAYS"
+                                   style="-fx-font-size: 12; -fx-font-weight: bold; -fx-text-fill: #1A1A2E;"/>
+                            <Label text="12 MB" prefWidth="70" style="-fx-font-size: 11; -fx-text-fill: #9E9E9E;"/>
+                            <Label text="Jun 09, 2021" prefWidth="90" style="-fx-font-size: 11; -fx-text-fill: #9E9E9E;"/>
+                            <Label text="⋮" style="-fx-font-size: 14; -fx-text-fill: #9E9E9E;"/>
+                        </HBox>
+
+                        <!-- File Row 4 -->
+                        <HBox alignment="CENTER_LEFT" spacing="10" prefHeight="46"
+                              style="-fx-background-color: #FFFFFF; -fx-background-radius: 10; -fx-padding: 0 12 0 12; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.04), 4, 0, 0, 1);">
+                            <StackPane prefWidth="28" prefHeight="28"
+                                       style="-fx-background-color: #FFF8E1; -fx-background-radius: 6;">
+                                <Label text="📙" style="-fx-font-size: 14;"/>
+                            </StackPane>
+                            <Label text="Socio respectively 366996" HBox.hgrow="ALWAYS"
+                                   style="-fx-font-size: 12; -fx-text-fill: #424242;"/>
+                            <Label text="43 MB" prefWidth="70" style="-fx-font-size: 11; -fx-text-fill: #9E9E9E;"/>
+                            <Label text="Jun 08, 2021" prefWidth="90" style="-fx-font-size: 11; -fx-text-fill: #9E9E9E;"/>
+                            <Label text="⋮" style="-fx-font-size: 14; -fx-text-fill: #9E9E9E;"/>
+                        </HBox>
+                    </VBox>
+                </VBox>
+
+                <!-- ======================== FILE PREVIEW PANEL ======================== -->
+                <VBox prefWidth="220" spacing="16"
+                      style="-fx-background-color: #FFFFFF; -fx-background-radius: 0 16 16 0; -fx-padding: 24 20 24 20; -fx-border-color: #F0F0F0; -fx-border-width: 0 0 0 1;">
+
+                    <!-- Window Traffic Lights -->
+                    <HBox alignment="CENTER_RIGHT" spacing="6">
+                        <Circle radius="6" style="-fx-fill: #4CAF50;"/>
+                        <Circle radius="6" style="-fx-fill: #FFC107;"/>
+                        <Circle radius="6" style="-fx-fill: #F44336;"/>
+                    </HBox>
+
+                    <Label text="File Preview" style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #1A1A2E;"/>
+
+                    <!-- PDF Icon -->
+                    <StackPane alignment="CENTER" prefHeight="100">
+                        <Rectangle width="80" height="80" arcWidth="18" arcHeight="18"
+                                   style="-fx-fill: #F44336;"/>
+                        <Label text="PDF" style="-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                    </StackPane>
+
+                    <!-- File Info -->
+                    <VBox spacing="4">
+                        <Label text="Licence Agreement on Waterfall INC.pdf"
+                               wrapText="true"
+                               style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #1A1A2E;"/>
+                        <Label text="12 MB  ·  Jun 09, 2021"
+                               style="-fx-font-size: 11; -fx-text-fill: #9E9E9E;"/>
+                    </VBox>
+
+                    <Separator style="-fx-background-color: #F0F0F0;"/>
+
+                    <!-- File Description -->
+                    <VBox spacing="6">
+                        <Label text="File Description"
+                               style="-fx-font-size: 12; -fx-font-weight: bold; -fx-text-fill: #424242;"/>
+                        <Label text="It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout."
+                               wrapText="true"
+                               style="-fx-font-size: 11; -fx-text-fill: #757575;"/>
+                    </VBox>
+
+                    <!-- Keywords -->
+                    <VBox spacing="6">
+                        <Label text="Keyword"
+                               style="-fx-font-size: 12; -fx-font-weight: bold; -fx-text-fill: #424242;"/>
+                        <Label text="dip / credit / disagree / sight / therapist / road / enfix / kettle / glance / clique."
+                               wrapText="true"
+                               style="-fx-font-size: 11; -fx-text-fill: #757575;"/>
+                    </VBox>
+
+                    <Region VBox.vgrow="ALWAYS"/>
+
+                    <!-- Action Buttons -->
+                    <HBox spacing="10" alignment="CENTER">
+
+                        <!-- Download -->
+                        <VBox alignment="CENTER" spacing="4">
+                            <Button text="⬇" prefWidth="44" prefHeight="44"
+                                    style="-fx-background-color: #2979FF; -fx-text-fill: white; -fx-font-size: 16; -fx-background-radius: 12; -fx-cursor: hand;"/>
+                            <Label text="Download" style="-fx-font-size: 10; -fx-text-fill: #757575;"/>
+                        </VBox>
+
+                        <!-- Edit -->
+                        <VBox alignment="CENTER" spacing="4">
+                            <Button text="✏" prefWidth="44" prefHeight="44"
+                                    style="-fx-background-color: #2979FF; -fx-text-fill: white; -fx-font-size: 16; -fx-background-radius: 12; -fx-cursor: hand;"/>
+                            <Label text="Edit" style="-fx-font-size: 10; -fx-text-fill: #757575;"/>
+                        </VBox>
+
+                        <!-- Delete -->
+                        <VBox alignment="CENTER" spacing="4">
+                            <Button text="🗑" prefWidth="44" prefHeight="44"
+                                    style="-fx-background-color: #2979FF; -fx-text-fill: white; -fx-font-size: 16; -fx-background-radius: 12; -fx-cursor: hand;"/>
+                            <Label text="Delete" style="-fx-font-size: 10; -fx-text-fill: #757575;"/>
+                        </VBox>
+
+                    </HBox>
+                </VBox>
+
+            </HBox>
+        </VBox>
+    </HBox>
+</StackPane>
