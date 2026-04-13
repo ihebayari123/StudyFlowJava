@@ -41,3 +41,4 @@ public class Quiz {
     @Override
     public String toString() { return titre + " (" + duree + " min)"; }
 }
+

@@ -38,7 +38,6 @@ public class ModifierUtilisateurController {
         roleCombo.setItems(FXCollections.observableArrayList("ADMIN", "ENSEIGNANT", "ETUDIANT"));
         statutCombo.setItems(FXCollections.observableArrayList("ACTIF", "BLOQUE"));
 
-        // Validation en temps réel
         nomField.textProperty().addListener((obs, old, val) ->
                 afficherErreur(nomError, nomField, Validation.messageNom(val)));
 
@@ -83,7 +82,6 @@ public class ModifierUtilisateurController {
         String role   = roleCombo.getValue();
         String statut = statutCombo.getValue();
 
-        // Afficher toutes les erreurs à la soumission
         afficherErreur(nomError,        nomField,        Validation.messageNom(nom));
         afficherErreur(prenomError,     prenomField,     Validation.messageNom(prenom));
         afficherErreur(emailError,      emailField,      Validation.messageEmail(email));
@@ -91,7 +89,6 @@ public class ModifierUtilisateurController {
         afficherErreurCombo(roleError,   roleCombo,      Validation.messageRole(role));
         afficherErreurCombo(statutError, statutCombo,    Validation.messageStatut(statut));
 
-        // Bloquer si invalide
         if (!Validation.validerTout(nom, prenom, email, mdp, role, statut)) return;
 
         utilisateurActuel.setNom(nom);
@@ -102,7 +99,8 @@ public class ModifierUtilisateurController {
         utilisateurActuel.setStatutCompte(statut);
 
         try {
-            service.updateEntity(utilisateurActuel.getId(), utilisateurActuel);
+            // IService.updateEntity expects int — cast Long safely
+            service.updateEntity(utilisateurActuel.getId().intValue(), utilisateurActuel);
             afficherAlert(Alert.AlertType.INFORMATION, "Succès", "✅ Utilisateur modifié avec succès !");
             fermerFenetre();
         } catch (SQLException e) {
