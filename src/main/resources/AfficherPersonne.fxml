@@ -4,6 +4,7 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
+<<<<<<< HEAD
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.shape.Rectangle?>
@@ -61,3 +62,18 @@
         </VBox>
     </children>
 </AnchorPane>
+=======
+
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.connexion3a36.Controller.AfficherPersonneController">
+   <children>
+      <TableView fx:id="tablepersonne" layoutX="90.0" layoutY="70.0" prefHeight="200.0" prefWidth="398.0">
+        <columns>
+          <TableColumn fx:id="nomcol" prefWidth="75.0" text="nom" />
+          <TableColumn fx:id="prenomcol" prefWidth="75.0" text="prenom" />
+        </columns>
+      </TableView>
+      <Label layoutX="51.0" layoutY="29.0" text="Label" />
+   </children>
+</AnchorPane>
+>>>>>>> Gestion_CoursEtChapitres

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="12" style="-fx-padding: 30; -fx-background-color: #F5F6FA; -fx-min-width: 420;"
+      xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="edu.connexion3a36.Controller.AjouterUtilisateurController">
+
+    <!-- Header -->
+    <Label text="👤 Ajouter un utilisateur"
+           style="-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: #1A1A2E;"/>
+
+    <Separator/>
+
+    <!-- Nom -->
+    <VBox spacing="4">
+        <Label text="Nom" style="-fx-font-size: 13; -fx-text-fill: #424242;"/>
+        <TextField fx:id="nomField" promptText="Entrez le nom"
+                   style="-fx-background-radius: 8; -fx-padding: 8; -fx-font-size: 13;"/>
+        <Label fx:id="nomError" text=""
+               style="-fx-font-size: 11; -fx-text-fill: #F44336;"/>
+    </VBox>
+
+    <!-- Prénom -->
+    <VBox spacing="4">
+        <Label text="Prénom" style="-fx-font-size: 13; -fx-text-fill: #424242;"/>
+        <TextField fx:id="prenomField" promptText="Entrez le prénom"
+                   style="-fx-background-radius: 8; -fx-padding: 8; -fx-font-size: 13;"/>
+        <Label fx:id="prenomError" text=""
+               style="-fx-font-size: 11; -fx-text-fill: #F44336;"/>
+    </VBox>
+
+    <!-- Email -->
+    <VBox spacing="4">
+        <Label text="Email" style="-fx-font-size: 13; -fx-text-fill: #424242;"/>
+        <TextField fx:id="emailField" promptText="Entrez l'email"
+                   style="-fx-background-radius: 8; -fx-padding: 8; -fx-font-size: 13;"/>
+        <Label fx:id="emailError" text=""
+               style="-fx-font-size: 11; -fx-text-fill: #F44336;"/>
+    </VBox>
+
+    <!-- Mot de passe -->
+    <VBox spacing="4">
+        <Label text="Mot de passe" style="-fx-font-size: 13; -fx-text-fill: #424242;"/>
+        <PasswordField fx:id="motDePasseField" promptText="Entrez le mot de passe"
+                       style="-fx-background-radius: 8; -fx-padding: 8; -fx-font-size: 13;"/>
+        <Label fx:id="motDePasseError" text=""
+               style="-fx-font-size: 11; -fx-text-fill: #F44336;"/>
+    </VBox>
+
+    <!-- Rôle -->
+    <VBox spacing="4">
+        <Label text="Rôle" style="-fx-font-size: 13; -fx-text-fill: #424242;"/>
+        <ComboBox fx:id="roleCombo" prefWidth="360"
+                  style="-fx-background-radius: 8; -fx-font-size: 13;"/>
+        <Label fx:id="roleError" text=""
+               style="-fx-font-size: 11; -fx-text-fill: #F44336;"/>
+    </VBox>
+
+    <!-- Statut -->
+    <VBox spacing="4">
+        <Label text="Statut" style="-fx-font-size: 13; -fx-text-fill: #424242;"/>
+        <ComboBox fx:id="statutCombo" prefWidth="360"
+                  style="-fx-background-radius: 8; -fx-font-size: 13;"/>
+        <Label fx:id="statutError" text=""
+               style="-fx-font-size: 11; -fx-text-fill: #F44336;"/>
+    </VBox>
+
+    <Separator/>
+
+    <!-- Boutons -->
+    <HBox spacing="12" alignment="CENTER_RIGHT">
+        <Button text="Annuler" onAction="#annuler"
+                style="-fx-background-color: #E0E0E0; -fx-text-fill: #424242; -fx-font-size: 13; -fx-background-radius: 8; -fx-padding: 8 20 8 20; -fx-cursor: hand;"/>
+        <Button text="✔ Ajouter" onAction="#ajouter"
+                style="-fx-background-color: #2979FF; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 13; -fx-background-radius: 8; -fx-padding: 8 20 8 20; -fx-cursor: hand;"/>
+    </HBox>
+
+</VBox>
