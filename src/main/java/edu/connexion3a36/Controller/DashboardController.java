@@ -4,10 +4,13 @@ import edu.connexion3a36.entities.Utilisateur;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.logging.Level;
@@ -19,6 +22,7 @@ public class DashboardController {
 
     private Utilisateur utilisateurConnecte;
 
+    // ── Sidebar items principaux ──────────────────────────────────────────────
     @FXML private HBox homeItem;
     @FXML private HBox coursItem;
     @FXML private HBox chapitresItem;
@@ -31,7 +35,23 @@ public class DashboardController {
     @FXML private HBox settingsItem;
     @FXML private HBox utilisateursItem;
 
+    // ── Sous-menu Anti-Stress ─────────────────────────────────────────────────
+    @FXML private VBox antiStressSubMenu;
+    @FXML private Label antiStressArrow;
+
+    @FXML private HBox ajouterMedecinItem;
+    @FXML private HBox listeMedecinsItem;
+    @FXML private HBox ajouterConsultationItem;
+    @FXML private HBox listeConsultationsItem;
+    @FXML private HBox antiStresseItem;
+    @FXML private HBox ajouterScoreEtudiantItem;
+    @FXML private HBox ajouterBienEtreItem;
+    @FXML private HBox voirScoreItem;
+    @FXML private HBox deconnexionItem;
+
     @FXML private StackPane contentArea;
+
+    private boolean antiStressMenuOpen = false;
 
     @FXML
     public void initialize() {
@@ -41,29 +61,55 @@ public class DashboardController {
     }
 
     private void setupNavigation() {
-        homeItem.setOnMouseClicked(event -> loadView("dashboard"));
-        coursItem.setOnMouseClicked(event -> loadView("cours"));
-        chapitresItem.setOnMouseClicked(event -> loadView("chapitres"));
-        quizItem.setOnMouseClicked(event -> loadView("QuizView"));
-        exercicesItem.setOnMouseClicked(event -> loadView("exercices"));
-        categorieItem.setOnMouseClicked(event -> loadView("categorieMenu"));
-        produitItem.setOnMouseClicked(event -> loadView("produitMenu"));
-        progressionItem.setOnMouseClicked(event -> loadView("progression"));
-        administrationItem.setOnMouseClicked(event -> loadView("admin"));
-        settingsItem.setOnMouseClicked(event -> loadView("settings"));
-        utilisateursItem.setOnMouseClicked(event -> loadView("gestionUtilisateurs"));
 
-        addHoverEffect(homeItem);
-        addHoverEffect(coursItem);
-        addHoverEffect(chapitresItem);
-        addHoverEffect(quizItem);
-        addHoverEffect(exercicesItem);
-        addHoverEffect(categorieItem);
-        addHoverEffect(produitItem);
-        addHoverEffect(progressionItem);
-        addHoverEffect(administrationItem);
-        addHoverEffect(settingsItem);
-        addHoverEffect(utilisateursItem);
+        homeItem.setOnMouseClicked(e -> loadView("dashboard"));
+        coursItem.setOnMouseClicked(e -> loadView("cours"));
+        chapitresItem.setOnMouseClicked(e -> loadView("chapitres"));
+        quizItem.setOnMouseClicked(e -> loadView("quiz"));
+        exercicesItem.setOnMouseClicked(e -> loadView("exercices"));
+        categorieItem.setOnMouseClicked(e -> loadView("categorieMenu"));
+        produitItem.setOnMouseClicked(e -> loadView("produitMenu"));
+        administrationItem.setOnMouseClicked(e -> loadView("admin"));
+        settingsItem.setOnMouseClicked(e -> loadView("settings"));
+        utilisateursItem.setOnMouseClicked(e -> loadView("gestionUtilisateurs"));
+
+        // Toggle Anti-Stress
+        progressionItem.setOnMouseClicked(e -> toggleAntiStressMenu());
+
+        // Sous-menu Anti-Stress
+        ajouterMedecinItem.setOnMouseClicked(e -> loadView("AjouterMedecin"));
+        listeMedecinsItem.setOnMouseClicked(e -> loadView("AfficherMedecin"));
+        ajouterConsultationItem.setOnMouseClicked(e -> loadView("AjouterConsultation"));
+        listeConsultationsItem.setOnMouseClicked(e -> loadView("AfficherConsultation"));
+        antiStresseItem.setOnMouseClicked(e -> loadView("AfficherStressSurvey"));
+        ajouterScoreEtudiantItem.setOnMouseClicked(e -> loadView("AjouterStressSurvey"));
+        ajouterBienEtreItem.setOnMouseClicked(e -> loadView("AjouterWellBeingScore"));
+        voirScoreItem.setOnMouseClicked(e -> loadView("AfficherWellBeingScore"));
+        deconnexionItem.setOnMouseClicked(e -> handleDeconnexion());
+
+        HBox[] allItems = {
+                homeItem, coursItem, chapitresItem, quizItem, exercicesItem,
+                categorieItem, produitItem, progressionItem,
+                administrationItem, settingsItem, utilisateursItem,
+                ajouterMedecinItem, listeMedecinsItem, ajouterConsultationItem,
+                listeConsultationsItem, antiStresseItem,
+                ajouterScoreEtudiantItem, ajouterBienEtreItem, voirScoreItem
+        };
+
+        for (HBox item : allItems) {
+            if (item != null) addHoverEffect(item);
+        }
+    }
+
+    private void toggleAntiStressMenu() {
+        antiStressMenuOpen = !antiStressMenuOpen;
+
+        antiStressSubMenu.setVisible(antiStressMenuOpen);
+        antiStressSubMenu.setManaged(antiStressMenuOpen);
+
+        if (antiStressArrow != null) {
+            antiStressArrow.setText(antiStressMenuOpen ? "▼" : "▶");
+        }
     }
 
     private void loadView(String viewName) {
@@ -71,144 +117,78 @@ public class DashboardController {
             resetActiveStyles();
             setActiveStyle(viewName);
 
-            // Avoid reloading studyflow.fxml (main layout)
-            if (viewName.equals("studyflow")) {
-                System.out.println("Ignorer studyflow.fxml");
-                return;
-            }
+            if (viewName.equals("studyflow")) return;
 
             String resourcePath = "/" + viewName + ".fxml";
-            System.out.println("Tentative de chargement: " + resourcePath);
-
             URL resourceUrl = getClass().getResource(resourcePath);
 
             if (resourceUrl == null) {
-                System.err.println("❌ Fichier non trouvé: " + resourcePath);
-                System.err.println("📁 Vérifiez que ces fichiers existent dans src/main/resources/ :");
-                System.err.println("   - cours.fxml");
-                System.err.println("   - add_course.fxml");
-                System.err.println("   - chapitres.fxml");
-                System.err.println("   - quiz.fxml");
-                System.err.println("   - exercices.fxml");
-                System.err.println("   - progression.fxml");
-                System.err.println("   - settings.fxml");
-                System.err.println("   - gestionUtilisateurs.fxml");
                 showErrorView(viewName);
                 return;
             }
 
-            System.out.println("✅ Fichier trouvé: " + resourceUrl);
             FXMLLoader loader = new FXMLLoader(resourceUrl);
             Node view = loader.load();
-            System.out.println("✅ Vue chargée avec succès: " + viewName);
 
-            // Pass dashboard reference to controller via reflection
             Object controller = loader.getController();
             if (controller != null) {
-                System.out.println("Contrôleur chargé: " + controller.getClass().getSimpleName());
                 try {
-                    java.lang.reflect.Method method = controller.getClass()
-                            .getMethod("setDashboardController", DashboardController.class);
-                    method.invoke(controller, this);
-                    System.out.println("✅ DashboardController injecté");
-                } catch (NoSuchMethodException e) {
-                    System.out.println("ℹ️ Pas de méthode setDashboardController");
-                } catch (Exception e) {
-                    LOGGER.log(Level.WARNING, "Erreur injection", e);
-                }
-            }
-            if (controller instanceof CategorieMenuController) {
-                ((CategorieMenuController) controller).setDashboardController(this);
-            }
-            if (controller instanceof ProduitMenuController) {
-                ((ProduitMenuController) controller).setDashboardController(this);
+                    controller.getClass()
+                            .getMethod("setDashboardController", DashboardController.class)
+                            .invoke(controller, this);
+                } catch (Exception ignored) {}
             }
 
-            contentArea.getChildren().clear();
-            contentArea.getChildren().add(view);
+            contentArea.getChildren().setAll(view);
 
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "❌ Erreur chargement: " + viewName, e);
+            LOGGER.log(Level.SEVERE, "Erreur chargement", e);
             showErrorView(viewName);
         }
     }
 
+    private void handleDeconnexion() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Login.fxml"));
+            Scene scene = new Scene(loader.load());
+            Stage stage = (Stage) contentArea.getScene().getWindow();
+            stage.setScene(scene);
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Erreur déconnexion", e);
+        }
+    }
+
     private void showErrorView(String viewName) {
-        VBox errorBox = new VBox();
-        errorBox.setStyle("-fx-alignment: center; -fx-padding: 40; -fx-spacing: 10;");
-        Label errorLabel = new Label("⚠️ Vue non trouvée: " + viewName + ".fxml");
-        Label infoLabel1 = new Label("Le fichier doit être dans: src/main/resources/");
-        Label infoLabel2 = new Label("Vérifiez que le nom du fichier est correct (cours.fxml, chapitres.fxml, etc.)");
-        infoLabel1.setStyle("-fx-text-fill: #757575; -fx-font-size: 12;");
-        infoLabel2.setStyle("-fx-text-fill: #757575; -fx-font-size: 12;");
-        errorLabel.setStyle("-fx-text-fill: #F44336; -fx-font-size: 14;");
-        errorBox.getChildren().addAll(errorLabel, infoLabel1, infoLabel2);
-        contentArea.getChildren().clear();
-        contentArea.getChildren().add(errorBox);
+        VBox box = new VBox();
+        box.setStyle("-fx-alignment: center; -fx-padding: 40;");
+        Label label = new Label("Vue non trouvée : " + viewName);
+        box.getChildren().add(label);
+        contentArea.getChildren().setAll(box);
     }
 
     private void resetActiveStyles() {
-        HBox[] items = {homeItem, coursItem, chapitresItem, quizItem, exercicesItem,
-                categorieItem, produitItem, progressionItem, administrationItem,
-                settingsItem, utilisateursItem};
+        HBox[] items = {homeItem, coursItem, chapitresItem, quizItem,
+                exercicesItem, categorieItem, produitItem,
+                progressionItem, administrationItem, settingsItem, utilisateursItem};
+
         for (HBox item : items) {
-            if (item != null) {
-                item.setStyle("-fx-background-color: transparent; -fx-background-radius: 8; -fx-padding: 0 12 0 12;");
-                for (Node node : item.getChildren()) {
-                    if (node instanceof Label) {
-                        Label label = (Label) node;
-                        String text = label.getText();
-                        if (text != null && !text.matches("🏠|📚|📖|❓|✏️|🏷️|🛒|📊|🏛️|⚙️|👥")) {
-                            label.setStyle("-fx-font-size: 13; -fx-text-fill: #757575; -fx-font-weight: normal;");
-                        }
-                    }
-                }
-            }
+            if (item != null)
+                item.setStyle("-fx-background-color: transparent;");
         }
     }
 
     private void setActiveStyle(String viewName) {
-        HBox activeItem = null;
-        switch (viewName) {
-            case "dashboard":           activeItem = homeItem; break;
-            case "cours":               activeItem = coursItem; break;
-            case "chapitres":           activeItem = chapitresItem; break;
-            case "quiz":                activeItem = quizItem; break;
-            case "exercices":           activeItem = exercicesItem; break;
-            case "categorieMenu":       activeItem = categorieItem; break;
-            case "produitMenu":         activeItem = produitItem; break;
-            case "progression":         activeItem = progressionItem; break;
-            case "settings":            activeItem = settingsItem; break;
-            case "gestionUtilisateurs": activeItem = utilisateursItem; break;
-            default: break;
-        }
-
-        if (activeItem != null) {
-            activeItem.setStyle("-fx-background-color: #E8F0FE; -fx-background-radius: 8; -fx-padding: 0 12 0 12;");
-            for (Node node : activeItem.getChildren()) {
-                if (node instanceof Label) {
-                    Label label = (Label) node;
-                    String text = label.getText();
-                    if (text != null && !text.matches("🏠|📚|📖|❓|✏️|🏷️|🛒|📊|🏛️|⚙️|👥")) {
-                        label.setStyle("-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #2979FF;");
-                    }
-                }
-            }
-        }
+        // simple version
     }
 
     private void addHoverEffect(HBox item) {
         if (item == null) return;
-        item.setOnMouseEntered(e -> {
-            if (!item.getStyle().contains("#E8F0FE")) {
-                item.setStyle("-fx-background-color: #F5F5F5; -fx-background-radius: 8; -fx-padding: 0 12 0 12; -fx-cursor: hand;");
-            }
-        });
-        item.setOnMouseExited(e -> {
-            if (!item.getStyle().contains("#E8F0FE")) {
-                item.setStyle("-fx-background-color: transparent; -fx-background-radius: 8; -fx-padding: 0 12 0 12;");
-            }
-        });
+
+        item.setOnMouseEntered(e ->
+                item.setStyle("-fx-background-color: #F5F5F5;"));
+
+        item.setOnMouseExited(e ->
+                item.setStyle("-fx-background-color: transparent;"));
     }
 
     public void navigateTo(String viewName) {
@@ -217,6 +197,5 @@ public class DashboardController {
 
     public void setUtilisateurConnecte(Utilisateur u) {
         this.utilisateurConnecte = u;
-        System.out.println("Bienvenue " + u.getNom() + " !");
     }
 }
