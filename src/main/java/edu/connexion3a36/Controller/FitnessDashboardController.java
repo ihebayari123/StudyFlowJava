@@ -241,26 +241,46 @@ public class FitnessDashboardController implements Initializable {
         imgContainer.setPrefHeight(130);
         imgContainer.setStyle("-fx-background-color: #E8F0FE; -fx-background-radius: 18 18 0 0;");
 
-        String imageUrl = p.getImage();
-        boolean isValidUrl = false;
-        try {
-            new java.net.URL(imageUrl);
-            isValidUrl = true;
-        } catch (Exception ex) {
-            // URL invalide
-        }
 
-        if (isValidUrl && imageUrl != null && !imageUrl.trim().isEmpty()) {
+
+/// ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        String imageUrl = p.getImage();
+
+        if (imageUrl != null && !imageUrl.trim().isEmpty()) {
             try {
-                Image image = new Image(imageUrl, 200, 130, false, true);
-                if (!image.isError()) {
-                    imageView.setImage(image);
+                // ✅ Chargement en background pour ne pas bloquer l'UI
+                Image image = new Image(imageUrl.trim(), 200, 130, false, true, true);
+
+                imageView.setImage(image);
+
+                // ✅ Si erreur de chargement → afficher placeholder
+                image.errorProperty().addListener((obs, wasError, isError) -> {
+                    if (isError) {
+                        Label placeholder = new Label("🖼️");
+                        placeholder.setStyle("-fx-font-size: 40px;");
+                        imgContainer.getChildren().clear();
+                        imgContainer.getChildren().add(placeholder);
+                    }
+                });
+
+                // ✅ Afficher un spinner pendant le chargement
+                image.progressProperty().addListener((obs, oldVal, newVal) -> {
+                    if (newVal.doubleValue() >= 1.0 && !image.isError()) {
+                        imgContainer.getChildren().clear();
+                        imgContainer.getChildren().add(imageView);
+                    }
+                });
+
+                // Si déjà chargé immédiatement
+                if (image.getProgress() >= 1.0 && !image.isError()) {
                     imgContainer.getChildren().add(imageView);
-                } else {
-                    Label placeholder = new Label("🖼️");
-                    placeholder.setStyle("-fx-font-size: 40px;");
-                    imgContainer.getChildren().add(placeholder);
+                } else if (!image.isError()) {
+                    // Placeholder temporaire pendant le chargement
+                    Label loading = new Label("⏳");
+                    loading.setStyle("-fx-font-size: 30px;");
+                    imgContainer.getChildren().add(loading);
                 }
+
             } catch (Exception ex) {
                 Label placeholder = new Label("🖼️");
                 placeholder.setStyle("-fx-font-size: 40px;");
@@ -271,6 +291,7 @@ public class FitnessDashboardController implements Initializable {
             placeholder.setStyle("-fx-font-size: 40px;");
             imgContainer.getChildren().add(placeholder);
         }
+        /// //////////////////////////////////////////////////////////////////////
 
         VBox info = new VBox(6);
         info.setPadding(new Insets(0, 14, 0, 14));
