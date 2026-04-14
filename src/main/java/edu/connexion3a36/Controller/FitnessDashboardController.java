@@ -405,7 +405,6 @@ public class FitnessDashboardController implements Initializable {
         }
         produits.forEach(p -> boutiqueProduitGrid.getChildren().add(buildProduitCard(p, catMap)));
     }
-
     private VBox buildProduitCard(edu.connexion3a36.entities.Produit p,
                                   Map<Integer, String> catMap) {
         VBox card = new VBox(10);
@@ -434,18 +433,32 @@ public class FitnessDashboardController implements Initializable {
         imgContainer.setStyle("-fx-background-color: #E8F0FE; -fx-background-radius: 18 18 0 0;");
 
         String imageUrl = p.getImage();
-        boolean isValidUrl = false;
-        try { new java.net.URL(imageUrl); isValidUrl = true; } catch (Exception ex) { /* URL invalide */ }
 
-        if (isValidUrl && imageUrl != null && !imageUrl.trim().isEmpty()) {
+        if (imageUrl != null && !imageUrl.trim().isEmpty()) {
             try {
-                Image image = new Image(imageUrl, 200, 130, false, true);
-                if (!image.isError()) {
-                    imageView.setImage(image);
+                Image image = new Image(imageUrl.trim(), 200, 130, false, true, true);
+                imageView.setImage(image);
+
+                image.errorProperty().addListener((obs, wasError, isError) -> {
+                    if (isError) {
+                        imgContainer.getChildren().clear();
+                        imgContainer.getChildren().add(placeholderLabel());
+                    }
+                });
+
+                image.progressProperty().addListener((obs, oldVal, newVal) -> {
+                    if (newVal.doubleValue() >= 1.0 && !image.isError()) {
+                        imgContainer.getChildren().clear();
+                        imgContainer.getChildren().add(imageView);
+                    }
+                });
+
+                if (image.getProgress() >= 1.0 && !image.isError()) {
                     imgContainer.getChildren().add(imageView);
                 } else {
                     imgContainer.getChildren().add(placeholderLabel());
                 }
+
             } catch (Exception ex) {
                 imgContainer.getChildren().add(placeholderLabel());
             }
@@ -470,6 +483,7 @@ public class FitnessDashboardController implements Initializable {
 
         info.getChildren().addAll(nomLabel, catLabel, prixLabel);
         card.getChildren().addAll(imgContainer, info);
+
         return card;
     }
 
