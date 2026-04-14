@@ -88,84 +88,100 @@ public class UserHomeController {
     }
 
     private VBox creerCarte(Quiz q) {
-        String accent      = q.getDuree() <= 15 ? "#0A8A5A" : q.getDuree() <= 30 ? "#C47A00" : "#C0222E";
-        String accentLight = q.getDuree() <= 15 ? "#D4F5E4" : q.getDuree() <= 30 ? "#FFF0CC" : "#FFE0E3";
-        String diffLabel   = q.getDuree() <= 15 ? "FACILE"  : q.getDuree() <= 30 ? "MOYEN"   : "DIFFICILE";
+        // Palette selon difficulté — alignée sur le dashboard
+        String accent      = q.getDuree() <= 15 ? "#2e7d32" : q.getDuree() <= 30 ? "#e65100" : "#c62828";
+        String accentLight = q.getDuree() <= 15 ? "#e8f5e9" : q.getDuree() <= 30 ? "#fff3e0" : "#fce4ec";
+        String diffLabel   = q.getDuree() <= 15 ? "Facile"  : q.getDuree() <= 30 ? "Moyen"   : "Difficile";
 
-        // Offset shadow wrapper
-        StackPane wrap = new StackPane();
-        wrap.setPrefWidth(265);
-
-        VBox shadow = new VBox();
-        shadow.setStyle("-fx-background-color:" + accent + ";");
-        shadow.setPrefWidth(265); shadow.setPrefHeight(180);
-        shadow.setTranslateX(5); shadow.setTranslateY(5);
-
-        // Card
+        // Card principale — style dashboard (white card, border-radius 16, dropshadow)
         VBox card = new VBox(0);
-        card.setPrefWidth(265);
-        card.setStyle("-fx-background-color:#FFFFFF; -fx-border-color:#1A1A1A; -fx-border-width:3; -fx-cursor:hand;");
+        card.setPrefWidth(260);
+        card.setStyle(
+            "-fx-background-color: white; -fx-background-radius: 16;" +
+            "-fx-border-color: #eeeeee; -fx-border-radius: 16; -fx-border-width: 1.5;" +
+            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.07), 12, 0, 0, 4);" +
+            "-fx-cursor: hand;"
+        );
 
-        // Top color bar
+        // Barre top colorée
         HBox bar = new HBox();
-        bar.setStyle("-fx-background-color:" + accent + "; -fx-min-height:5;");
+        bar.setPrefHeight(5);
         bar.setMaxWidth(Double.MAX_VALUE);
+        bar.setStyle("-fx-background-color: " + accent + "; -fx-background-radius: 16 16 0 0;");
 
-        // Content
-        VBox top = new VBox(8);
-        top.setStyle("-fx-padding:14 14 12 14; -fx-background-color:#FFFFFF;");
+        // Body
+        VBox body = new VBox(10);
+        body.setStyle("-fx-padding: 16 16 12 16; -fx-background-color: transparent;");
 
+        // Badge + icône
         HBox badgeRow = new HBox(8);
         badgeRow.setAlignment(Pos.CENTER_LEFT);
         Label badge = new Label(diffLabel);
-        badge.setStyle("-fx-font-family:'Courier New'; -fx-font-size:8; -fx-font-weight:bold;" +
-                       "-fx-padding:2 8; -fx-background-color:" + accentLight + ";" +
-                       "-fx-text-fill:" + accent + "; -fx-border-color:" + accent + "; -fx-border-width:2;");
+        badge.setStyle(
+            "-fx-font-size: 10px; -fx-font-weight: bold; -fx-padding: 3 10;" +
+            "-fx-background-color: " + accentLight + "; -fx-text-fill: " + accent + ";" +
+            "-fx-background-radius: 20;"
+        );
         Region sp = new Region(); HBox.setHgrow(sp, Priority.ALWAYS);
-        Label icon = new Label(getIcon(q)); icon.setStyle("-fx-font-size:18;");
+        Label icon = new Label(getIcon(q));
+        icon.setStyle("-fx-font-size: 20px; -fx-background-color: #f5f5f5;" +
+                      "-fx-background-radius: 10; -fx-padding: 4 8;");
         badgeRow.getChildren().addAll(badge, sp, icon);
 
-        Label titre = new Label(q.getTitre().toUpperCase());
-        titre.setStyle("-fx-font-family:'Courier New'; -fx-font-size:13; -fx-font-weight:bold;" +
-                       "-fx-text-fill:#1A1A1A;"); titre.setMaxWidth(237); titre.setWrapText(true);
+        // Titre
+        Label titre = new Label(q.getTitre());
+        titre.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1a1a2e;");
+        titre.setMaxWidth(236); titre.setWrapText(true);
 
-        HBox meta = new HBox(12);
-        Label md = new Label(">> " + q.getDuree() + " MIN");
-        md.setStyle("-fx-font-family:'Courier New'; -fx-font-size:9; -fx-text-fill:#777;");
-        Label mc = new Label("COURS #" + q.getCourseId());
-        mc.setStyle("-fx-font-family:'Courier New'; -fx-font-size:9; -fx-text-fill:#777;");
+        // Meta (durée + cours)
+        HBox meta = new HBox(14);
+        meta.setAlignment(Pos.CENTER_LEFT);
+        Label md = new Label("⏱ " + q.getDuree() + " min");
+        md.setStyle("-fx-font-size: 11px; -fx-text-fill: #888888;");
+        Label mc = new Label("Cours #" + q.getCourseId());
+        mc.setStyle("-fx-font-size: 11px; -fx-text-fill: #888888;");
         meta.getChildren().addAll(md, mc);
-        top.getChildren().addAll(badgeRow, titre, meta);
 
-        // Sep
-        Region sep = new Region(); sep.setPrefHeight(2);
-        sep.setStyle("-fx-background-color:#EBEBEB;");
+        body.getChildren().addAll(badgeRow, titre, meta);
+
+        // Séparateur
+        Region sep = new Region(); sep.setPrefHeight(1);
+        sep.setStyle("-fx-background-color: #eeeeee;");
 
         // Footer
-        HBox footer = new HBox(10); footer.setAlignment(Pos.CENTER_LEFT);
-        footer.setStyle("-fx-background-color:#F8F8F8; -fx-padding:10 14;" +
-                        "-fx-border-color:#EBEBEB; -fx-border-width:2 0 0 0;");
-        Label ql = new Label("? QUESTIONS");
-        ql.setStyle("-fx-font-family:'Courier New'; -fx-font-size:9; -fx-text-fill:#999;");
+        HBox footer = new HBox(10);
+        footer.setAlignment(Pos.CENTER_LEFT);
+        footer.setStyle(
+            "-fx-background-color: #f9f9f9; -fx-padding: 10 16;" +
+            "-fx-background-radius: 0 0 16 16;"
+        );
+        Label ql = new Label("? questions");
+        ql.setStyle("-fx-font-size: 11px; -fx-text-fill: #aaaaaa;");
         Region fsp = new Region(); HBox.setHgrow(fsp, Priority.ALWAYS);
-        Button btn = new Button("[ GO ]");
-        btn.setStyle("-fx-font-family:'Courier New'; -fx-font-size:11; -fx-font-weight:bold;" +
-                     "-fx-background-color:" + accent + "; -fx-text-fill:#FFFFFF;" +
-                     "-fx-border-color:#1A1A1A; -fx-border-width:2;" +
-                     "-fx-background-radius:0; -fx-border-radius:0; -fx-padding:6 16; -fx-cursor:hand;");
+        Button btn = new Button("GO →");
+        btn.setStyle(
+            "-fx-font-size: 12px; -fx-font-weight: bold;" +
+            "-fx-background-color: " + accent + "; -fx-text-fill: white;" +
+            "-fx-background-radius: 8; -fx-border-radius: 8;" +
+            "-fx-padding: 7 18; -fx-cursor: hand;"
+        );
         btn.setOnAction(e -> lancerQuiz(q));
         footer.getChildren().addAll(ql, fsp, btn);
 
-        card.getChildren().addAll(bar, top, sep, footer);
+        card.getChildren().addAll(bar, body, sep, footer);
 
-        // Hover
-        card.setOnMouseEntered(e ->
-            card.setStyle(card.getStyle().replace("#FFFFFF;", accentLight + ";")));
-        card.setOnMouseExited(e ->
-            card.setStyle(card.getStyle().replace(accentLight + ";", "#FFFFFF;")));
+        // Hover — léger lift
+        String baseStyle = card.getStyle();
+        String hoverStyle = baseStyle.replace(
+            "dropshadow(gaussian, rgba(0,0,0,0.07), 12, 0, 0, 4)",
+            "dropshadow(gaussian, rgba(0,0,0,0.14), 20, 0, 0, 7)"
+        ).replace("white;", "#fafafa;");
+        card.setOnMouseEntered(e -> card.setStyle(hoverStyle));
+        card.setOnMouseExited(e -> card.setStyle(baseStyle));
 
-        wrap.getChildren().addAll(shadow, card);
-        return new VBox(wrap);
+        VBox wrapper = new VBox(card);
+        wrapper.setStyle("-fx-padding: 0;");
+        return wrapper;
     }
 
     // ── Lancer quiz ───────────────────────────────────────────

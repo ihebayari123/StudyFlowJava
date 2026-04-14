@@ -1,138 +1,173 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="edu.connexion3a36.Controller.UserQuizController"
       spacing="0"
-      style="-fx-background-color:#F2F2F2; -fx-font-family:'Courier New';">
+      style="-fx-background-color: #f5f5f5;">
 
-    <!-- TOPBAR -->
-    <HBox alignment="CENTER_LEFT" spacing="0"
-          style="-fx-background-color:#FFFFFF; -fx-min-height:46;
-                 -fx-border-color:#1A1A1A; -fx-border-width:0 0 3 0;">
-        <Button fx:id="btnRetour" text="&lt; RETOUR"
-                style="-fx-background-color:transparent; -fx-border-color:#1A1A1A;
-                       -fx-border-width:0 3 0 0; -fx-background-radius:0; -fx-border-radius:0;
-                       -fx-font-family:'Courier New'; -fx-font-size:10; -fx-font-weight:bold;
-                       -fx-letter-spacing:1; -fx-text-fill:#888888;
-                       -fx-padding:0 16; -fx-min-height:46; -fx-cursor:hand;"/>
-        <Label fx:id="lblQuizTitle" text="QUIZ"
-               style="-fx-font-family:'Courier New'; -fx-font-size:13; -fx-font-weight:bold;
-                      -fx-text-fill:#1A1A1A; -fx-padding:0 16;"
-               HBox.hgrow="ALWAYS"/>
-        <HBox alignment="CENTER"
-              style="-fx-background-color:#C47A00; -fx-padding:0 18; -fx-min-height:46;
-                     -fx-border-color:#1A1A1A; -fx-border-width:0 0 0 3;">
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!--  TOPBAR                                                 -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <HBox prefHeight="64" alignment="CENTER_LEFT" spacing="16"
+          style="-fx-background-color: white;
+                 -fx-border-color: transparent transparent #e0e0e0 transparent;
+                 -fx-border-width: 0 0 1 0;">
+        <padding><Insets top="0" right="28" bottom="0" left="28"/></padding>
+
+        <Button fx:id="btnRetour" text="← Retour"
+                style="-fx-background-color: white; -fx-border-color: #dddddd;
+                       -fx-border-radius: 10; -fx-background-radius: 10;
+                       -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px;"/>
+
+        <VBox spacing="2">
+            <Label fx:id="lblQuizTitle" text="QUIZ"
+                   style="-fx-font-size: 18px; -fx-font-weight: bold;
+                          -fx-font-family: 'Georgia'; -fx-text-fill: #1a1a2e;"/>
+            <Label text="Répondez à chaque question avant la fin du temps."
+                   style="-fx-font-size: 11px; -fx-text-fill: #888888;"/>
+        </VBox>
+
+        <Region HBox.hgrow="ALWAYS"/>
+
+        <!-- Compteur question -->
+        <HBox alignment="CENTER" spacing="6"
+              style="-fx-background-color: #f0f0f0; -fx-background-radius: 20;
+                     -fx-padding: 6 16;">
+            <Label text="Question"
+                   style="-fx-font-size: 11px; -fx-text-fill: #888888;"/>
             <Label fx:id="lblQCounter" text="1 / ?"
-                   style="-fx-font-family:'Courier New'; -fx-font-size:13;
-                          -fx-font-weight:bold; -fx-text-fill:#FFFFFF;"/>
+                   style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #111111;"/>
         </HBox>
     </HBox>
 
-    <!-- BODY -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!--  BODY                                                   -->
+    <!-- ══════════════════════════════════════════════════════ -->
     <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
-                style="-fx-background:#F2F2F2; -fx-background-color:#F2F2F2; -fx-border-color:transparent;">
-        <VBox spacing="0" style="-fx-padding:18; -fx-max-width:720; -fx-background-color:#F2F2F2;">
+                style="-fx-background-color: #f5f5f5; -fx-border-color: transparent;">
+        <VBox spacing="20">
+            <padding><Insets top="28" right="28" bottom="28" left="28"/></padding>
 
-            <!-- TIMER -->
-            <VBox style="-fx-background-color:#FFFFFF; -fx-border-color:#1A1A1A;
-                         -fx-border-width:3; -fx-padding:12 14; -fx-margin-bottom:14;">
-                <HBox alignment="CENTER_LEFT" style="-fx-padding:0 0 6 0;">
-                    <Label text="// TEMPS RESTANT"
-                           style="-fx-font-family:'Courier New'; -fx-font-size:9; -fx-font-weight:bold;
-                                  -fx-letter-spacing:2; -fx-text-fill:#888888;"/>
-                    <Region HBox.hgrow="ALWAYS"/>
+            <!-- PROGRESS DOTS + TIMER ROW -->
+            <HBox spacing="16" alignment="CENTER">
+
+                <!-- Progress bar dots -->
+                <HBox fx:id="progressRow" spacing="5" HBox.hgrow="ALWAYS" alignment="CENTER"/>
+
+                <!-- Timer badge -->
+                <HBox alignment="CENTER" spacing="8"
+                      style="-fx-background-color: white; -fx-background-radius: 14;
+                             -fx-border-color: #eeeeee; -fx-border-radius: 14;
+                             -fx-padding: 8 16;
+                             -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 8, 0, 0, 2);">
+                    <Label text="⏱"
+                           style="-fx-font-size: 16px;"/>
                     <Label fx:id="lblTimerVal" text="--:--"
-                           style="-fx-font-family:'Courier New'; -fx-font-size:16;
-                                  -fx-font-weight:bold; -fx-text-fill:#C47A00;"/>
+                           style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #111111;"/>
                 </HBox>
-                <ProgressBar fx:id="pbTimer" progress="1.0" prefWidth="10000"
-                             style="-fx-pref-height:6; -fx-background-radius:0; -fx-border-radius:0;
-                                    -fx-accent:#C47A00; -fx-background-color:#DDDDDD;"/>
-            </VBox>
+            </HBox>
 
-            <!-- PROGRESS DOTS -->
-            <HBox fx:id="progressRow" spacing="4" style="-fx-padding:0 0 14 0;"/>
+            <!-- Timer progress bar -->
+            <ProgressBar fx:id="pbTimer" progress="1.0" prefWidth="10000" prefHeight="6"
+                         style="-fx-background-radius: 10; -fx-border-radius: 10;
+                                -fx-accent: #111111; -fx-background-color: #eeeeee;"/>
 
-            <!-- CARTE QUESTION avec offset shadow -->
-            <StackPane style="-fx-padding:0 0 12 0;">
-                <VBox style="-fx-background-color:#888888;
-                             -fx-translate-x:5; -fx-translate-y:5; -fx-min-height:200;"/>
-                <VBox style="-fx-background-color:#FFFFFF; -fx-border-color:#1A1A1A;
-                             -fx-border-width:3; -fx-padding:22 22 18 22;" spacing="0">
+            <!-- CARTE QUESTION -->
+            <VBox spacing="0"
+                  style="-fx-background-color: white; -fx-background-radius: 20;
+                         -fx-border-color: #eeeeee; -fx-border-radius: 20; -fx-border-width: 1.5;
+                         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.07), 12, 0, 0, 4);">
+
+                <!-- Barre top colorée -->
+                <HBox prefHeight="5" maxWidth="10000"
+                      style="-fx-background-color: #111111;
+                             -fx-background-radius: 20 20 0 0;"/>
+
+                <VBox spacing="16">
+                    <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
 
                     <!-- Badge type -->
-                    <HBox style="-fx-padding:0 0 8 0;">
+                    <HBox alignment="CENTER_LEFT" spacing="10">
                         <Label fx:id="lblQType" text="TYPE"
-                               style="-fx-font-family:'Courier New'; -fx-font-size:9; -fx-font-weight:bold;
-                                      -fx-letter-spacing:2; -fx-background-color:#0A5A8A;
-                                      -fx-text-fill:#FFFFFF; -fx-padding:3 10;"/>
+                               style="-fx-font-size: 10px; -fx-font-weight: bold;
+                                      -fx-background-color: #e8f5e9; -fx-text-fill: #2e7d32;
+                                      -fx-padding: 4 12; -fx-background-radius: 20;"/>
                     </HBox>
 
                     <!-- Texte question -->
                     <Label fx:id="lblQTexte" text="" wrapText="true"
-                           style="-fx-font-family:'Courier New'; -fx-font-size:15; -fx-font-weight:bold;
-                                  -fx-text-fill:#1A1A1A; -fx-padding:0 0 10 0;"/>
+                           style="-fx-font-size: 15px; -fx-font-weight: bold;
+                                  -fx-text-fill: #1a1a2e; -fx-line-spacing: 3;"/>
 
                     <!-- Indice -->
-                    <HBox fx:id="hintBox" spacing="8" alignment="CENTER_LEFT"
+                    <HBox fx:id="hintBox" spacing="10" alignment="CENTER_LEFT"
                           visible="false" managed="false"
-                          style="-fx-background-color:#FFF8E6; -fx-border-color:#C47A00;
-                                 -fx-border-width:0 0 0 4; -fx-padding:8 12; -fx-margin-bottom:10;">
-                        <Label text="HINT:"
-                               style="-fx-font-family:'Courier New'; -fx-font-size:9;
-                                      -fx-font-weight:bold; -fx-text-fill:#C47A00;"/>
+                          style="-fx-background-color: #fff8e1;
+                                 -fx-border-color: #ffca28;
+                                 -fx-border-width: 0 0 0 4;
+                                 -fx-background-radius: 0 8 8 0;
+                                 -fx-border-radius: 0 8 8 0;
+                                 -fx-padding: 10 14;">
+                        <Label text="💡 Indice :"
+                               style="-fx-font-size: 11px; -fx-font-weight: bold;
+                                      -fx-text-fill: #f57f17;"/>
                         <Label fx:id="lblHint" text="" wrapText="true"
-                               style="-fx-font-family:'Courier New'; -fx-font-size:11; -fx-text-fill:#C47A00;"/>
+                               style="-fx-font-size: 12px; -fx-text-fill: #795548;"/>
                     </HBox>
 
-                    <Region prefHeight="1" style="-fx-background-color:#EBEBEB;"/>
+                    <!-- Séparateur -->
+                    <Region prefHeight="1"
+                            style="-fx-background-color: #eeeeee;"/>
 
                     <!-- Zone choix_multiple -->
-                    <VBox fx:id="optionsArea" spacing="8" visible="false" managed="false"
-                          style="-fx-padding:12 0 0 0;"/>
+                    <VBox fx:id="optionsArea" spacing="10" visible="false" managed="false"/>
 
                     <!-- Zone vrai_faux -->
-                    <HBox fx:id="tfArea" spacing="12" visible="false" managed="false"
-                          style="-fx-padding:12 0 0 0;"/>
+                    <HBox fx:id="tfArea" spacing="14" visible="false" managed="false"/>
 
                     <!-- Zone texte libre -->
-                    <VBox fx:id="texteArea" spacing="6" visible="false" managed="false"
-                          style="-fx-padding:12 0 0 0;">
-                        <TextArea fx:id="taReponse" promptText="VOTRE REPONSE..."
+                    <VBox fx:id="texteArea" spacing="8" visible="false" managed="false">
+                        <TextArea fx:id="taReponse" promptText="Votre réponse..."
                                   prefRowCount="4" wrapText="true"
-                                  style="-fx-font-family:'Courier New'; -fx-font-size:13;
-                                         -fx-background-color:#F5F5F5; -fx-border-color:#1A1A1A;
-                                         -fx-border-width:3; -fx-background-radius:0; -fx-border-radius:0;
-                                         -fx-text-fill:#1A1A1A; -fx-prompt-text-fill:#AAAAAA; -fx-padding:10 12;"/>
+                                  style="-fx-font-size: 13px;
+                                         -fx-background-color: #f5f5f5;
+                                         -fx-border-color: #dddddd;
+                                         -fx-border-radius: 10; -fx-background-radius: 10;
+                                         -fx-border-width: 1.5;
+                                         -fx-text-fill: #1a1a2e;
+                                         -fx-prompt-text-fill: #aaaaaa;
+                                         -fx-padding: 10 14;"/>
                     </VBox>
 
                     <!-- Feedback -->
                     <VBox fx:id="feedbackBox" visible="false" managed="false"
-                          style="-fx-background-color:#F5F5F5; -fx-border-color:#1A1A1A;
-                                 -fx-border-width:0 0 0 4; -fx-padding:8 12; -fx-margin-top:10;">
+                          style="-fx-background-color: #f5f5f5;
+                                 -fx-background-radius: 10;
+                                 -fx-border-color: #dddddd;
+                                 -fx-border-radius: 10;
+                                 -fx-border-width: 1;
+                                 -fx-padding: 12 16;">
                         <Label fx:id="lblFeedback" text="" wrapText="true"
-                               style="-fx-font-family:'Courier New'; -fx-font-size:12; -fx-text-fill:#555555;"/>
+                               style="-fx-font-size: 13px; -fx-text-fill: #555555;"/>
                     </VBox>
 
-                    <!-- Boutons -->
-                    <HBox spacing="10" alignment="CENTER_RIGHT" style="-fx-padding:16 0 0 0;">
-                        <Button fx:id="btnValider" text="[ VALIDER ]" disable="true"
-                                style="-fx-font-family:'Courier New'; -fx-font-size:11; -fx-font-weight:bold;
-                                       -fx-letter-spacing:1; -fx-background-color:#0A5A8A; -fx-text-fill:#FFFFFF;
-                                       -fx-border-color:#1A1A1A; -fx-border-width:2;
-                                       -fx-background-radius:0; -fx-border-radius:0;
-                                       -fx-padding:10 20; -fx-cursor:hand;"/>
-                        <Button fx:id="btnSuivant" text="SUIVANT >>" visible="false" managed="false"
-                                style="-fx-font-family:'Courier New'; -fx-font-size:11; -fx-font-weight:bold;
-                                       -fx-letter-spacing:1; -fx-background-color:#C47A00; -fx-text-fill:#FFFFFF;
-                                       -fx-border-color:#1A1A1A; -fx-border-width:2;
-                                       -fx-background-radius:0; -fx-border-radius:0;
-                                       -fx-padding:10 20; -fx-cursor:hand;"/>
+                    <!-- Boutons action -->
+                    <HBox spacing="12" alignment="CENTER_RIGHT">
+                        <Button fx:id="btnValider" text="Valider" disable="true"
+                                style="-fx-background-color: #111111; -fx-text-fill: white;
+                                       -fx-background-radius: 10; -fx-font-size: 13px;
+                                       -fx-font-weight: bold; -fx-padding: 10 24; -fx-cursor: hand;"/>
+                        <Button fx:id="btnSuivant" text="Suivant →" visible="false" managed="false"
+                                style="-fx-background-color: #4caf50; -fx-text-fill: white;
+                                       -fx-background-radius: 10; -fx-font-size: 13px;
+                                       -fx-font-weight: bold; -fx-padding: 10 24; -fx-cursor: hand;"/>
                     </HBox>
+
                 </VBox>
-            </StackPane>
+            </VBox>
 
         </VBox>
     </ScrollPane>
