@@ -74,6 +74,15 @@
                                -fx-font-size: 14; -fx-font-weight: bold;
                                -fx-background-radius: 8; -fx-cursor: hand;"/>
 
+                <!-- Lien vers inscription -->
+                <HBox alignment="CENTER">
+                    <Label text="Pas encore de compte ? "
+                           style="-fx-font-size: 12; -fx-text-fill: #9E9E9E;"/>
+                    <Label text="S'inscrire"
+                           onMouseClicked="#allerVersInscription"
+                           style="-fx-font-size: 12; -fx-text-fill: #2979FF;
+                  -fx-cursor: hand; -fx-underline: true;"/>
+                </HBox>
                 <!-- Footer -->
                 <Label text="StudyFlow © 2026"
                        style="-fx-font-size: 11; -fx-text-fill: #9E9E9E;"

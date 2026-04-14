@@ -33,12 +33,47 @@ public class MedecinService implements IService {
     @Override
     public void deleteEntity(Object o) throws SQLException {
         Medecin m = (Medecin) o;
-        String req = "DELETE FROM medecin WHERE id = ?";
-        PreparedStatement pst = cnx.prepareStatement(req);
-        pst.setInt(1, m.getId());
-        pst.executeUpdate();
-        pst.close();
-        System.out.println("Médecin supprimé !");
+        int medecinId = m.getId();
+        
+        // Enable transaction for cascade deletion
+        cnx.setAutoCommit(false);
+        
+        try {
+            // 1. Supprimer les consultations liées (CASCADE)
+            String deleteConsultations = "DELETE FROM consultation WHERE medecin_id = ?";
+            try (PreparedStatement pstConsult = cnx.prepareStatement(deleteConsultations)) {
+                pstConsult.setInt(1, medecinId);
+                int consultationsDeleted = pstConsult.executeUpdate();
+                System.out.println(consultationsDeleted + " Consultation(s) supprimée(s) en cascade");
+            }
+            
+            // 2. Supprimer le médecin lui-même
+            String req = "DELETE FROM medecin WHERE id = ?";
+            try (PreparedStatement pst = cnx.prepareStatement(req)) {
+                pst.setInt(1, medecinId);
+                pst.executeUpdate();
+            }
+            
+            // Valider la transaction
+            cnx.commit();
+            System.out.println("Médecin supprimé avec succès (suppression en cascade) !");
+            
+        } catch (SQLException e) {
+            // Annuler la transaction en cas d'erreur
+            cnx.rollback();
+            throw e;
+        } finally {
+            cnx.setAutoCommit(true);
+        }
+    }
+    
+    /**
+     * Supprime un Médecin par son ID (méthode alternative)
+     */
+    public void deleteById(int id) throws SQLException {
+        Medecin m = new Medecin();
+        m.setId(id);
+        deleteEntity(m);
     }
 
     @Override

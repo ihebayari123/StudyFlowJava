@@ -1,31 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.control.Separator?>
 
-<VBox spacing="15" style="-fx-background-color: #eef2eb; -fx-padding: 30;"
+<VBox spacing="20" style="-fx-background-color: #F5F6FA; -fx-padding: 25;"
       xmlns="http://javafx.com/javafx/21"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="edu.connexion3a36.Controller.AjouterStressSurveyController">
 
-    <Label text="Ajouter un Stress Survey"
-           style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2d6a4f;"/>
+    <!-- Header avec icône et titre -->
+    <HBox alignment="CENTER_LEFT" spacing="12">
+        <Rectangle height="30" width="5" style="-fx-fill: #2979FF; -fx-arc-width: 3; -fx-arc-height: 3;" />
+        <Label text="Ajouter un Stress Survey"
+               style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #1A1A2E; -fx-font-family: 'Segoe UI';"/>
+    </HBox>
 
-    <Label text="Date"/>
-    <DatePicker fx:id="datePicker" prefWidth="300"/>
+    <Separator style="-fx-background-color: #E0E0E0;" />
 
-    <Label text="Heures de sommeil"/>
-    <TextField fx:id="sleepHoursTF" promptText="Ex : 7"/>
+    <!-- Formulaire -->
+    <VBox spacing="16" style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 20; -fx-border-color: #E0E0E0; -fx-border-radius: 12;">
 
-    <Label text="Heures d'étude"/>
-    <TextField fx:id="studyHoursTF" promptText="Ex : 5"/>
+        <Label text="📊 Informations du stress survey"
+               style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #2979FF; -fx-font-family: 'Segoe UI'; -fx-padding: 0 0 5 0;"/>
 
-    <Label text="User ID"/>
-    <TextField fx:id="userIdTF" promptText="Ex : 1"/>
+        <!-- Date -->
+        <VBox spacing="4">
+            <Label text="Date"
+                   style="-fx-text-fill: #1A1A2E; -fx-font-size: 13px; -fx-font-weight: bold; -fx-font-family: 'Segoe UI';"/>
+            <DatePicker fx:id="datePicker" prefWidth="350"
+                        style="-fx-background-color: #F8F9FA; -fx-background-radius: 8; -fx-border-color: #E0E0E0; -fx-border-radius: 8; -fx-font-family: 'Segoe UI'; -fx-font-size: 13px;"/>
+        </VBox>
 
-    <HBox spacing="12">
+        <!-- Heures de sommeil -->
+        <VBox spacing="4">
+            <Label text="Heures de sommeil"
+                   style="-fx-text-fill: #1A1A2E; -fx-font-size: 13px; -fx-font-weight: bold; -fx-font-family: 'Segoe UI';"/>
+            <TextField fx:id="sleepHoursTF" promptText="Ex : 7"
+                       style="-fx-background-color: #F8F9FA; -fx-background-radius: 8; -fx-border-color: #E0E0E0; -fx-border-radius: 8; -fx-padding: 10 12; -fx-font-family: 'Segoe UI'; -fx-font-size: 13px;"/>
+        </VBox>
+
+        <!-- Heures d'étude -->
+        <VBox spacing="4">
+            <Label text="Heures d'étude"
+                   style="-fx-text-fill: #1A1A2E; -fx-font-size: 13px; -fx-font-weight: bold; -fx-font-family: 'Segoe UI';"/>
+            <TextField fx:id="studyHoursTF" promptText="Ex : 5"
+                       style="-fx-background-color: #F8F9FA; -fx-background-radius: 8; -fx-border-color: #E0E0E0; -fx-border-radius: 8; -fx-padding: 10 12; -fx-font-family: 'Segoe UI'; -fx-font-size: 13px;"/>
+        </VBox>
+
+        <!-- User ID -->
+        <VBox spacing="4">
+            <Label text="User ID"
+                   style="-fx-text-fill: #1A1A2E; -fx-font-size: 13px; -fx-font-weight: bold; -fx-font-family: 'Segoe UI';"/>
+            <TextField fx:id="userIdTF" promptText="Ex : 1"
+                       style="-fx-background-color: #F8F9FA; -fx-background-radius: 8; -fx-border-color: #E0E0E0; -fx-border-radius: 8; -fx-padding: 10 12; -fx-font-family: 'Segoe UI'; -fx-font-size: 13px;"/>
+        </VBox>
+
+    </VBox>
+
+    <!-- Boutons d'action -->
+    <HBox spacing="15" alignment="CENTER_RIGHT">
         <Button text="✦ Enregistrer" onAction="#ajouter"
-                style="-fx-background-color: #2d6a4f; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 4; -fx-padding: 10 20;"/>
+                style="-fx-background-color: #2979FF; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 10 25; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(41,121,255,0.25), 8, 0, 0, 2); -fx-font-family: 'Segoe UI'; -fx-font-size: 13px;"/>
         <Button text="↺ Réinitialiser" onAction="#reinitialiser"
-                style="-fx-background-color: transparent; -fx-border-color: #2d6a4f; -fx-border-radius: 4; -fx-padding: 10 20;"/>
+                style="-fx-background-color: transparent; -fx-text-fill: #757575; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 10 25; -fx-cursor: hand; -fx-border-color: #E0E0E0; -fx-border-width: 1; -fx-border-radius: 10; -fx-font-family: 'Segoe UI'; -fx-font-size: 13px;"/>
     </HBox>
 </VBox>

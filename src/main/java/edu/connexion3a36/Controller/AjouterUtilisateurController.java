@@ -89,7 +89,8 @@ public class AjouterUtilisateurController {
         // Bloquer si invalide
         if (!Validation.validerTout(nom, prenom, email, mdp, role, statut)) return;
 
-        Utilisateur u = new Utilisateur(nom, prenom, email, mdp, role, statut);
+        Utilisateur u = new Utilisateur(nom, prenom, email, mdp, role);
+        u.setStatus(statut);
 
         try {
             service.addEntity(u);

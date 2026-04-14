@@ -44,6 +44,7 @@ public class AfficherWellBeingScoreController {
 
     @FXML
     public void initialize() {
+        // Configuration des colonnes
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colSurveyId.setCellValueFactory(new PropertyValueFactory<>("survey_id"));
         colRecommendation.setCellValueFactory(new PropertyValueFactory<>("recommendation"));
@@ -51,6 +52,7 @@ public class AfficherWellBeingScoreController {
         colComment.setCellValueFactory(new PropertyValueFactory<>("comment"));
         colScore.setCellValueFactory(new PropertyValueFactory<>("score"));
 
+        // Sélection dans le tableau
         tableView.getSelectionModel().selectedItemProperty().addListener((obs, old, w) -> {
             if (w != null) {
                 selected = w;
@@ -61,23 +63,20 @@ public class AfficherWellBeingScoreController {
             }
         });
 
-        // Configuration Filtre / Recherche / Tri
+        // Configuration des ComboBox de tri
         triCB.getItems().addAll("ID", "Score", "Survey ID");
         ordreCB.getItems().addAll("Croissant", "Décroissant");
 
-        triCB.setOnAction(e -> appliquerTri());
-        ordreCB.setOnAction(e -> appliquerTri());
+        // Valeurs par défaut pour le tri
+        triCB.setValue("ID");
+        ordreCB.setValue("Croissant");
+
+        // Listeners pour le tri
+        triCB.valueProperty().addListener((obs, oldVal, newVal) -> appliquerTri());
+        ordreCB.valueProperty().addListener((obs, oldVal, newVal) -> appliquerTri());
 
         // Recherche temps réel
-        rechercheTF.textProperty().addListener((obs, oldVal, newVal) -> {
-            String recherche = newVal.trim().toLowerCase();
-            filteredData.setPredicate(score -> {
-                if (recherche.isEmpty()) return true;
-                return score.getComment().toLowerCase().contains(recherche)
-                        || score.getRecommendation().toLowerCase().contains(recherche)
-                        || score.getAction_plan().toLowerCase().contains(recherche);
-            });
-        });
+        rechercheTF.textProperty().addListener((obs, oldVal, newVal) -> appliquerFiltres());
 
         loadData();
     }
@@ -87,10 +86,71 @@ public class AfficherWellBeingScoreController {
             masterData = FXCollections.observableArrayList(service.getData());
             filteredData = new FilteredList<>(masterData, p -> true);
             sortedData = new SortedList<>(filteredData);
-            sortedData.comparatorProperty().bind(tableView.comparatorProperty());
+
+            // Appliquer les filtres initiaux
+            appliquerFiltres();
+
+            // Appliquer le tri initial
+            appliquerTri();
+
+            // Lier à la TableView
             tableView.setItems(sortedData);
+
         } catch (SQLException e) {
             showAlert(Alert.AlertType.ERROR, "Erreur", e.getMessage());
+        }
+    }
+
+    private void appliquerFiltres() {
+        if (filteredData == null) return;
+
+        String recherche = rechercheTF.getText() != null ? rechercheTF.getText().trim().toLowerCase() : "";
+
+        filteredData.setPredicate(score -> {
+            if (recherche.isEmpty()) return true;
+
+            // Recherche dans les champs texte
+            boolean matchRecommendation = score.getRecommendation() != null &&
+                    score.getRecommendation().toLowerCase().contains(recherche);
+            boolean matchActionPlan = score.getAction_plan() != null &&
+                    score.getAction_plan().toLowerCase().contains(recherche);
+            boolean matchComment = score.getComment() != null &&
+                    score.getComment().toLowerCase().contains(recherche);
+
+            return matchRecommendation || matchActionPlan || matchComment;
+        });
+    }
+
+    private void appliquerTri() {
+        if (sortedData == null) return;
+
+        String champTri = triCB.getValue();
+        String ordre = ordreCB.getValue();
+
+        if (champTri == null || ordre == null) {
+            sortedData.setComparator(null);
+            return;
+        }
+
+        Comparator<WellBeingScore> comparator = null;
+
+        switch (champTri) {
+            case "ID":
+                comparator = Comparator.comparingInt(WellBeingScore::getId);
+                break;
+            case "Score":
+                comparator = Comparator.comparingInt(WellBeingScore::getScore);
+                break;
+            case "Survey ID":
+                comparator = Comparator.comparingInt(WellBeingScore::getSurvey_id);
+                break;
+        }
+
+        if (comparator != null) {
+            if ("Décroissant".equals(ordre)) {
+                comparator = comparator.reversed();
+            }
+            sortedData.setComparator(comparator);
         }
     }
 
@@ -124,9 +184,19 @@ public class AfficherWellBeingScoreController {
             service.updateEntity(selected.getId(), selected);
             showAlert(Alert.AlertType.INFORMATION, "Succès", "Score modifié !");
             loadData();
+            clearSelection();
         } catch (SQLException e) {
             showAlert(Alert.AlertType.ERROR, "Erreur BDD", e.getMessage());
         }
+    }
+
+    private void clearSelection() {
+        selected = null;
+        recommendationTF.clear();
+        actionPlanTF.clear();
+        commentTF.clear();
+        scoreTF.clear();
+        tableView.getSelectionModel().clearSelection();
     }
 
     @FXML
@@ -143,7 +213,7 @@ public class AfficherWellBeingScoreController {
                     service.deleteEntity(selected);
                     showAlert(Alert.AlertType.INFORMATION, "Succès", "Score supprimé !");
                     loadData();
-                    selected = null;
+                    clearSelection();
                 } catch (SQLException e) {
                     showAlert(Alert.AlertType.ERROR, "Erreur BDD", e.getMessage());
                 }
@@ -152,44 +222,36 @@ public class AfficherWellBeingScoreController {
     }
 
     @FXML
-    void actualiser(ActionEvent event) { loadData(); }
-
-    private void appliquerTri() {
-        String champTri = triCB.getValue();
-        String ordre = ordreCB.getValue();
-
-        if (champTri == null || ordre == null) {
-            sortedData.setComparator(null);
-            return;
-        }
-
-        Comparator<WellBeingScore> comparator = switch (champTri) {
-            case "ID" -> Comparator.comparingInt(WellBeingScore::getId);
-            case "Score" -> Comparator.comparingInt(WellBeingScore::getScore);
-            case "Survey ID" -> Comparator.comparingInt(WellBeingScore::getSurvey_id);
-            default -> null;
-        };
-
-        if (comparator != null) {
-            if ("Décroissant".equals(ordre)) {
-                comparator = comparator.reversed();
-            }
-            sortedData.setComparator(comparator);
-        }
+    void actualiser(ActionEvent event) {
+        loadData();
+        resetFiltre(event);
     }
 
     @FXML
     void resetFiltre(ActionEvent event) {
-        triCB.setValue(null);
-        ordreCB.setValue(null);
+        // Réinitialiser les ComboBox
+        triCB.setValue("ID");
+        ordreCB.setValue("Croissant");
+
+        // Réinitialiser la recherche
         rechercheTF.clear();
-        filteredData.setPredicate(p -> true);
-        sortedData.setComparator(null);
+
+        // Réinitialiser les prédicats
+        if (filteredData != null) {
+            filteredData.setPredicate(p -> true);
+        }
+
+        // Réappliquer le tri par défaut
+        appliquerTri();
+
+        showAlert(Alert.AlertType.INFORMATION, "Info", "Filtres réinitialisés !");
     }
 
     private void showAlert(Alert.AlertType type, String titre, String msg) {
         Alert a = new Alert(type);
-        a.setTitle(titre); a.setHeaderText(null); a.setContentText(msg);
+        a.setTitle(titre);
+        a.setHeaderText(null);
+        a.setContentText(msg);
         a.showAndWait();
     }
 }

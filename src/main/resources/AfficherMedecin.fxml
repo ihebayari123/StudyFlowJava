@@ -4,161 +4,144 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.shape.Rectangle?>
-<?import javafx.scene.paint.Color?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.ProgressBar?>
 
-<AnchorPane prefHeight="620.0" prefWidth="580.0" style="-fx-background-color: #eef2eb;"
+<AnchorPane prefHeight="620.0" prefWidth="580.0" style="-fx-background-color: #c8d8e8;"
             xmlns="http://javafx.com/javafx/21"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="edu.connexion3a36.Controller.AfficherMedecinController">
 
     <children>
-        <!-- Left accent bar -->
-        <Rectangle width="8" height="620" layoutX="0" layoutY="0" fill="#2d6a4f"/>
-        <Rectangle width="580" height="4" layoutX="0" layoutY="0" fill="#c8a84b"/>
+        <!-- Rectangle de fond avec dégradé bleu -->
+        <Rectangle height="620" style="-fx-fill: linear-gradient(to bottom right, #7BAFD4, #B0C9D8, #8A9BAA);" width="580" />
 
-        <VBox layoutX="8" layoutY="4" prefWidth="572" spacing="0">
+        <VBox alignment="CENTER" layoutX="15" layoutY="15" prefWidth="550" prefHeight="590">
 
-            <!-- HEADER -->
-            <HBox style="-fx-background-color: #ffffff;" alignment="CENTER_LEFT" spacing="0" prefHeight="100">
-                <VBox style="-fx-background-color: #2d6a4f;" prefWidth="180" prefHeight="100"
-                      alignment="CENTER" spacing="2">
-                    <Label text="STUDYFLOW"
-                           style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #c8a84b; -fx-font-family: 'Palatino Linotype';"/>
-                    <Label text="🩺" style="-fx-font-size: 28px;"/>
-                    <Label text="GESTION MÉDICALE"
-                           style="-fx-font-size: 8px; -fx-text-fill: rgba(255,255,255,0.7); -fx-font-family: 'Palatino Linotype';"/>
-                </VBox>
-                <VBox prefWidth="392" prefHeight="100" alignment="CENTER_LEFT" spacing="4">
-                    <padding><Insets left="24" right="20"/></padding>
-                    <Label text="Liste des Médecins"
-                           style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1a3320; -fx-font-family: 'Palatino Linotype';"/>
-                    <Label text="Consultation — Service Médical"
-                           style="-fx-font-size: 11px; -fx-text-fill: #6b8f71; -fx-font-family: 'Palatino Linotype';"/>
-                    <Rectangle width="160" height="2" fill="#c8a84b"/>
-                </VBox>
-            </HBox>
+            <VBox prefHeight="590" prefWidth="550" style="-fx-background-color: #F5F6FA; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 30, 0, 0, 8);">
 
-            <HBox style="-fx-background-color: #d4e6d4;" prefHeight="1"/>
+                <HBox VBox.vgrow="ALWAYS">
 
-            <!-- BODY -->
-            <HBox style="-fx-background-color: #ffffff;" spacing="0" prefHeight="460">
+                    <!-- ======================== SIDEBAR ======================== -->
+                    <VBox prefWidth="180" spacing="0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 16 0 0 16; -fx-padding: 20 0 20 0;">
 
-                <!-- Colonne gauche - Sidebar with summary info -->
-                <VBox prefWidth="168"
-                      style="-fx-background-color: #f5f9f5; -fx-border-color: #d4e6d4; -fx-border-width: 0 1 0 0;"
-                      spacing="0">
-                    <padding><Insets top="28" bottom="20" left="16" right="16"/></padding>
+                        <HBox alignment="CENTER_LEFT" style="-fx-padding: 0 16 16 20;">
+                            <Circle radius="14" style="-fx-fill: #2979FF;" />
+                            <Label style="-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: #1A1A2E; -fx-padding: 0 0 0 8;" text="EduDoc" />
+                        </HBox>
 
-                    <Label text="RÉSUMÉ"
-                           style="-fx-font-size: 9px; -fx-font-weight: bold; -fx-text-fill: #c8a84b; -fx-font-family: 'Palatino Linotype';"/>
-
-                    <Rectangle width="136" height="1" fill="#d4e6d4">
-                        <VBox.margin><Insets top="8" bottom="16"/></VBox.margin>
-                    </Rectangle>
-
-                    <VBox spacing="12">
-                        <VBox spacing="3" style="-fx-background-color: #eef7ee; -fx-background-radius: 8; -fx-padding: 12;">
-                            <Label text="👨‍⚕️  Total Médecins"
-                                   style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #2d6a4f; -fx-font-family: 'Palatino Linotype';"/>
-                            <Label fx:id="totalDoctorsLabel" text="0"
-                                   style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2d6a4f; -fx-font-family: 'Palatino Linotype';"/>
+                        <VBox style="-fx-padding: 0 16 20 20; -fx-spacing: 4;">
+                            <Label style="-fx-font-size: 10; -fx-text-fill: #9E9E9E;" text="Gestion Médicale" />
+                            <HBox alignment="CENTER_LEFT" spacing="4">
+                                <Label style="-fx-font-size: 12; -fx-font-weight: bold; -fx-text-fill: #2979FF;" text="Liste" />
+                                <Label style="-fx-font-size: 10; -fx-text-fill: #9E9E9E;" text="des médecins" />
+                            </HBox>
+                            <ProgressBar prefHeight="5" prefWidth="120" progress="0.8" style="-fx-accent: #2979FF; -fx-background-color: #E0E0E0; -fx-background-radius: 4;" />
                         </VBox>
 
-                        <VBox spacing="3" style="-fx-background-color: #fdf8ec; -fx-background-radius: 8; -fx-padding: 12;">
-                            <Label text="📊  Disponibilité"
-                                   style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #2d6a4f; -fx-font-family: 'Palatino Linotype';"/>
-                            <Label fx:id="availableDoctorsLabel" text="0 disponible(s)"
-                                   style="-fx-font-size: 12px; -fx-text-fill: #6b8f71; -fx-font-family: 'Palatino Linotype';"/>
+                        <Separator style="-fx-background-color: #F0F0F0;" />
+
+                        <VBox spacing="8" style="-fx-padding: 16 12 0 12;">
+                            <Label style="-fx-font-size: 10; -fx-text-fill: #9E9E9E; -fx-padding: 0 0 4 8;" text="RÉSUMÉ" />
+
+                            <!-- Total Médecins -->
+                            <VBox spacing="4" style="-fx-background-color: #E8F0FE; -fx-background-radius: 10; -fx-padding: 12;">
+                                <HBox spacing="6" alignment="CENTER_LEFT">
+                                    <Label style="-fx-font-size: 14;" text="👨‍⚕️" />
+                                    <Label style="-fx-font-size: 11; -fx-font-weight: bold; -fx-text-fill: #2979FF;" text="Total Médecins" />
+                                </HBox>
+                                <Label fx:id="totalDoctorsLabel" text="0"
+                                       style="-fx-font-size: 22; -fx-font-weight: bold; -fx-text-fill: #2979FF; -fx-padding: 0 0 0 4;"/>
+                            </VBox>
+
+                            <!-- Disponibilité -->
+                            <VBox spacing="4" style="-fx-background-color: #F5F5F5; -fx-background-radius: 10; -fx-padding: 12;">
+                                <HBox spacing="6" alignment="CENTER_LEFT">
+                                    <Label style="-fx-font-size: 14;" text="📊" />
+                                    <Label style="-fx-font-size: 11; -fx-font-weight: bold; -fx-text-fill: #1A1A2E;" text="Disponibilité" />
+                                </HBox>
+                                <Label fx:id="availableDoctorsLabel" text="0 disponible(s)"
+                                       style="-fx-font-size: 12; -fx-text-fill: #757575; -fx-padding: 0 0 0 4;"/>
+                            </VBox>
+                        </VBox>
+
+                        <Region VBox.vgrow="ALWAYS" />
+
+                        <!-- Badge médecin -->
+                        <VBox alignment="CENTER" spacing="4" style="-fx-padding: 16;">
+                            <Label text="MÉDECIN"
+                                   style="-fx-font-size: 9px; -fx-text-fill: #2979FF; -fx-font-weight: bold;"/>
+                            <Label text="🩺" style="-fx-font-size: 24px;"/>
+                            <Label text="Service de santé"
+                                   style="-fx-font-size: 9px; -fx-text-fill: #9E9E9E;"/>
                         </VBox>
                     </VBox>
 
-                    <VBox alignment="CENTER" spacing="2"
-                          style="-fx-background-color: #2d6a4f; -fx-background-radius: 10; -fx-padding: 14;">
-                        <VBox.margin><Insets top="14"/></VBox.margin>
-                        <Label text="MÉDECIN"
-                               style="-fx-font-size: 9px; -fx-text-fill: #c8a84b; -fx-font-weight: bold; -fx-font-family: 'Palatino Linotype';"/>
-                        <Label text="🩺" style="-fx-font-size: 22px;"/>
-                        <Label text="Service de santé"
-                               style="-fx-font-size: 9px; -fx-text-fill: rgba(255,255,255,0.6); -fx-font-family: 'Palatino Linotype';"/>
+                    <!-- ======================== TABLEAU ======================== -->
+                    <VBox prefWidth="370" spacing="14" style="-fx-background-color: #F5F6FA; -fx-background-radius: 0 16 16 0; -fx-padding: 20 20 20 20;">
+
+                        <!-- Header -->
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <Rectangle height="24" width="4" style="-fx-fill: #2979FF; -fx-arc-width: 2; -fx-arc-height: 2;" />
+                            <Label text="Liste des Médecins"
+                                   style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #1A1A2E; -fx-font-family: 'Segoe UI';"/>
+                        </HBox>
+
+                        <Label text="Consultation — Service Médical"
+                               style="-fx-font-size: 11px; -fx-text-fill: #9E9E9E; -fx-font-family: 'Segoe UI';"/>
+
+                        <Separator style="-fx-background-color: #E0E0E0;" />
+
+                        <Label text="LISTE DES MÉDECINS"
+                               style="-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: #2979FF; -fx-font-family: 'Segoe UI';"/>
+
+                        <!-- BARRE DE RECHERCHE, FILTRE ET TRI -->
+                        <HBox spacing="8" alignment="CENTER_LEFT">
+                            <TextField fx:id="rechercheTF" promptText="🔍 Rechercher par nom..." prefWidth="140"
+                                       style="-fx-background-color: white; -fx-border-color: #E0E0E0; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8 12; -fx-font-family: 'Segoe UI'; -fx-font-size: 11px;"/>
+
+                            <ComboBox fx:id="filtreDispoCB" prefWidth="100" promptText="Disponibilité"
+                                      style="-fx-background-color: white; -fx-border-color: #E0E0E0; -fx-border-radius: 8; -fx-background-radius: 8; -fx-font-family: 'Segoe UI'; -fx-font-size: 11px;"/>
+
+                            <Button fx:id="btnTriAsc" text="⬆ A-Z" onAction="#trierCroissant" prefWidth="60"
+                                    style="-fx-background-color: #F5F5F5; -fx-text-fill: #757575; -fx-font-size: 10px; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand;"/>
+                            <Button fx:id="btnTriDesc" text="⬇ Z-A" onAction="#trierDecroissant" prefWidth="60"
+                                    style="-fx-background-color: #F5F5F5; -fx-text-fill: #757575; -fx-font-size: 10px; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand;"/>
+                        </HBox>
+
+                        <!-- TableView -->
+                        <TableView fx:id="tableView" prefHeight="340" prefWidth="330"
+                                   style="-fx-background-color: white; -fx-background-radius: 12; -fx-border-color: #E0E0E0; -fx-border-radius: 12; -fx-border-width: 1;">
+                            <columns>
+                                <TableColumn fx:id="colId" text="ID" prefWidth="50"
+                                             style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #2979FF; -fx-font-family: 'Segoe UI'; -fx-alignment: CENTER;"/>
+                                <TableColumn fx:id="colNom" text="Nom" prefWidth="130"
+                                             style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #2979FF; -fx-font-family: 'Segoe UI';"/>
+                                <TableColumn fx:id="colPrenom" text="Prénom" prefWidth="130"
+                                             style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #2979FF; -fx-font-family: 'Segoe UI';"/>
+                                <TableColumn fx:id="colEmail" text="Email" prefWidth="150"
+                                             style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #2979FF; -fx-font-family: 'Segoe UI';"/>
+                                <TableColumn fx:id="colTelephone" text="Téléphone" prefWidth="100"
+                                             style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #2979FF; -fx-font-family: 'Segoe UI';"/>
+                                <TableColumn fx:id="colDisponibilite" text="Disponibilité" prefWidth="100"
+                                             style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #2979FF; -fx-font-family: 'Segoe UI';"/>
+                            </columns>
+                        </TableView>
+
+                        <!-- Boutons d'action -->
+                        <HBox spacing="12" alignment="CENTER_RIGHT">
+                            <VBox.margin><Insets top="8"/></VBox.margin>
+                            <Button text="🗑️ Supprimer" onAction="#supprimer" prefHeight="38" prefWidth="100"
+                                    style="-fx-background-color: #FF5252; -fx-text-fill: white; -fx-font-size: 11px; -fx-font-weight: bold; -fx-font-family: 'Segoe UI'; -fx-background-radius: 10; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(255,82,82,0.25), 8, 0, 0, 2);"/>
+                            <Button text="✏️ Modifier" onAction="#modifier" prefHeight="38" prefWidth="100"
+                                    style="-fx-background-color: #2979FF; -fx-text-fill: white; -fx-font-size: 11px; -fx-font-weight: bold; -fx-font-family: 'Segoe UI'; -fx-background-radius: 10; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(41,121,255,0.25), 8, 0, 0, 2);"/>
+                            <Button text="🔒 Fermer" onAction="#fermer" prefHeight="38" prefWidth="100"
+                                    style="-fx-background-color: #F5F5F5; -fx-text-fill: #757575; -fx-font-size: 11px; -fx-font-weight: bold; -fx-font-family: 'Segoe UI'; -fx-background-radius: 10; -fx-cursor: hand;"/>
+                        </HBox>
                     </VBox>
-                </VBox>
-
-                <!-- Colonne droite - Tableau des médecins -->
-                <VBox prefWidth="404" spacing="18">
-                    <padding><Insets top="30" bottom="24" left="30" right="30"/></padding>
-
-                    <Label text="LISTE DES MÉDECINS"
-                           style="-fx-font-size: 9px; -fx-font-weight: bold; -fx-text-fill: #c8a84b; -fx-font-family: 'Palatino Linotype';"/>
-
-                    <!-- BARRE DE RECHERCHE, FILTRE ET TRI -->
-                    <HBox spacing="8" alignment="CENTER_LEFT">
-                        <TextField fx:id="rechercheTF" promptText="🔍 Rechercher par nom..." prefWidth="160" />
-                        
-                        <ComboBox fx:id="filtreDispoCB" prefWidth="110" promptText="Disponibilité" />
-                        
-                        <Button fx:id="btnTriAsc" text="⬆ A-Z" onAction="#trierCroissant" prefWidth="70"
-                                style="-fx-background-color: #e8f0e8; -fx-text-fill: #2d6a4f; -fx-font-size:11px;"/>
-                        <Button fx:id="btnTriDesc" text="⬇ Z-A" onAction="#trierDecroissant" prefWidth="70"
-                                style="-fx-background-color: #e8f0e8; -fx-text-fill: #2d6a4f; -fx-font-size:11px;"/>
-                    </HBox>
-
-                    <TableView fx:id="tableView" prefHeight="350" prefWidth="344">
-                        <columns>
-                            <TableColumn fx:id="colId" text="ID" prefWidth="50"
-                                          style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #2d6a4f; -fx-font-family: 'Palatino Linotype';"/>
-                            <TableColumn fx:id="colNom" text="Nom" prefWidth="150"
-                                          style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #2d6a4f; -fx-font-family: 'Palatino Linotype';"/>
-                            <TableColumn fx:id="colPrenom" text="Prénom" prefWidth="150"
-                                          style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #2d6a4f; -fx-font-family: 'Palatino Linotype';"/>
-                            <TableColumn fx:id="colEmail" text="Email" prefWidth="150"
-                                          style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #2d6a4f; -fx-font-family: 'Palatino Linotype';"/>
-                            <TableColumn fx:id="colTelephone" text="Téléphone" prefWidth="100"
-                                          style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #2d6a4f; -fx-font-family: 'Palatino Linotype';"/>
-                            <TableColumn fx:id="colDisponibilite" text="Disponibilité" prefWidth="100"
-                                          style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #2d6a4f; -fx-font-family: 'Palatino Linotype';"/>
-                        </columns>
-                    </TableView>
-
-                    <!-- Footer with close, modify, and delete buttons -->
-                    <HBox spacing="12" alignment="CENTER_RIGHT">
-                        <VBox.margin><Insets top="20"/></VBox.margin>
-                        <Button text="🗑️  Supprimer" onAction="#supprimer" prefHeight="38" prefWidth="120"
-                                style="-fx-background-color: #d32f2f; -fx-text-fill: white;
-                                 -fx-font-size: 12px; -fx-font-weight: bold;
-                                 -fx-font-family: 'Palatino Linotype'; -fx-background-radius: 4;
-                                 -fx-cursor: hand;
-                                 -fx-effect: dropshadow(gaussian, rgba(211,47,47,0.4), 10, 0, 0, 3);"/>
-                        <Button text="✏️  Modifier" onAction="#modifier" prefHeight="38" prefWidth="120"
-                                style="-fx-background-color: #c8a84b; -fx-text-fill: #2d6a4f;
-                                 -fx-font-size: 12px; -fx-font-weight: bold;
-                                 -fx-font-family: 'Palatino Linotype'; -fx-background-radius: 4;
-                                 -fx-cursor: hand;
-                                 -fx-effect: dropshadow(gaussian, rgba(200,168,75,0.4), 10, 0, 0, 3);"/>
-                        <Button text="🔒  Fermer" onAction="#fermer" prefHeight="38" prefWidth="120"
-                                style="-fx-background-color: #2d6a4f; -fx-text-fill: white;
-                                 -fx-font-size: 12px; -fx-font-weight: bold;
-                                 -fx-font-family: 'Palatino Linotype'; -fx-background-radius: 4;
-                                 -fx-cursor: hand;
-                                 -fx-effect: dropshadow(gaussian, rgba(45,106,79,0.4), 10, 0, 0, 3);"/>
-                    </HBox>
-                </VBox>
-            </HBox>
-
-            <!-- FOOTER -->
-            <HBox prefHeight="56" style="-fx-background-color: #2d6a4f;" alignment="CENTER_LEFT" spacing="16">
-                <padding><Insets left="24" right="24"/></padding>
-                <Rectangle width="2" height="28" fill="#c8a84b"/>
-                <VBox spacing="2">
-                    <Label text="Université — Service de Santé Étudiante"
-                           style="-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: rgba(255,255,255,0.9); -fx-font-family: 'Palatino Linotype';"/>
-                    <Label text="Toutes les données sont confidentielles et sécurisées"
-                           style="-fx-font-size: 9px; -fx-text-fill: rgba(255,255,255,0.5); -fx-font-family: 'Palatino Linotype';"/>
-                </VBox>
-                <Region HBox.hgrow="ALWAYS"/>
-                <Label text="🔒 Confidentiel"
-                       style="-fx-font-size: 10px; -fx-text-fill: #c8a84b; -fx-font-family: 'Palatino Linotype';"/>
-            </HBox>
-
+                </HBox>
+            </VBox>
         </VBox>
     </children>
 </AnchorPane>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="edu.connexion3a36.Controller.AddCourseController"
+      spacing="15" style="-fx-background-color: white;">
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <!-- Header -->
+    <Label fx:id="formTitle" text="Ajouter un Cours"
+           style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+
+    <Separator/>
+
+    <!-- Form Fields -->
+    <GridPane hgap="10" vgap="15">
+        <columnConstraints>
+            <ColumnConstraints halignment="RIGHT" hgrow="NEVER" minWidth="120"/>
+            <ColumnConstraints hgrow="ALWAYS"/>
+        </columnConstraints>
+
+        <!-- Titre -->
+        <Label text="Titre :" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+        <VBox GridPane.columnIndex="1" GridPane.rowIndex="0">
+            <TextField fx:id="titreField" promptText="Entrez le titre du cours (3-100 caractères)"/>
+            <Label fx:id="titreErrorLabel" style="-fx-text-fill: red; -fx-font-size: 11px;" visible="false"/>
+        </VBox>
+
+        <!-- Description -->
+        <Label text="Description :" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+        <VBox GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <TextArea fx:id="descriptionField" promptText="Entrez la description du cours (10-500 caractères)"
+                      prefHeight="100"/>
+            <Label fx:id="descriptionErrorLabel" style="-fx-text-fill: red; -fx-font-size: 11px;" visible="false"/>
+        </VBox>
+
+        <!-- Image URL -->
+        <Label text="Image URL :" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+        <VBox GridPane.columnIndex="1" GridPane.rowIndex="2">
+            <HBox spacing="10">
+                <TextField fx:id="imageField" promptText="URL de l'image (jpg, png, gif, webp)" HBox.hgrow="ALWAYS"/>
+                <Button text="Parcourir..." onAction="#handleBrowseImage"/>
+            </HBox>
+            <Label fx:id="imageErrorLabel" style="-fx-text-fill: orange; -fx-font-size: 11px;" visible="false"/>
+        </VBox>
+
+        <!-- Image Preview -->
+        <Label text="Aperçu :" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+        <HBox spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="3">
+            <StackPane prefWidth="100" prefHeight="100"
+                       style="-fx-background-color: #ecf0f1; -fx-border-color: #bdc3c7; -fx-border-radius: 5;">
+                <ImageView fx:id="imagePreview" fitWidth="90" fitHeight="90" preserveRatio="true"/>
+            </StackPane>
+        </HBox>
+
+        <!-- Hidden ID for update -->
+        <Label fx:id="courseIdLabel" visible="false" managed="false"/>
+    </GridPane>
+
+    <Separator/>
+
+    <!-- Buttons -->
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button text="Annuler" onAction="#handleCancel"
+                style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-cursor: hand;"
+                prefWidth="100"/>
+        <Button fx:id="saveButton" text="Enregistrer" onAction="#handleSave"
+                style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-cursor: hand;"
+                prefWidth="100"/>
+    </HBox>
+
+</VBox>

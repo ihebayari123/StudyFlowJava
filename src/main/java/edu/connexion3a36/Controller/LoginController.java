@@ -10,6 +10,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import edu.connexion3a36.Controller.FitnessDashboardController;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -99,12 +100,26 @@ public class LoginController {
     // ═══════════════════════════════
     private void redirigerVersTableauDeBord(Utilisateur u) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/studyflow.fxml"));
+            String fxml;
+
+            // Redirection selon le rôle
+            if (u.getRole().equals("ETUDIANT")) {
+                fxml = "/fitness_dashboard2.fxml";   // front-office
+            } else {
+                fxml = "/studyflow.fxml";             // back-office (ADMIN, ENSEIGNANT)
+            }
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxml));
             Parent root = loader.load();
 
-            // Passer l'utilisateur connecté au DashboardController
-            DashboardController dashboard = loader.getController();
-            dashboard.setUtilisateurConnecte(u);
+            // Passer l'utilisateur au bon controller
+            if (u.getRole().equals("ETUDIANT")) {
+                FitnessDashboardController controller = loader.getController();
+                controller.setUtilisateurConnecte(u);
+            } else {
+                DashboardController controller = loader.getController();
+                controller.setUtilisateurConnecte(u);
+            }
 
             Stage stage = (Stage) emailField.getScene().getWindow();
             stage.setTitle("StudyFlow — " + u.getRole());
@@ -136,5 +151,18 @@ public class LoginController {
     private void afficherErreurGlobale(String message) {
         loginError.setText(message);
         loginError.setVisible(true);
+    }
+    @FXML
+    void allerVersInscription(javafx.scene.input.MouseEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/inscription.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) emailField.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("StudyFlow — Inscription");
+            stage.show();
+        } catch (IOException e) {
+            afficherErreurGlobale("❌ Erreur navigation : " + e.getMessage());
+        }
     }
 }
