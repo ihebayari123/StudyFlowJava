@@ -154,11 +154,7 @@
 
                             <Separator style="-fx-background-color: #F0F0F0;" />
 
-                            <HBox fx:id="deconnexionItem" alignment="CENTER_LEFT" prefHeight="36" spacing="8"
-                                  style="-fx-background-radius: 6; -fx-padding: 0 8 0 8; -fx-cursor: hand;">
-                                <Label style="-fx-font-size: 13;" text="🔓" />
-                                <Label style="-fx-font-size: 12; -fx-text-fill: #E53935;" text="Déconnexion" />
-                            </HBox>
+
 
                         </VBox>
                         <!-- ===== FIN SOUS-MENU ===== -->
@@ -172,6 +168,11 @@
                             <Label style="-fx-font-size: 14;" text="⚙️" />
                             <Label style="-fx-font-size: 13; -fx-text-fill: #757575;" text="Paramètres" />
                         </HBox>
+                        <HBox fx:id="deconnexionItem" alignment="CENTER_LEFT" prefHeight="36" spacing="8"
+                              style="-fx-background-radius: 6; -fx-padding: 0 8 0 8; -fx-cursor: hand;">
+                            <Label style="-fx-font-size: 13;" text="🔓" />
+                            <Label style="-fx-font-size: 12; -fx-text-fill: #E53935;" text="Déconnexion" />
+                        </HBox>
                     </VBox>
 
                     <Region VBox.vgrow="ALWAYS" />
@@ -182,5 +183,6 @@
 
             </HBox>
         </VBox>
+
     </HBox>
 </StackPane>
