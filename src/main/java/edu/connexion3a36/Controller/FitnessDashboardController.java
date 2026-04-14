@@ -908,6 +908,18 @@ public class FitnessDashboardController implements Initializable {
 
         if (!msgPrenom.isEmpty() || !msgNom.isEmpty() || !msgEmail.isEmpty()) return;
 
+        // ✅ TEST UNICITÉ EMAIL — AJOUTER ICI
+        try {
+            if (new UtilisateurService().emailExiste(email, utilisateurConnecte.getId().intValue())) {
+                erreurEmail.setText("Cet email est déjà utilisé par un autre compte.");
+                fieldEmail.setStyle("-fx-border-color: #F44336; -fx-border-radius: 8; -fx-border-width: 1.5; -fx-padding: 8 12;");
+                return;
+            }
+        } catch (SQLException ex) {
+            showAlert("❌ Erreur", "Erreur vérification email : " + ex.getMessage());
+            return;
+        }
+
         utilisateurConnecte.setPrenom(prenom);
         utilisateurConnecte.setNom(nom);
         utilisateurConnecte.setEmail(email);

@@ -73,25 +73,17 @@ public class LoginController {
         // Vérification en base
         try {
             Utilisateur u = service.login(email, mdp);
-
-            if (u == null) {
-                // Email ou mot de passe incorrect
-                afficherErreurGlobale("❌ Email ou mot de passe incorrect.");
-                return;
-            }
-
-            if (u.getStatutCompte().equals("BLOQUE")) {
-                // Compte bloqué
-                afficherErreurGlobale("🔒 Votre compte est bloqué. Contactez un administrateur.");
-                return;
-            }
-
-            // ✅ Connexion réussie → redirection
             System.out.println("✅ Connecté : " + u.getNom() + " | Rôle : " + u.getRole());
             redirigerVersTableauDeBord(u);
 
         } catch (SQLException e) {
-            afficherErreurGlobale("❌ Erreur de connexion : " + e.getMessage());
+            switch (e.getMessage()) {
+                case "EMAIL_INTROUVABLE"      -> afficherErreurGlobale("❌ Aucun compte trouvé avec cet email.");
+                case "COMPTE_BLOQUE"          -> afficherErreurGlobale("🔒 Votre compte est bloqué. Contactez un administrateur.");
+                case "COMPTE_INACTIF"         -> afficherErreurGlobale("⚠️ Votre compte n'est pas encore activé.");
+                case "MOT_DE_PASSE_INCORRECT" -> afficherErreurGlobale("❌ Mot de passe incorrect.");
+                default                       -> afficherErreurGlobale("❌ Erreur de connexion : " + e.getMessage());
+            }
         }
     }
 

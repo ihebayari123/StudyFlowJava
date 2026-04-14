@@ -74,15 +74,35 @@ public class UtilisateurService implements IService<Utilisateur> {
     // LOGIN
     // ═══════════════════════════════
     public Utilisateur login(String email, String motDePasse) throws SQLException {
-        String requete = "SELECT * FROM utilisateur WHERE email = ? AND mot_de_passe = ?";
-        PreparedStatement pst = cnx.prepareStatement(requete);
-        pst.setString(1, email);
-        pst.setString(2, motDePasse);
-        ResultSet rs = pst.executeQuery();
-        if (rs.next()) {
-            return mapRow(rs);
+        // Étape 1 — vérifier si l'email existe
+        String requeteEmail = "SELECT * FROM utilisateur WHERE email = ?";
+        PreparedStatement pst1 = cnx.prepareStatement(requeteEmail);
+        pst1.setString(1, email);
+        ResultSet rs1 = pst1.executeQuery();
+
+        if (!rs1.next()) {
+            // Email introuvable
+            throw new SQLException("EMAIL_INTROUVABLE");
         }
-        return null;
+
+        Utilisateur u = mapRow(rs1);
+
+        // Étape 2 — vérifier le statut
+        if (u.getStatutCompte().equals("BLOQUE")) {
+            throw new SQLException("COMPTE_BLOQUE");
+        }
+
+        if (u.getStatutCompte().equals("INACTIF")) {
+            throw new SQLException("COMPTE_INACTIF");
+        }
+
+        // Étape 3 — vérifier le mot de passe
+        if (!u.getMotDePasse().equals(motDePasse)) {
+            throw new SQLException("MOT_DE_PASSE_INCORRECT");
+        }
+
+        // ✅ Tout est bon
+        return u;
     }
 
     // ═══════════════════════════════
@@ -111,5 +131,15 @@ public class UtilisateurService implements IService<Utilisateur> {
         u.setRole(rs.getString("role"));
         u.setStatutCompte(rs.getString("statut_compte"));
         return u;
+    }
+
+    public boolean emailExiste(String email, int excludeId) throws SQLException {
+        String requete = "SELECT COUNT(*) FROM utilisateur WHERE email = ? AND id != ?";
+        PreparedStatement pst = cnx.prepareStatement(requete);
+        pst.setString(1, email);
+        pst.setInt(2, excludeId);
+        ResultSet rs = pst.executeQuery();
+        rs.next();
+        return rs.getInt(1) > 0;
     }
 }
