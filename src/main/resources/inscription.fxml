@@ -6,7 +6,7 @@
 
 <StackPane xmlns="http://javafx.com/javafx/21"
            xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="edu.connexion3a36.Controller.LoginController"
+           fx:controller="edu.connexion3a36.Controller.InscriptionController"
            style="-fx-background-color: #c8d8e8;">
 
     <!-- Background -->
@@ -23,19 +23,45 @@
             <!-- Header bleu -->
             <VBox alignment="CENTER" spacing="8"
                   style="-fx-background-color: #2979FF; -fx-background-radius: 16 16 0 0;
-                         -fx-padding: 40 30 40 30;">
+                         -fx-padding: 30 30 30 30;">
                 <Circle radius="30" style="-fx-fill: rgba(255,255,255,0.2);"/>
                 <Label text="StudyFlow"
                        style="-fx-font-size: 26; -fx-font-weight: bold; -fx-text-fill: white;"/>
-                <Label text="Connectez-vous à votre compte"
+                <Label text="Créez votre compte étudiant"
                        style="-fx-font-size: 13; -fx-text-fill: rgba(255,255,255,0.8);"/>
             </VBox>
 
             <!-- Formulaire -->
-            <VBox spacing="16" style="-fx-padding: 36 36 36 36;">
+            <VBox spacing="12" style="-fx-padding: 30 36 30 36;">
+
+                <!-- Nom -->
+                <VBox spacing="4">
+                    <Label text="Nom"
+                           style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #424242;"/>
+                    <TextField fx:id="nomField"
+                               promptText="Entrez votre nom"
+                               style="-fx-background-radius: 8; -fx-padding: 10;
+                                      -fx-font-size: 13; -fx-border-color: #E0E0E0;
+                                      -fx-border-radius: 8; -fx-border-width: 1.5;"/>
+                    <Label fx:id="nomError" text=""
+                           style="-fx-font-size: 11; -fx-text-fill: #F44336;"/>
+                </VBox>
+
+                <!-- Prénom -->
+                <VBox spacing="4">
+                    <Label text="Prénom"
+                           style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #424242;"/>
+                    <TextField fx:id="prenomField"
+                               promptText="Entrez votre prénom"
+                               style="-fx-background-radius: 8; -fx-padding: 10;
+                                      -fx-font-size: 13; -fx-border-color: #E0E0E0;
+                                      -fx-border-radius: 8; -fx-border-width: 1.5;"/>
+                    <Label fx:id="prenomError" text=""
+                           style="-fx-font-size: 11; -fx-text-fill: #F44336;"/>
+                </VBox>
 
                 <!-- Email -->
-                <VBox spacing="6">
+                <VBox spacing="4">
                     <Label text="Email"
                            style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #424242;"/>
                     <TextField fx:id="emailField"
@@ -48,11 +74,11 @@
                 </VBox>
 
                 <!-- Mot de passe -->
-                <VBox spacing="6">
+                <VBox spacing="4">
                     <Label text="Mot de passe"
                            style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #424242;"/>
                     <PasswordField fx:id="motDePasseField"
-                                   promptText="Entrez votre mot de passe"
+                                   promptText="Minimum 8 caractères, majuscule, chiffre, spécial"
                                    style="-fx-background-radius: 8; -fx-padding: 10;
                                           -fx-font-size: 13; -fx-border-color: #E0E0E0;
                                           -fx-border-radius: 8; -fx-border-width: 1.5;"/>
@@ -60,33 +86,46 @@
                            style="-fx-font-size: 11; -fx-text-fill: #F44336;"/>
                 </VBox>
 
+                <!-- Confirmer mot de passe -->
+                <VBox spacing="4">
+                    <Label text="Confirmer le mot de passe"
+                           style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #424242;"/>
+                    <PasswordField fx:id="confirmMotDePasseField"
+                                   promptText="Répétez votre mot de passe"
+                                   style="-fx-background-radius: 8; -fx-padding: 10;
+                                          -fx-font-size: 13; -fx-border-color: #E0E0E0;
+                                          -fx-border-radius: 8; -fx-border-width: 1.5;"/>
+                    <Label fx:id="confirmMotDePasseError" text=""
+                           style="-fx-font-size: 11; -fx-text-fill: #F44336;"/>
+                </VBox>
+
                 <!-- Message erreur global -->
-                <Label fx:id="loginError" text=""
+                <Label fx:id="inscriptionError" text=""
                        wrapText="true"
                        style="-fx-font-size: 12; -fx-text-fill: #F44336;
                               -fx-background-color: #FFEBEE; -fx-background-radius: 8;
                               -fx-padding: 8 12 8 12;"/>
 
-                <!-- Bouton connexion -->
-                <Button text="Se connecter" onAction="#seConnecter"
+                <!-- Bouton inscription -->
+                <Button text="S'inscrire" onAction="#sInscrire"
                         prefWidth="348" prefHeight="44"
                         style="-fx-background-color: #2979FF; -fx-text-fill: white;
                                -fx-font-size: 14; -fx-font-weight: bold;
                                -fx-background-radius: 8; -fx-cursor: hand;"/>
 
-                <!-- Lien vers inscription -->
+                <!-- Lien retour login -->
                 <HBox alignment="CENTER">
-                    <Label text="Pas encore de compte ? "
+                    <Label text="Déjà un compte ? "
                            style="-fx-font-size: 12; -fx-text-fill: #9E9E9E;"/>
-                    <Label text="S'inscrire"
-                           onMouseClicked="#allerVersInscription"
+                    <Label text="Se connecter"
+                           onMouseClicked="#allerVersLogin"
                            style="-fx-font-size: 12; -fx-text-fill: #2979FF;
-                  -fx-cursor: hand; -fx-underline: true;"/>
+                                  -fx-cursor: hand; -fx-underline: true;"/>
                 </HBox>
+
                 <!-- Footer -->
                 <Label text="StudyFlow © 2026"
-                       style="-fx-font-size: 11; -fx-text-fill: #9E9E9E;"
-                       HBox.hgrow="ALWAYS"/>
+                       style="-fx-font-size: 11; -fx-text-fill: #9E9E9E;"/>
 
             </VBox>
         </VBox>

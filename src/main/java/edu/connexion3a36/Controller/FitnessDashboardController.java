@@ -1,5 +1,12 @@
 package edu.connexion3a36.Controller;
-
+import edu.connexion3a36.entities.Utilisateur;
+import edu.connexion3a36.services.UtilisateurService;
+import edu.connexion3a36.utils.Validation;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.PasswordField;
+import java.io.IOException;
+import java.sql.SQLException;
 import javafx.animation.FadeTransition;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -89,6 +96,10 @@ public class FitnessDashboardController implements Initializable {
 
     @FXML private VBox messageList;
 
+    @FXML private Label erreurPrenom;
+    @FXML private Label erreurNom;
+    @FXML private Label erreurEmail;
+
     @FXML private VBox settingsNotifList;
     @FXML private VBox settingsPrivacyList;
 
@@ -105,6 +116,53 @@ public class FitnessDashboardController implements Initializable {
     private int currentCourseIndex = 0;
 
     private Map<Button, VBox> navMap;
+    // ═══════════════════════════════
+// UTILISATEUR CONNECTE
+// ═══════════════════════════════
+    private Utilisateur utilisateurConnecte;
+
+    public void setUtilisateurConnecte(Utilisateur u) {
+        this.utilisateurConnecte = u;
+
+        // Greeting personnalisé
+        int hour = LocalTime.now().getHour();
+        String greet = hour < 12 ? "Bonjour" : hour < 18 ? "Bon après-midi" : "Bonsoir";
+        String prenom = (u.getPrenom() != null && !u.getPrenom().isEmpty()) ? u.getPrenom() : u.getNom();
+        lblGreeting.setText(greet + ", " + prenom + " !");
+
+        // Pré-remplir les champs profil
+        if (fieldFirstName != null) fieldFirstName.setText(u.getPrenom());
+        if (fieldLastName  != null) fieldLastName.setText(u.getNom());
+        if (fieldEmail     != null) fieldEmail.setText(u.getEmail());
+        if (profileFullName != null) profileFullName.setText(u.getNom() + " " + u.getPrenom());
+
+        // Validation en temps réel
+        fieldFirstName.textProperty().addListener((obs, old, val) -> {
+            String msg = Validation.messageNom(val);
+            erreurPrenom.setText(msg);
+            fieldFirstName.setStyle(msg.isEmpty()
+                    ? "-fx-border-color: #4CAF50; -fx-border-radius: 8; -fx-border-width: 1.5; -fx-padding: 8 12;"
+                    : "-fx-border-color: #F44336; -fx-border-radius: 8; -fx-border-width: 1.5; -fx-padding: 8 12;");
+        });
+
+        fieldLastName.textProperty().addListener((obs, old, val) -> {
+            String msg = Validation.messageNom(val);
+            erreurNom.setText(msg);
+            fieldLastName.setStyle(msg.isEmpty()
+                    ? "-fx-border-color: #4CAF50; -fx-border-radius: 8; -fx-border-width: 1.5; -fx-padding: 8 12;"
+                    : "-fx-border-color: #F44336; -fx-border-radius: 8; -fx-border-width: 1.5; -fx-padding: 8 12;");
+        });
+
+        fieldEmail.textProperty().addListener((obs, old, val) -> {
+            String msg = Validation.messageEmail(val);
+            erreurEmail.setText(msg);
+            fieldEmail.setStyle(msg.isEmpty()
+                    ? "-fx-border-color: #4CAF50; -fx-border-radius: 8; -fx-border-width: 1.5; -fx-padding: 8 12;"
+                    : "-fx-border-color: #F44336; -fx-border-radius: 8; -fx-border-width: 1.5; -fx-padding: 8 12;");
+        });
+
+        System.out.println("✅ Étudiant connecté : " + u.getNom() + " " + u.getPrenom());
+    }
     private Button activeNavButton;
 
     private List<edu.connexion3a36.entities.Produit> allProduits = new ArrayList<>();
@@ -591,7 +649,48 @@ public class FitnessDashboardController implements Initializable {
     }
 
     @FXML public void handleChangePassword(ActionEvent e) {
-        showAlert("Mot de passe", "Fonctionnalité de changement de mot de passe en cours de développement.");
+        Dialog<String> dialog = new Dialog<>();
+        dialog.setTitle("Changer le mot de passe");
+        dialog.setHeaderText("Entrez votre nouveau mot de passe");
+
+        ButtonType confirmerBtn = new ButtonType("Confirmer", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(confirmerBtn, ButtonType.CANCEL);
+
+        PasswordField newMdp     = new PasswordField();
+        newMdp.setPromptText("Nouveau mot de passe");
+        PasswordField confirmMdp = new PasswordField();
+        confirmMdp.setPromptText("Confirmer le mot de passe");
+
+        VBox content = new VBox(10,
+                new Label("Nouveau mot de passe :"), newMdp,
+                new Label("Confirmer :"), confirmMdp
+        );
+        content.setPadding(new Insets(10));
+        dialog.getDialogPane().setContent(content);
+        dialog.setResultConverter(btn -> btn == confirmerBtn ? newMdp.getText() : null);
+
+        dialog.showAndWait().ifPresent(mdp -> {
+            if (mdp.isEmpty()) {
+                showAlert("Erreur", "Le mot de passe ne peut pas être vide.");
+                return;
+            }
+            if (!mdp.equals(confirmMdp.getText())) {
+                showAlert("Erreur", "Les mots de passe ne correspondent pas.");
+                return;
+            }
+            if (!Validation.validerMotDePasse(mdp)) {
+                showAlert("Erreur", Validation.messageMotDePasse(mdp));
+                return;
+            }
+            try {
+                utilisateurConnecte.setMotDePasse(mdp);
+                UtilisateurService service = new UtilisateurService();
+                service.updateEntity(utilisateurConnecte.getId().intValue(), utilisateurConnecte);
+                showAlert("✅ Succès", "Mot de passe changé avec succès !");
+            } catch (SQLException ex) {
+                showAlert("❌ Erreur", "Erreur : " + ex.getMessage());
+            }
+        });
     }
 
     @FXML public void handleDeleteAccount(ActionEvent e) {
@@ -600,7 +699,21 @@ public class FitnessDashboardController implements Initializable {
         confirm.setHeaderText("Êtes-vous sûr de vouloir supprimer votre compte ?");
         confirm.setContentText("Cette action est irréversible.");
         confirm.showAndWait().ifPresent(r -> {
-            if (r == ButtonType.OK) showAlert("Compte supprimé", "Votre compte a été supprimé.");
+            if (r == ButtonType.OK) {
+                try {
+                    UtilisateurService service = new UtilisateurService();
+                    service.deleteEntity(utilisateurConnecte);
+                    showAlert("Compte supprimé", "Votre compte a été supprimé. Au revoir !");
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/login.fxml"));
+                    Parent root = loader.load();
+                    Stage stage = (Stage) btnHome.getScene().getWindow();
+                    stage.setScene(new Scene(root));
+                    stage.setTitle("StudyFlow — Login");
+                    stage.show();
+                } catch (SQLException | IOException ex) {
+                    showAlert("❌ Erreur", "Erreur suppression : " + ex.getMessage());
+                }
+            }
         });
     }
 
@@ -658,16 +771,49 @@ public class FitnessDashboardController implements Initializable {
     }
 
     @FXML public void handleSaveProfile(ActionEvent e) {
-        String fn = fieldFirstName.getText().trim();
-        String ln = fieldLastName.getText().trim();
-        if (fn.isEmpty() || ln.isEmpty()) {
-            showAlert("Erreur", "Le prénom et le nom sont obligatoires.");
-            return;
+        String prenom = fieldFirstName.getText().trim();
+        String nom    = fieldLastName.getText().trim();
+        String email  = fieldEmail.getText().trim();
+
+        // ═══════════════════════════════
+        // CONTRÔLE DE SAISIE
+        // ═══════════════════════════════
+        String msgPrenom = Validation.messageNom(prenom);
+        String msgNom    = Validation.messageNom(nom);
+        String msgEmail  = Validation.messageEmail(email);
+
+        erreurPrenom.setText(msgPrenom);
+        erreurNom.setText(msgNom);
+        erreurEmail.setText(msgEmail);
+
+        fieldFirstName.setStyle(!msgPrenom.isEmpty()
+                ? "-fx-border-color: #F44336; -fx-border-radius: 8; -fx-border-width: 1.5; -fx-padding: 8 12;"
+                : "-fx-border-color: #4CAF50; -fx-border-radius: 8; -fx-border-width: 1.5; -fx-padding: 8 12;");
+        fieldLastName.setStyle(!msgNom.isEmpty()
+                ? "-fx-border-color: #F44336; -fx-border-radius: 8; -fx-border-width: 1.5; -fx-padding: 8 12;"
+                : "-fx-border-color: #4CAF50; -fx-border-radius: 8; -fx-border-width: 1.5; -fx-padding: 8 12;");
+        fieldEmail.setStyle(!msgEmail.isEmpty()
+                ? "-fx-border-color: #F44336; -fx-border-radius: 8; -fx-border-width: 1.5; -fx-padding: 8 12;"
+                : "-fx-border-color: #4CAF50; -fx-border-radius: 8; -fx-border-width: 1.5; -fx-padding: 8 12;");
+
+        if (!msgPrenom.isEmpty() || !msgNom.isEmpty() || !msgEmail.isEmpty()) return;
+
+        // ═══════════════════════════════
+        // SAUVEGARDE EN BD
+        // ═══════════════════════════════
+        utilisateurConnecte.setPrenom(prenom);
+        utilisateurConnecte.setNom(nom);
+        utilisateurConnecte.setEmail(email);
+
+        try {
+            UtilisateurService service = new UtilisateurService();
+            service.updateEntity(utilisateurConnecte.getId().intValue(), utilisateurConnecte);
+            profileFullName.setText(nom + " " + prenom);
+            lblGreeting.setText("Bonjour, " + prenom + " !");
+            showAlert("✅ Succès", "Votre profil a été mis à jour avec succès !");
+        } catch (SQLException ex) {
+            showAlert("❌ Erreur", "Erreur mise à jour : " + ex.getMessage());
         }
-        String fullName = fn + " " + ln;
-        profileFullName.setText(fullName);
-        lblGreeting.setText("Bonjour, " + fn + " !");
-        showAlert("Profil mis à jour", "Vos informations ont été enregistrées avec succès ✅");
     }
 
     @FXML public void handleNotif(ActionEvent e) {
@@ -683,7 +829,18 @@ public class FitnessDashboardController implements Initializable {
         confirm.setTitle("Déconnexion");
         confirm.setHeaderText("Voulez-vous vous déconnecter ?");
         confirm.showAndWait().ifPresent(r -> {
-            if (r == ButtonType.OK) System.exit(0);
+            if (r == ButtonType.OK) {
+                try {
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/login.fxml"));
+                    Parent root = loader.load();
+                    Stage stage = (Stage) btnHome.getScene().getWindow();
+                    stage.setScene(new Scene(root));
+                    stage.setTitle("StudyFlow — Login");
+                    stage.show();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
         });
     }
 
