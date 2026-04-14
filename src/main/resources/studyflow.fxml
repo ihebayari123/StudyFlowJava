@@ -23,7 +23,7 @@
             <HBox VBox.vgrow="ALWAYS">
 
                 <!-- ======================== SIDEBAR ======================== -->
-                <VBox prefWidth="180" spacing="0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 16 0 0 16; -fx-padding: 24 0 24 0;">
+                <VBox prefWidth="210" spacing="0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 16 0 0 16; -fx-padding: 24 0 24 0;">
 
                     <HBox alignment="CENTER_LEFT" style="-fx-padding: 0 16 20 20;">
                         <Circle radius="16" style="-fx-fill: #2979FF;" />
@@ -91,10 +91,73 @@
 
                         <Label style="-fx-font-size: 11; -fx-text-fill: #9E9E9E; -fx-padding: 0 0 4 12;" text="AUTRES" />
 
-                        <HBox fx:id="progressionItem" alignment="CENTER_LEFT" prefHeight="40" spacing="10" style="-fx-background-radius: 8; -fx-padding: 0 12 0 12; -fx-cursor: hand;">
+                        <!-- ===== ANTI-STRESS TOGGLE BUTTON ===== -->
+                        <HBox fx:id="progressionItem" alignment="CENTER_LEFT" prefHeight="40" spacing="10"
+                              style="-fx-background-radius: 8; -fx-padding: 0 12 0 12; -fx-cursor: hand;">
                             <Label style="-fx-font-size: 14;" text="📊" />
-                            <Label style="-fx-font-size: 13; -fx-text-fill: #757575;" text="Anti-Stresse" />
+                            <Label style="-fx-font-size: 13; -fx-text-fill: #757575;" text="Anti-Stress" />
+                            <Region HBox.hgrow="ALWAYS" />
+                            <Label fx:id="antiStressArrow" style="-fx-font-size: 10; -fx-text-fill: #9E9E9E;" text="▶" />
                         </HBox>
+
+                        <!-- ===== SOUS-MENU ANTI-STRESS (caché par défaut) ===== -->
+                        <VBox fx:id="antiStressSubMenu" managed="false" visible="false"
+                              spacing="2" style="-fx-padding: 2 0 4 14;">
+
+                            <HBox fx:id="ajouterMedecinItem" alignment="CENTER_LEFT" prefHeight="36" spacing="8"
+                                  style="-fx-background-radius: 6; -fx-padding: 0 8 0 8; -fx-cursor: hand;">
+                                <Label style="-fx-font-size: 13;" text="➕" />
+                                <Label style="-fx-font-size: 12; -fx-text-fill: #555555;" text="Ajouter Médecin" />
+                            </HBox>
+
+                            <HBox fx:id="listeMedecinsItem" alignment="CENTER_LEFT" prefHeight="36" spacing="8"
+                                  style="-fx-background-radius: 6; -fx-padding: 0 8 0 8; -fx-cursor: hand;">
+                                <Label style="-fx-font-size: 13;" text="👥" />
+                                <Label style="-fx-font-size: 12; -fx-text-fill: #555555;" text="Liste Médecins" />
+                            </HBox>
+
+                            <HBox fx:id="ajouterConsultationItem" alignment="CENTER_LEFT" prefHeight="36" spacing="8"
+                                  style="-fx-background-radius: 6; -fx-padding: 0 8 0 8; -fx-cursor: hand;">
+                                <Label style="-fx-font-size: 13;" text="📅" />
+                                <Label style="-fx-font-size: 12; -fx-text-fill: #555555;" text="Ajouter Consultation" />
+                            </HBox>
+
+                            <HBox fx:id="listeConsultationsItem" alignment="CENTER_LEFT" prefHeight="36" spacing="8"
+                                  style="-fx-background-radius: 6; -fx-padding: 0 8 0 8; -fx-cursor: hand;">
+                                <Label style="-fx-font-size: 13;" text="📋" />
+                                <Label style="-fx-font-size: 12; -fx-text-fill: #555555;" text="Liste Consultations" />
+                            </HBox>
+
+                            <HBox fx:id="antiStresseItem" alignment="CENTER_LEFT" prefHeight="36" spacing="8"
+                                  style="-fx-background-radius: 6; -fx-padding: 0 8 0 8; -fx-cursor: hand;">
+                                <Label style="-fx-font-size: 13;" text="📱" />
+                                <Label style="-fx-font-size: 12; -fx-text-fill: #555555;" text="Anti-Stresse" />
+                            </HBox>
+
+                            <HBox fx:id="ajouterScoreEtudiantItem" alignment="CENTER_LEFT" prefHeight="36" spacing="8"
+                                  style="-fx-background-radius: 6; -fx-padding: 0 8 0 8; -fx-cursor: hand;">
+                                <Label style="-fx-font-size: 13;" text="📝" />
+                                <Label style="-fx-font-size: 12; -fx-text-fill: #555555;" text="Ajouter score étudiant" />
+                            </HBox>
+
+                            <HBox fx:id="ajouterBienEtreItem" alignment="CENTER_LEFT" prefHeight="36" spacing="8"
+                                  style="-fx-background-radius: 6; -fx-padding: 0 8 0 8; -fx-cursor: hand;">
+                                <Label style="-fx-font-size: 13;" text="📊" />
+                                <Label style="-fx-font-size: 12; -fx-text-fill: #555555;" text="Ajouter bien-être" />
+                            </HBox>
+
+                            <HBox fx:id="voirScoreItem" alignment="CENTER_LEFT" prefHeight="36" spacing="8"
+                                  style="-fx-background-radius: 6; -fx-padding: 0 8 0 8; -fx-cursor: hand;">
+                                <Label style="-fx-font-size: 13;" text="📈" />
+                                <Label style="-fx-font-size: 12; -fx-text-fill: #555555;" text="Voir Score" />
+                            </HBox>
+
+                            <Separator style="-fx-background-color: #F0F0F0;" />
+
+
+
+                        </VBox>
+                        <!-- ===== FIN SOUS-MENU ===== -->
 
                         <HBox fx:id="administrationItem" alignment="CENTER_LEFT" prefHeight="40" spacing="10" style="-fx-background-radius: 8; -fx-padding: 0 12 0 12; -fx-cursor: hand;">
                             <Label style="-fx-font-size: 14;" text="🏛️" />
@@ -104,6 +167,11 @@
                         <HBox fx:id="settingsItem" alignment="CENTER_LEFT" prefHeight="40" spacing="10" style="-fx-background-radius: 8; -fx-padding: 0 12 0 12; -fx-cursor: hand;">
                             <Label style="-fx-font-size: 14;" text="⚙️" />
                             <Label style="-fx-font-size: 13; -fx-text-fill: #757575;" text="Paramètres" />
+                        </HBox>
+                        <HBox fx:id="deconnexionItem" alignment="CENTER_LEFT" prefHeight="36" spacing="8"
+                              style="-fx-background-radius: 6; -fx-padding: 0 8 0 8; -fx-cursor: hand;">
+                            <Label style="-fx-font-size: 13;" text="🔓" />
+                            <Label style="-fx-font-size: 12; -fx-text-fill: #E53935;" text="Déconnexion" />
                         </HBox>
                     </VBox>
 
@@ -115,5 +183,6 @@
 
             </HBox>
         </VBox>
+
     </HBox>
 </StackPane>

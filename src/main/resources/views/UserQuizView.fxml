@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="edu.connexion3a36.Controller.UserQuizController"
+      spacing="0"
+      style="-fx-background-color: #f5f5f5;">
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!--  TOPBAR                                                 -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <HBox prefHeight="64" alignment="CENTER_LEFT" spacing="16"
+          style="-fx-background-color: white;
+                 -fx-border-color: transparent transparent #e0e0e0 transparent;
+                 -fx-border-width: 0 0 1 0;">
+        <padding><Insets top="0" right="28" bottom="0" left="28"/></padding>
+
+        <Button fx:id="btnRetour" text="← Retour"
+                style="-fx-background-color: white; -fx-border-color: #dddddd;
+                       -fx-border-radius: 10; -fx-background-radius: 10;
+                       -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px;"/>
+
+        <VBox spacing="2">
+            <Label fx:id="lblQuizTitle" text="QUIZ"
+                   style="-fx-font-size: 18px; -fx-font-weight: bold;
+                          -fx-font-family: 'Georgia'; -fx-text-fill: #1a1a2e;"/>
+            <Label text="Répondez à chaque question avant la fin du temps."
+                   style="-fx-font-size: 11px; -fx-text-fill: #888888;"/>
+        </VBox>
+
+        <Region HBox.hgrow="ALWAYS"/>
+
+        <!-- Compteur question -->
+        <HBox alignment="CENTER" spacing="6"
+              style="-fx-background-color: #f0f0f0; -fx-background-radius: 20;
+                     -fx-padding: 6 16;">
+            <Label text="Question"
+                   style="-fx-font-size: 11px; -fx-text-fill: #888888;"/>
+            <Label fx:id="lblQCounter" text="1 / ?"
+                   style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #111111;"/>
+        </HBox>
+    </HBox>
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!--  BODY                                                   -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                style="-fx-background-color: #f5f5f5; -fx-border-color: transparent;">
+        <VBox spacing="20">
+            <padding><Insets top="28" right="28" bottom="28" left="28"/></padding>
+
+            <!-- PROGRESS DOTS + TIMER ROW -->
+            <HBox spacing="16" alignment="CENTER">
+
+                <!-- Progress bar dots -->
+                <HBox fx:id="progressRow" spacing="5" HBox.hgrow="ALWAYS" alignment="CENTER"/>
+
+                <!-- Timer badge -->
+                <HBox alignment="CENTER" spacing="8"
+                      style="-fx-background-color: white; -fx-background-radius: 14;
+                             -fx-border-color: #eeeeee; -fx-border-radius: 14;
+                             -fx-padding: 8 16;
+                             -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 8, 0, 0, 2);">
+                    <Label text="⏱"
+                           style="-fx-font-size: 16px;"/>
+                    <Label fx:id="lblTimerVal" text="--:--"
+                           style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #111111;"/>
+                </HBox>
+            </HBox>
+
+            <!-- Timer progress bar -->
+            <ProgressBar fx:id="pbTimer" progress="1.0" prefWidth="10000" prefHeight="6"
+                         style="-fx-background-radius: 10; -fx-border-radius: 10;
+                                -fx-accent: #111111; -fx-background-color: #eeeeee;"/>
+
+            <!-- CARTE QUESTION -->
+            <VBox spacing="0"
+                  style="-fx-background-color: white; -fx-background-radius: 20;
+                         -fx-border-color: #eeeeee; -fx-border-radius: 20; -fx-border-width: 1.5;
+                         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.07), 12, 0, 0, 4);">
+
+                <!-- Barre top colorée -->
+                <HBox prefHeight="5" maxWidth="10000"
+                      style="-fx-background-color: #111111;
+                             -fx-background-radius: 20 20 0 0;"/>
+
+                <VBox spacing="16">
+                    <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
+
+                    <!-- Badge type -->
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label fx:id="lblQType" text="TYPE"
+                               style="-fx-font-size: 10px; -fx-font-weight: bold;
+                                      -fx-background-color: #e8f5e9; -fx-text-fill: #2e7d32;
+                                      -fx-padding: 4 12; -fx-background-radius: 20;"/>
+                    </HBox>
+
+                    <!-- Texte question -->
+                    <Label fx:id="lblQTexte" text="" wrapText="true"
+                           style="-fx-font-size: 15px; -fx-font-weight: bold;
+                                  -fx-text-fill: #1a1a2e; -fx-line-spacing: 3;"/>
+
+                    <!-- Indice -->
+                    <HBox fx:id="hintBox" spacing="10" alignment="CENTER_LEFT"
+                          visible="false" managed="false"
+                          style="-fx-background-color: #fff8e1;
+                                 -fx-border-color: #ffca28;
+                                 -fx-border-width: 0 0 0 4;
+                                 -fx-background-radius: 0 8 8 0;
+                                 -fx-border-radius: 0 8 8 0;
+                                 -fx-padding: 10 14;">
+                        <Label text="💡 Indice :"
+                               style="-fx-font-size: 11px; -fx-font-weight: bold;
+                                      -fx-text-fill: #f57f17;"/>
+                        <Label fx:id="lblHint" text="" wrapText="true"
+                               style="-fx-font-size: 12px; -fx-text-fill: #795548;"/>
+                    </HBox>
+
+                    <!-- Séparateur -->
+                    <Region prefHeight="1"
+                            style="-fx-background-color: #eeeeee;"/>
+
+                    <!-- Zone choix_multiple -->
+                    <VBox fx:id="optionsArea" spacing="10" visible="false" managed="false"/>
+
+                    <!-- Zone vrai_faux -->
+                    <HBox fx:id="tfArea" spacing="14" visible="false" managed="false"/>
+
+                    <!-- Zone texte libre -->
+                    <VBox fx:id="texteArea" spacing="8" visible="false" managed="false">
+                        <TextArea fx:id="taReponse" promptText="Votre réponse..."
+                                  prefRowCount="4" wrapText="true"
+                                  style="-fx-font-size: 13px;
+                                         -fx-background-color: #f5f5f5;
+                                         -fx-border-color: #dddddd;
+                                         -fx-border-radius: 10; -fx-background-radius: 10;
+                                         -fx-border-width: 1.5;
+                                         -fx-text-fill: #1a1a2e;
+                                         -fx-prompt-text-fill: #aaaaaa;
+                                         -fx-padding: 10 14;"/>
+                    </VBox>
+
+                    <!-- Feedback -->
+                    <VBox fx:id="feedbackBox" visible="false" managed="false"
+                          style="-fx-background-color: #f5f5f5;
+                                 -fx-background-radius: 10;
+                                 -fx-border-color: #dddddd;
+                                 -fx-border-radius: 10;
+                                 -fx-border-width: 1;
+                                 -fx-padding: 12 16;">
+                        <Label fx:id="lblFeedback" text="" wrapText="true"
+                               style="-fx-font-size: 13px; -fx-text-fill: #555555;"/>
+                    </VBox>
+
+                    <!-- Boutons action -->
+                    <HBox spacing="12" alignment="CENTER_RIGHT">
+                        <Button fx:id="btnValider" text="Valider" disable="true"
+                                style="-fx-background-color: #111111; -fx-text-fill: white;
+                                       -fx-background-radius: 10; -fx-font-size: 13px;
+                                       -fx-font-weight: bold; -fx-padding: 10 24; -fx-cursor: hand;"/>
+                        <Button fx:id="btnSuivant" text="Suivant →" visible="false" managed="false"
+                                style="-fx-background-color: #4caf50; -fx-text-fill: white;
+                                       -fx-background-radius: 10; -fx-font-size: 13px;
+                                       -fx-font-weight: bold; -fx-padding: 10 24; -fx-cursor: hand;"/>
+                    </HBox>
+
+                </VBox>
+            </VBox>
+
+        </VBox>
+    </ScrollPane>
+</VBox>
