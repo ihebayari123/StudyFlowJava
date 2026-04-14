@@ -8,6 +8,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Circle?>
 
+
 <HBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="edu.connexion3a36.Controller.FitnessDashboardController"
@@ -429,18 +430,27 @@
                     <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
                     <Label text="Modifier le profil"
                            style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+                    <!-- ✅ Après -->
                     <Label text="Prénom" style="-fx-font-size: 11px; -fx-text-fill: #888;"/>
                     <TextField fx:id="fieldFirstName" text="Josh"
                                style="-fx-border-radius: 8; -fx-background-radius: 8;
-                                      -fx-border-color: #ddd; -fx-padding: 8 12;"/>
+                  -fx-border-color: #ddd; -fx-padding: 8 12;"/>
+                    <Label fx:id="erreurPrenom" text=""
+                           style="-fx-text-fill: #F44336; -fx-font-size: 11px;"/>
+
                     <Label text="Nom" style="-fx-font-size: 11px; -fx-text-fill: #888;"/>
                     <TextField fx:id="fieldLastName" text="Dubois"
                                style="-fx-border-radius: 8; -fx-background-radius: 8;
-                                      -fx-border-color: #ddd; -fx-padding: 8 12;"/>
+                  -fx-border-color: #ddd; -fx-padding: 8 12;"/>
+                    <Label fx:id="erreurNom" text=""
+                           style="-fx-text-fill: #F44336; -fx-font-size: 11px;"/>
+
                     <Label text="Email" style="-fx-font-size: 11px; -fx-text-fill: #888;"/>
                     <TextField fx:id="fieldEmail" text="josh.dubois@email.com"
                                style="-fx-border-radius: 8; -fx-background-radius: 8;
-                                      -fx-border-color: #ddd; -fx-padding: 8 12;"/>
+                  -fx-border-color: #ddd; -fx-padding: 8 12;"/>
+                    <Label fx:id="erreurEmail" text=""
+                           style="-fx-text-fill: #F44336; -fx-font-size: 11px;"/>
                     <Label text="Bio" style="-fx-font-size: 11px; -fx-text-fill: #888;"/>
                     <TextField fx:id="fieldBio" text="Passionné par les langues et le design"
                                style="-fx-border-radius: 8; -fx-background-radius: 8;
