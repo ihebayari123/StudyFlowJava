@@ -30,4 +30,10 @@ public class MyConnection {
         return instance;
 
     }
+    
+    // Reset the singleton instance - useful for testing
+    public static void resetInstance() {
+        instance = null;
+        cnx = null;
+    }
 }
