@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.shape.Circle?>
+
+<AnchorPane
+        prefHeight="620.0" prefWidth="580.0"
+        style="-fx-background-color: #c8d8e8;"
+        xmlns="http://javafx.com/javafx/21"
+        xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="edu.connexion3a36.Controller.ModifierMedecinController">
+
+    <children>
+        <!-- Rectangle de fond avec dégradé bleu -->
+        <Rectangle height="620" style="-fx-fill: linear-gradient(to bottom right, #7BAFD4, #B0C9D8, #8A9BAA);" width="580" />
+
+        <VBox alignment="CENTER" layoutX="15" layoutY="15" prefWidth="550" prefHeight="590">
+
+            <VBox prefHeight="590" prefWidth="550" style="-fx-background-color: #F5F6FA; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 30, 0, 0, 8);">
+
+                <HBox VBox.vgrow="ALWAYS">
+
+                    <!-- ======================== SIDEBAR ======================== -->
+                    <VBox prefWidth="180" spacing="0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 16 0 0 16; -fx-padding: 20 0 20 0;">
+
+                        <HBox alignment="CENTER_LEFT" style="-fx-padding: 0 16 16 20;">
+                            <Circle radius="14" style="-fx-fill: #2979FF;" />
+                            <Label style="-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: #1A1A2E; -fx-padding: 0 0 0 8;" text="EduDoc" />
+                        </HBox>
+
+                        <VBox style="-fx-padding: 0 16 20 20; -fx-spacing: 4;">
+                            <Label style="-fx-font-size: 10; -fx-text-fill: #9E9E9E;" text="Gestion Médicale" />
+                            <HBox alignment="CENTER_LEFT" spacing="4">
+                                <Label style="-fx-font-size: 12; -fx-font-weight: bold; -fx-text-fill: #2979FF;" text="Modification" />
+                                <Label style="-fx-font-size: 10; -fx-text-fill: #9E9E9E;" text="médecin" />
+                            </HBox>
+                            <ProgressBar prefHeight="5" prefWidth="120" progress="0.6" style="-fx-accent: #2979FF; -fx-background-color: #E0E0E0; -fx-background-radius: 4;" />
+                        </VBox>
+
+                        <Separator style="-fx-background-color: #F0F0F0;" />
+
+                        <VBox spacing="6" style="-fx-padding: 16 8 0 8;">
+                            <Label style="-fx-font-size: 10; -fx-text-fill: #9E9E9E; -fx-padding: 0 0 4 12;" text="INFORMATIONS" />
+
+                            <HBox alignment="CENTER_LEFT" prefHeight="36" spacing="10" style="-fx-background-color: #E8F0FE; -fx-background-radius: 8; -fx-padding: 0 12 0 12;">
+                                <Label style="-fx-font-size: 12;" text="👤" />
+                                <Label style="-fx-font-size: 11; -fx-font-weight: bold; -fx-text-fill: #2979FF;" text="Identité" />
+                            </HBox>
+
+                            <HBox alignment="CENTER_LEFT" prefHeight="36" spacing="10" style="-fx-background-radius: 8; -fx-padding: 0 12 0 12;">
+                                <Label style="-fx-font-size: 12;" text="📧" />
+                                <Label style="-fx-font-size: 11; -fx-text-fill: #757575;" text="Contact" />
+                            </HBox>
+
+                            <HBox alignment="CENTER_LEFT" prefHeight="36" spacing="10" style="-fx-background-radius: 8; -fx-padding: 0 12 0 12;">
+                                <Label style="-fx-font-size: 12;" text="📅" />
+                                <Label style="-fx-font-size: 11; -fx-text-fill: #757575;" text="Disponibilité" />
+                            </HBox>
+                        </VBox>
+
+                        <Region VBox.vgrow="ALWAYS" />
+
+                        <!-- Badge médecin -->
+                        <VBox alignment="CENTER" spacing="4" style="-fx-padding: 16;">
+                            <Label text="MÉDECIN"
+                                   style="-fx-font-size: 9px; -fx-text-fill: #2979FF; -fx-font-weight: bold;"/>
+                            <Label text="🩺" style="-fx-font-size: 24px;"/>
+                            <Label text="Service de santé"
+                                   style="-fx-font-size: 9px; -fx-text-fill: #9E9E9E;"/>
+                        </VBox>
+                    </VBox>
+
+                    <!-- ======================== FORMULAIRE DE MODIFICATION ======================== -->
+                    <VBox prefWidth="370" spacing="16" style="-fx-background-color: #F5F6FA; -fx-background-radius: 0 16 16 0; -fx-padding: 20 25 20 25;">
+
+                        <!-- Header du formulaire -->
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <Rectangle height="24" width="4" style="-fx-fill: #2979FF; -fx-arc-width: 2; -fx-arc-height: 2;" />
+                            <Label text="Modifier un Médecin"
+                                   style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #1A1A2E; -fx-font-family: 'Segoe UI';"/>
+                        </HBox>
+
+                        <Label text="Modification — Service Médical"
+                               style="-fx-font-size: 11px; -fx-text-fill: #9E9E9E; -fx-font-family: 'Segoe UI';"/>
+
+                        <Separator style="-fx-background-color: #E0E0E0;" />
+
+                        <Label text="MODIFIER LES DONNÉES"
+                               style="-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: #2979FF; -fx-font-family: 'Segoe UI';"/>
+
+                        <!-- Nom -->
+                        <VBox spacing="4">
+                            <Label text="Nom"
+                                   style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #1A1A2E; -fx-font-family: 'Segoe UI';"/>
+                            <TextField fx:id="nomTF" prefHeight="36"
+                                       style="-fx-background-color: white; -fx-border-color: #E0E0E0; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8 12; -fx-font-family: 'Segoe UI'; -fx-font-size: 12px;"/>
+                        </VBox>
+
+                        <!-- Prénom -->
+                        <VBox spacing="4">
+                            <Label text="Prénom"
+                                   style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #1A1A2E; -fx-font-family: 'Segoe UI';"/>
+                            <TextField fx:id="prenomTF" prefHeight="36"
+                                       style="-fx-background-color: white; -fx-border-color: #E0E0E0; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8 12; -fx-font-family: 'Segoe UI'; -fx-font-size: 12px;"/>
+                        </VBox>
+
+                        <!-- Email -->
+                        <VBox spacing="4">
+                            <Label text="Email"
+                                   style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #1A1A2E; -fx-font-family: 'Segoe UI';"/>
+                            <TextField fx:id="emailTF" prefHeight="36"
+                                       style="-fx-background-color: white; -fx-border-color: #E0E0E0; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8 12; -fx-font-family: 'Segoe UI'; -fx-font-size: 12px;"/>
+                        </VBox>
+
+                        <!-- Téléphone -->
+                        <VBox spacing="4">
+                            <Label text="Téléphone"
+                                   style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #1A1A2E; -fx-font-family: 'Segoe UI';"/>
+                            <TextField fx:id="telephoneTF" prefHeight="36"
+                                       style="-fx-background-color: white; -fx-border-color: #E0E0E0; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8 12; -fx-font-family: 'Segoe UI'; -fx-font-size: 12px;"/>
+                        </VBox>
+
+                        <!-- Disponibilité -->
+                        <VBox spacing="4">
+                            <Label text="Disponibilité"
+                                   style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #1A1A2E; -fx-font-family: 'Segoe UI';"/>
+                            <ComboBox fx:id="disponibiliteCB" prefHeight="36" prefWidth="320"
+                                      style="-fx-background-color: white; -fx-border-color: #E0E0E0; -fx-border-radius: 8; -fx-background-radius: 8; -fx-font-family: 'Segoe UI'; -fx-font-size: 12px;"/>
+                        </VBox>
+
+                        <!-- Boutons -->
+                        <HBox spacing="12" alignment="CENTER_LEFT">
+                            <VBox.margin><Insets top="8"/></VBox.margin>
+                            <Button text="✎ Mettre à jour" onAction="#modifier"
+                                    prefHeight="40" prefWidth="180"
+                                    style="-fx-background-color: #2979FF; -fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold; -fx-font-family: 'Segoe UI'; -fx-background-radius: 10; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(41,121,255,0.25), 8, 0, 0, 2);"/>
+                            <Button text="↺ Réinitialiser" onAction="#reinitialiser"
+                                    prefHeight="36" prefWidth="100"
+                                    style="-fx-background-color: transparent; -fx-text-fill: #757575; -fx-font-size: 11px; -fx-font-family: 'Segoe UI'; -fx-border-color: #E0E0E0; -fx-border-width: 1; -fx-border-radius: 8; -fx-background-radius: 8; -fx-cursor: hand;"/>
+                            <Button text="❌ Annuler" onAction="#annuler"
+                                    prefHeight="36" prefWidth="90"
+                                    style="-fx-background-color: transparent; -fx-text-fill: #FF5252; -fx-font-size: 11px; -fx-font-family: 'Segoe UI'; -fx-border-color: #FFCDD2; -fx-border-width: 1; -fx-border-radius: 8; -fx-background-radius: 8; -fx-cursor: hand;"/>
+                        </HBox>
+
+                    </VBox>
+                </HBox>
+            </VBox>
+        </VBox>
+    </children>
+</AnchorPane>
