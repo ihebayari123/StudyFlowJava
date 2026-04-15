@@ -2,7 +2,6 @@ package edu.connexion3a36.controllers;
 
 import edu.connexion3a36.models.Event;
 import edu.connexion3a36.services.EventService;
-import edu.connexion3a36.services.SponsorService;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -51,7 +50,6 @@ public class EventController implements Initializable {
     @FXML private TableColumn<Event, String>    colImage;
 
     private final EventService eventService = new EventService();
-    private final SponsorService sponsorService = new SponsorService();
     private final ObservableList<Event> eventList = FXCollections.observableArrayList();
     private Event eventSelectionne = null;
     private String imageChoisieNom = "";
@@ -420,7 +418,7 @@ public class EventController implements Initializable {
     }
 
     // ══════════════════════════════════════════════════════
-    //  SUPPRIMER (MODIFIÉ AVEC CASCADE)
+    //  SUPPRIMER
     // ══════════════════════════════════════════════════════
 
     @FXML
@@ -430,50 +428,24 @@ public class EventController implements Initializable {
             return;
         }
 
-        // Vérifier si l'événement a des sponsors
-        try {
-            int nbSponsors = sponsorService.compterParEventId(eventSelectionne.getId());
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Confirmation de suppression");
+        confirm.setHeaderText(null);
+        confirm.setContentText("Voulez-vous vraiment supprimer « " + eventSelectionne.getTitre() + " » ?\nCette action est irréversible.");
+        confirm.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
 
-            String messageSponsors = "";
-            if (nbSponsors > 0) {
-                messageSponsors = "\n\n⚠️ Cet événement a " + nbSponsors + " sponsor(s) qui seront également supprimés.";
-            }
-
-            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-            confirm.setTitle("Confirmation de suppression");
-            confirm.setHeaderText(null);
-            confirm.setContentText("Voulez-vous vraiment supprimer « " + eventSelectionne.getTitre() + " » ?" +
-                    messageSponsors + "\n\nCette action est irréversible.");
-            confirm.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
-
-            confirm.showAndWait().ifPresent(response -> {
-                if (response == ButtonType.YES) {
-                    try {
-                        // SUPPRESSION EN CASCADE DANS LE CODE
-                        // 1. D'abord supprimer les sponsors liés
-                        if (nbSponsors > 0) {
-                            sponsorService.supprimerParEventId(eventSelectionne.getId());
-                        }
-
-                        // 2. Ensuite supprimer l'événement
-                        eventService.supprimer(eventSelectionne.getId());
-
-                        String message = nbSponsors > 0 ?
-                                "✅ Événement et ses " + nbSponsors + " sponsor(s) supprimés avec succès !" :
-                                "✅ Événement supprimé avec succès !";
-                        afficherSucces(message);
-                        viderFormulaire();
-                        chargerEvents();
-                    } catch (SQLException e) {
-                        afficherErreur("❌ Erreur suppression : " + e.getMessage());
-                        e.printStackTrace();
-                    }
+        confirm.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.YES) {
+                try {
+                    eventService.supprimer(eventSelectionne.getId());
+                    afficherSucces("✅ Événement supprimé !");
+                    viderFormulaire();
+                    chargerEvents();
+                } catch (SQLException e) {
+                    afficherErreur("❌ Erreur suppression : " + e.getMessage());
                 }
-            });
-        } catch (SQLException e) {
-            afficherErreur("❌ Erreur lors de la vérification des sponsors : " + e.getMessage());
-            e.printStackTrace();
-        }
+            }
+        });
     }
 
     // ══════════════════════════════════════════════════════
