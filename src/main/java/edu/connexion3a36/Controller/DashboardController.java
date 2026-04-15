@@ -65,7 +65,7 @@ public class DashboardController {
         homeItem.setOnMouseClicked(e -> loadView("dashboard"));
         coursItem.setOnMouseClicked(e -> loadView("cours"));
         chapitresItem.setOnMouseClicked(e -> loadView("chapitres"));
-        quizItem.setOnMouseClicked(e -> loadView("quiz"));
+        quizItem.setOnMouseClicked(e -> loadView("QuizView"));
         exercicesItem.setOnMouseClicked(e -> loadView("exercices"));
         categorieItem.setOnMouseClicked(e -> loadView("categorieMenu"));
         produitItem.setOnMouseClicked(e -> loadView("produitMenu"));
