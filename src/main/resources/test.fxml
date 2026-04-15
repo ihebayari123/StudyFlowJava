@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="edu.connexion3a36.Controller.DashboardController">
+
+    <!-- Sidebar -->
+    <VBox styleClass="sidebar" prefWidth="220" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0">
+        <children>
+            <!-- Logo / Header -->
+            <Label text="Mr.Doc" styleClass="logo" />
+            <Label text="Hello Amine, welcome!" styleClass="welcome" />
+
+            <!-- Menu items cliquables -->
+            <VBox styleClass="menu">
+                <children>
+                    <Button text="🏠 Home" fx:id="homeBtn" styleClass="menu-btn" onAction="#goToHome" />
+                    <Button text="📁 Folders" fx:id="foldersBtn" styleClass="menu-btn" onAction="#goToFolders" />
+                    <Button text="📄 Documents" fx:id="docsBtn" styleClass="menu-btn" onAction="#goToDocuments" />
+                    <Button text="🗑️ Trash" fx:id="trashBtn" styleClass="menu-btn" onAction="#goToTrash" />
+                    <Button text="⚙️ Settings" fx:id="settingsBtn" styleClass="menu-btn" onAction="#goToSettings" />
+                </children>
+            </VBox>
+        </children>
+    </VBox>
+
+    <!-- Main content area (change selon la section) -->
+    <StackPane fx:id="mainContent" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="220" AnchorPane.rightAnchor="0" />
+
+</AnchorPane>
