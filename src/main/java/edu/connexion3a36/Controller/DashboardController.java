@@ -197,5 +197,29 @@ public class DashboardController {
 
     public void setUtilisateurConnecte(Utilisateur u) {
         this.utilisateurConnecte = u;
+
+        // ═══════════════════════════════
+        // MASQUER SELON LE RÔLE
+        // ═══════════════════════════════
+        if (u.getRole().equals("ENSEIGNANT")) {
+            // Cacher tout ce qui n'est pas pour l'enseignant
+            utilisateursItem.setVisible(false);
+            utilisateursItem.setManaged(false);
+
+            administrationItem.setVisible(false);
+            administrationItem.setManaged(false);
+
+            categorieItem.setVisible(false);
+            categorieItem.setManaged(false);
+
+            produitItem.setVisible(false);
+            produitItem.setManaged(false);
+
+            settingsItem.setVisible(false);
+            settingsItem.setManaged(false);
+
+            homeItem.setVisible(false);
+            homeItem.setManaged(false);
+        }
     }
 }

@@ -91,6 +91,16 @@ public class ModifierUtilisateurController {
 
         if (!Validation.validerTout(nom, prenom, email, mdp, role, statut)) return;
 
+        try {
+            if (service.emailExiste(email, utilisateurActuel.getId().intValue())) {
+                afficherErreur(emailError, emailField, "Cet email est déjà utilisé par un autre compte.");
+                return;
+            }
+        } catch (SQLException e) {
+            afficherAlert(Alert.AlertType.ERROR, "Erreur", "❌ Erreur vérification email : " + e.getMessage());
+            return;
+        }
+
         utilisateurActuel.setNom(nom);
         utilisateurActuel.setPrenom(prenom);
         utilisateurActuel.setEmail(email);
