@@ -87,6 +87,20 @@
             <version>2.2.224</version>
             <scope>runtime</scope>
         </dependency>
+
+        <!-- ZXing QR Code Generator -->
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>core</artifactId>
+            <version>3.5.2</version>
+        </dependency>
+
+        <!-- ZXing JavaSE (for desktop applications) -->
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>javase</artifactId>
+            <version>3.5.2</version>
+        </dependency>
     </dependencies>
 
     <build>

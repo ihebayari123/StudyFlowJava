@@ -43,7 +43,7 @@ public class AjouterConsultationController {
 
     @FXML
     void ajouter(ActionEvent event) {
-        // 🔴 CONTROLE 1 : Tous les champs obligatoires remplis
+
         if (datePicker.getValue() == null) {
             showAlert(Alert.AlertType.WARNING, "Champ manquant", "Veuillez sélectionner une date de consultation !");
             datePicker.requestFocus();
@@ -64,7 +64,7 @@ public class AjouterConsultationController {
             return;
         }
         
-        // ✅ Contrainte Genre : doit être Homme, Femme ou Etudiant (première lettre majuscule)
+
         if (!genre.equals("Homme") && !genre.equals("Femme") && !genre.equals("Etudiant")) {
             showAlert(Alert.AlertType.WARNING, "Genre invalide", "Le genre doit être : Homme, Femme ou Etudiant (première lettre majuscule) !");
             genreTF.requestFocus();
@@ -78,28 +78,28 @@ public class AjouterConsultationController {
             return;
         }
         
-        // ✅ Contrainte longueur minimum Genre
+
         if (genre.length() < 3) {
             showAlert(Alert.AlertType.WARNING, "Genre invalide", "Le genre doit contenir au moins 3 caractères !");
             genreTF.requestFocus();
             return;
         }
         
-        // ✅ Contrainte longueur maximum Genre
+
         if (genre.length() > 30) {
             showAlert(Alert.AlertType.WARNING, "Genre trop long", "Le genre ne peut pas dépasser 30 caractères !");
             genreTF.requestFocus();
             return;
         }
         
-        // ✅ Contrainte longueur minimum Niveau
+
         if (niveau.length() < 2) {
             showAlert(Alert.AlertType.WARNING, "Niveau invalide", "Le niveau d'étude doit contenir au moins 2 caractères !");
             niveauTF.requestFocus();
             return;
         }
         
-        // ✅ Contrainte longueur maximum Niveau
+
         if (niveau.length() > 30) {
             showAlert(Alert.AlertType.WARNING, "Niveau trop long", "Le niveau d'étude ne peut pas dépasser 30 caractères !");
             niveauTF.requestFocus();
@@ -118,7 +118,7 @@ public class AjouterConsultationController {
             return;
         }
         
-        // 🔴 CONTROLE 2 : Date ne peut pas être dans le passé
+
         LocalDate selectedDate = datePicker.getValue();
         if (selectedDate.isBefore(LocalDate.now())) {
             showAlert(Alert.AlertType.WARNING, "Date invalide", "La date de consultation ne peut pas être dans le passé !");
@@ -126,14 +126,14 @@ public class AjouterConsultationController {
             return;
         }
         
-        // 🔴 CONTROLE 3 : Longueur minimum du motif
+
         if (motif.length() < 5) {
             showAlert(Alert.AlertType.WARNING, "Motif invalide", "Le motif doit contenir au moins 5 caractères !");
             motifTF.requestFocus();
             return;
         }
         
-        // 🔴 CONTROLE 4 : Longueur maximum du motif
+
         if (motif.length() > 255) {
             showAlert(Alert.AlertType.WARNING, "Motif trop long", "Le motif ne peut pas dépasser 255 caractères !");
             motifTF.requestFocus();

@@ -8,10 +8,15 @@ import edu.connexion3a36.services.MedecinService;
 import edu.connexion3a36.services.StressSurveyService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -155,6 +160,9 @@ public class AjouterConsultationEtudiantController {
             );
             service.addEntity(c);
             showAlert(Alert.AlertType.INFORMATION, "Succès", "Consultation ajoutée avec succès !");
+            
+            // Navigate to stress options page after successful save
+            navigateToStressOptions();
             clearFields();
         } catch (SQLException e) {
             showAlert(Alert.AlertType.ERROR, "Erreur BDD", "Erreur : " + e.getMessage());
@@ -177,5 +185,23 @@ public class AjouterConsultationEtudiantController {
         Alert a = new Alert(type);
         a.setTitle(titre); a.setHeaderText(null); a.setContentText(msg);
         a.showAndWait();
+    }
+    
+    /**
+     * Navigate to stress options page after successful form submission
+     */
+    private void navigateToStressOptions() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/stress_options.fxml"));
+            Parent root = loader.load();
+            
+            // Get the stage from any of the form fields
+            Stage stage = (Stage) datePicker.getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible de naviguer vers les options : " + e.getMessage());
+        }
     }
 }

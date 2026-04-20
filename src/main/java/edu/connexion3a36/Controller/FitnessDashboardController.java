@@ -4,9 +4,11 @@ import edu.connexion3a36.services.UtilisateurService;
 import edu.connexion3a36.utils.Validation;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.Dialog;
+import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.lang.ProcessBuilder;
 import javafx.animation.FadeTransition;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -17,6 +19,9 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.chart.*;
 import javafx.scene.control.*;
+import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
@@ -64,8 +69,14 @@ public class FitnessDashboardController implements Initializable {
     // ─── Nouvelles vues embarquées ───────────────────────────────────
     @FXML private VBox viewMedecin;
     @FXML private VBox viewStress;
+    @FXML private VBox viewCatchStress;
+    @FXML private VBox viewFitness;
+    @FXML private VBox viewNutrition;
     @FXML private StackPane medecinArea;
     @FXML private StackPane stressArea;
+    @FXML private StackPane catchStressArea;
+    @FXML private StackPane fitnessArea;
+    @FXML private StackPane nutritionArea;
 
     // ─── Home ────────────────────────────────────────────────────────
     @FXML private Label lblGreeting;
@@ -124,6 +135,15 @@ public class FitnessDashboardController implements Initializable {
     // ─── Relax buttons ───────────────────────────────────────────────
     @FXML private Button btnConsulterMedecin;
     @FXML private Button btnCalculerScore;
+    @FXML private Button btnCatchStress;
+    @FXML private Button btnFitness;
+    @FXML private Button btnNutrition;
+    @FXML private Button btnEnvoyerReclamation;
+
+    // ─── Reclamation ───────────────────────────────────────────────
+    @FXML private VBox viewReclamation;
+    @FXML private TextArea reclamationTextArea;
+    @FXML private Button btnEnvoyer;
 
     // ─── Données ─────────────────────────────────────────────────────
     private record Course(String emoji, String name, String author,
@@ -188,6 +208,7 @@ public class FitnessDashboardController implements Initializable {
         allViews = new ArrayList<>(navMap.values());
         allViews.add(viewMedecin);
         allViews.add(viewStress);
+        allViews.add(viewReclamation);
         allViews.add(contentArea);
     }
 
@@ -318,6 +339,92 @@ public class FitnessDashboardController implements Initializable {
     }
 
     // ═════════════════════════════════════════════════════════════════
+    //  RÉCLAMATION
+    // ═════════════════════════════════════════════════════════════════
+
+    /**
+     * Ouvre la vue de réclamation.
+     */
+    @FXML
+    public void handleEnvoyerReclamation(ActionEvent e) {
+        showView(viewReclamation);
+        setActiveNav(btnRelax);
+    }
+
+    /**
+     * Envoie la réclamation via Twilio SMS.
+     */
+    @FXML
+    public void handleSendReclamation(ActionEvent e) {
+        String message = reclamationTextArea.getText();
+        if (message == null || message.trim().isEmpty()) {
+            showAlert("Veuillez écrire une réclamation.");
+            return;
+        }
+        if (message.length() > 160) {
+            showAlert("La réclamation doit être courte (max 160 caractères). Veuillez la résumer.");
+            return;
+        }
+
+        try {
+            // On Windows, utiliser cmd.exe /c pour exécuter curl
+            String os = System.getProperty("os.name").toLowerCase();
+            String curlCommand;
+            
+            // URL encoder le message pour les données POST
+            String encodedMessage = message.replace(" ", "%20").replace("\n", "%0A");
+            
+            if (os.contains("win")) {
+                // Windows - utiliser cmd /c
+                String fullCommand = "curl https://api.twilio.com/2010-04-01/Accounts/AC487b3b729bca8e8690dbd4d8e8666327/Messages.json -X POST --data-urlencode To=+21652176756 --data-urlencode MessagingServiceSid=MG132a322f96e964c43e508bba78e7bb84 --data-urlencode Body=" + encodedMessage + " -u AC487b3b729bca8e8690dbd4d8e8666327:4d8bca8e8690dbd4d8e8666327";
+                ProcessBuilder pb = new ProcessBuilder("cmd", "/c", fullCommand);
+                pb.redirectErrorStream(true);
+                Process process = pb.start();
+
+                int exitCode = process.waitFor();
+
+                if (exitCode == 0) {
+                    showAlert("Réclamation envoyée avec succès !");
+                    reclamationTextArea.clear();
+                } else {
+                    showAlert("Erreur lors de l'envoi de la réclamation. Veuillez réessayer.");
+                }
+            } else {
+                // Linux/Mac - exécuter directement curl
+                String[] commands = {
+                    "curl", "https://api.twilio.com/2010-04-01/Accounts/AC487b3b729bca8e8690dbd4d8e8666327/Messages.json",
+                    "-X", "POST",
+                    "--data-urlencode", "To=+21652176756",
+                    "--data-urlencode", "MessagingServiceSid=MG132a322f96e964c43e508bba78e7bb84",
+                    "--data-urlencode", "Body=" + message,
+                    "-u", "AC487b3b729bca8e8690dbd4d8e8666327:4d8bca8e8690dbd4d8e8666327"
+                };
+
+                ProcessBuilder pb = new ProcessBuilder(commands);
+                pb.redirectErrorStream(true);
+                Process process = pb.start();
+
+                int exitCode = process.waitFor();
+
+                if (exitCode == 0) {
+                    showAlert("Réclamation envoyée avec succès !");
+                    reclamationTextArea.clear();
+                } else {
+                    showAlert("Erreur lors de l'envoi de la réclamation. Veuillez réessayer.");
+                }
+            }
+        } catch (Exception ex) {
+            showAlert("Erreur : " + ex.getMessage());
+        }
+    }
+
+    private void showAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    // ═════════════════════════════════════════════════════════════════
     //  RELAXATION — Consulter Médecin & Calculer Score
     // ═════════════════════════════════════════════════════════════════
 
@@ -360,6 +467,230 @@ public class FitnessDashboardController implements Initializable {
             }
         }
         showView(viewStress);
+        setActiveNav(btnRelax);
+    }
+
+
+    @FXML
+    public void handleCatchStress(ActionEvent e) {
+        if (catchStressArea.getChildren().isEmpty()) {
+            VBox catchStressContent = new VBox(20);
+            catchStressContent.setPadding(new Insets(20));
+            catchStressContent.setStyle("-fx-background-color: #f5f5f5;");
+            
+            Label title = new Label("🎯 Catch the Stress");
+            title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #c62828;");
+            
+            Label desc = new Label("Techniques pour identifier et gerer le stress:");
+            desc.setStyle("-fx-font-size: 14px; -fx-text-fill: #555;");
+            
+            VBox techniques = new VBox(15);
+            
+            String[][] techs = {
+                {"Respiration 4-7-8", "Inspirez 4s, retenez 7s, expirez 8s"},
+                {" Meditation guidee", "10 min de meditation quotidienne"},
+                {"Journal du stress", "Notez vos moments de stress"},
+                {"Exercice physique", "Liberez les tensions"}
+            };
+            
+            for (String[] t : techs) {
+                HBox card = new HBox(15);
+                card.setStyle("-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 15;");
+                Label name = new Label(t[0]);
+                name.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #c62828;");
+                Label descTech = new Label(t[1]);
+                descTech.setStyle("-fx-font-size: 12px; -fx-text-fill: #555;");
+                card.getChildren().addAll(name, descTech);
+                techniques.getChildren().add(card);
+            }
+            
+            Button backBtn = new Button("← Retour au Dashboard");
+            backBtn.setStyle("-fx-background-color: #c62828; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 12 30; -fx-background-radius: 10; -fx-cursor: hand;");
+            backBtn.setOnAction(ev -> goHome(ev));
+            
+            catchStressContent.getChildren().addAll(title, desc, techniques, backBtn);
+            catchStressArea.getChildren().setAll(catchStressContent);
+        }
+        showView(viewCatchStress);
+        setActiveNav(btnRelax);
+    }
+
+    @FXML
+    public void handleFitness(ActionEvent e) {
+        if (fitnessArea.getChildren().isEmpty()) {
+            VBox fitnessContent = new VBox(20);
+            fitnessContent.setPadding(new Insets(20));
+            fitnessContent.setStyle("-fx-background-color: #f5f5f5;");
+            
+            Label title = new Label("💪 Exercices Avances");
+            title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #0277bd;");
+            
+            Label durationLabel = new Label("Duree de l'exercice (minutes):");
+            durationLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #555;");
+            
+            Slider durationSlider = new Slider(5, 60, 15);
+            durationSlider.setStyle("-fxPref-width: 300;");
+            Label durationValue = new Label("15 minutes");
+            durationValue.setStyle("-fx-font-size: 14px; -fx-text-fill: #0277bd;");
+            durationSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
+                durationValue.setText(newVal.intValue() + " minutes");
+            });
+            
+            HBox exerciseButtons = new HBox(15);
+            exerciseButtons.setAlignment(Pos.CENTER);
+            
+            Button btnWarmup = new Button("Echauffement");
+            btnWarmup.setStyle("-fx-background-color: #4fc3f7; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 15 25; -fx-background-radius: 10;");
+            
+            Button btnCardio = new Button("Cardio");
+            btnCardio.setStyle("-fx-background-color: #039be5; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 15 25; -fx-background-radius: 10;");
+            
+            Button btnStrength = new Button("Force");
+            btnStrength.setStyle("-fx-background-color: #0277bd; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 15 25; -fx-background-radius: 10;");
+            
+            Button btnStretch = new Button("Etirements");
+            btnStretch.setStyle("-fx-background-color: #01579b; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 15 25; -fx-background-radius: 10;");
+            
+            exerciseButtons.getChildren().addAll(btnWarmup, btnCardio, btnStrength, btnStretch);
+            
+            Label advancedLabel = new Label("Exercices Avances:");
+            advancedLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #0277bd; -fx-padding: 20 0 10 0;");
+            
+            HBox advancedExercises = new HBox(15);
+            advancedExercises.setAlignment(Pos.CENTER);
+            
+            Button btnYoga = new Button("Yoga 3D");
+            btnYoga.setStyle("-fx-background-color: #7c4dff; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 15 25; -fx-background-radius: 10;");
+            
+            Button btnPilates = new Button("Pilates");
+            btnPilates.setStyle("-fx-background-color: #651fff; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 15 25; -fx-background-radius: 10;");
+            
+            Button btnHIIT = new Button("HIIT");
+            btnHIIT.setStyle("-fx-background-color: #536dfe; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 15 25; -fx-background-radius: 10;");
+            
+            Button btnMeditation = new Button("Meditation");
+            btnMeditation.setStyle("-fx-background-color: #3d5afe; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 15 25; -fx-background-radius: 10;");
+            
+            advancedExercises.getChildren().addAll(btnYoga, btnPilates, btnHIIT, btnMeditation);
+            
+            Button backBtn = new Button("← Retour au Dashboard");
+            backBtn.setStyle("-fx-background-color: #0277bd; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 12 30; -fx-background-radius: 10; -fx-cursor: hand;");
+            backBtn.setOnAction(ev -> goHome(ev));
+            
+            Label infoLabel = new Label("Selectnez un type d'exercice et ajustez la duree selon vos besoins.");
+            infoLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #888; -fx-padding: 10 0 0 0;");
+            
+            fitnessContent.getChildren().addAll(title, durationLabel, durationSlider, durationValue, exerciseButtons, advancedLabel, advancedExercises, backBtn, infoLabel);
+            fitnessArea.getChildren().setAll(fitnessContent);
+        }
+        showView(viewFitness);
+        setActiveNav(btnRelax);
+    }
+
+    @FXML
+    public void handleNutrition(ActionEvent e) {
+        if (nutritionArea.getChildren().isEmpty()) {
+            VBox nutritionContent = new VBox(20);
+            nutritionContent.setPadding(new Insets(20));
+            nutritionContent.setStyle("-fx-background-color: #f5f5f5;");
+            
+            Label title = new Label("🥗 Nutrition et Bien-Etre");
+            title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2e7d32;");
+            
+            Label foodLabel = new Label("Aliments pour booster votre energie:");
+            foodLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #555;");
+            
+            FlowPane foodGrid = new FlowPane(15, 15);
+            foodGrid.setPrefWrapLength(500);
+            
+            String[][] foods = {
+                {"Banane", "89 cal", "#fff176"},
+                {"Avocat", "160 cal", "#a5d6a7"},
+                {"Noix", "185 cal", "#d7ccc8"},
+                {"Miel", "64 cal", "#ffe082"},
+                {"Chocolat Noir", "170 cal", "#5d4037"},
+                {"The Vert", "2 cal", "#c8e6c9"},
+                {"Blueberries", "57 cal", "#90caf9"},
+                {"Saumon", "208 cal", "#ef9a9a"},
+                {"Eggs", "78 cal", "#fff59d"},
+                {"Legumes Verts", "35 cal", "#a5d6a7"}
+            };
+            
+            for (String[] food : foods) {
+                VBox foodCard = new VBox(5);
+                foodCard.setStyle("-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 15; -fx-min-width: 100;");
+                Label foodName = new Label(food[0]);
+                foodName.setStyle("-fx-font-size: 13px; -fx-font-weight: bold;");
+                Label foodCals = new Label(food[1] + " cal");
+                foodCals.setStyle("-fx-font-size: 12px; -fx-text-fill: #2e7d32;");
+                foodCard.getChildren().addAll(foodName, foodCals);
+                foodGrid.getChildren().add(foodCard);
+            }
+            
+            Label calcTitle = new Label("Calculateur de Calories");
+            calcTitle.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2e7d32; -fx-padding: 20 0 10 0;");
+            
+            HBox calcRow = new HBox(15);
+            calcRow.setAlignment(Pos.CENTER);
+            Label weightLabel = new Label("Poids (g):");
+            weightLabel.setStyle("-fx-font-size: 14px;");
+            TextField weightField = new TextField("100");
+            weightField.setStyle("-fx-pref-width: 80; -fx-padding: 5;");
+            Label calsPerGramLabel = new Label("Calories pour 100g:");
+            calsPerGramLabel.setStyle("-fx-font-size: 14px;");
+            TextField calsField = new TextField("89");
+            calsField.setStyle("-fx-pref-width: 80; -fx-padding: 5;");
+            Button calcBtn = new Button("Calculer");
+            calcBtn.setStyle("-fx-background-color: #2e7d32; -fx-text-fill: white; -fx-padding: 8 20; -fx-background-radius: 8;");
+            Label resultLabel = new Label("Resultat: 89 cal");
+            resultLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2e7d32;");
+            calcBtn.setOnAction(ev -> {
+                try {
+                    double weight = Double.parseDouble(weightField.getText());
+                    double calsPer100 = Double.parseDouble(calsField.getText());
+                    double totalCals = (weight * calsPer100) / 100;
+                    resultLabel.setText("Resultat: " + String.format("%.0f", totalCals) + " cal");
+                } catch (NumberFormatException ex) {
+                    resultLabel.setText("Erreur: Entrez des nombres");
+                }
+            });
+            calcRow.getChildren().addAll(weightLabel, weightField, calsPerGramLabel, calsField, calcBtn, resultLabel);
+            
+            Label joyLabel = new Label("Aliments pour ameliorer l'humeur:");
+            joyLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #555; -fx-padding: 20 0 10 0;");
+            
+            FlowPane joyGrid = new FlowPane(15, 15);
+            joyGrid.setPrefWrapLength(500);
+            String[][] joyFoods = {
+                {"Chocolat", "170 cal", "🍫"},
+                {"Fraises", "32 cal", "🍓"},
+                {"Mangue", "60 cal", "🥭"},
+                {"The Matcha", "2 cal", "🍵"}
+            };
+            for (String[] joy : joyFoods) {
+                HBox joyCard = new HBox(10);
+                joyCard.setStyle("-fx-background-color: #fff8e1; -fx-background-radius: 10; -fx-padding: 15;");
+                Label emoji = new Label(joy[2]);
+                emoji.setStyle("-fx-font-size: 24px;");
+                VBox joyInfo = new VBox(2);
+                Label joyName = new Label(joy[0]);
+                joyName.setStyle("-fx-font-size: 13px; -fx-font-weight: bold;");
+                Label joyCals = new Label(joy[1] + " cal - Bonheur!");
+                joyCals.setStyle("-fx-font-size: 11px; -fx-text-fill: #f57f17;");
+                joyInfo.getChildren().addAll(joyName, joyCals);
+                joyCard.getChildren().addAll(emoji, joyInfo);
+                joyGrid.getChildren().add(joyCard);
+            }
+            
+            nutritionContent.getChildren().addAll(title, foodLabel, foodGrid, calcTitle, calcRow, joyLabel, joyGrid);
+            
+            Button backBtn = new Button("← Retour au Dashboard");
+            backBtn.setStyle("-fx-background-color: #2e7d32; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 12 30; -fx-background-radius: 10; -fx-cursor: hand;");
+            backBtn.setOnAction(ev -> goHome(ev));
+            nutritionContent.getChildren().add(backBtn);
+            nutritionArea.getChildren().setAll(nutritionContent);
+        }
+        showView(viewNutrition);
         setActiveNav(btnRelax);
     }
 

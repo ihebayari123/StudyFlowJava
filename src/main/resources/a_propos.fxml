@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.geometry.Pos?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.TextAlignment?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="edu.connexion3a36.Controller.AProposController"
+           style="-fx-background-color: linear-gradient(to bottom, #e3f2fd, #bbdefb);">
+
+    <!-- Top Section - Title -->
+    <top>
+        <VBox alignment="CENTER" spacing="15" style="-fx-padding: 25;">
+            <Label text="A propos - Anti-Stress"
+                   style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #1565c0;"/>
+            <Label text="Votre application de bien-etre mental"
+                   style="-fx-font-size: 16px; -fx-text-fill: #1976d2;"/>
+        </VBox>
+    </top>
+
+    <!-- Center Section - Content and Comments -->
+    <center>
+        <ScrollPane style="-fx-padding: 10;">
+            <VBox alignment="CENTER" spacing="25" style="-fx-padding: 20;">
+
+                <!-- Application Info -->
+                <VBox alignment="CENTER" spacing="10" style="-fx-padding: 15; -fx-background-color: white; -fx-background-radius: 15; -fx-border-color: #64b5f6; -fx-border-radius: 15;">
+                    <Label text="Description"
+                           style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1565c0;"/>
+                    <TextArea editable="false" prefWidth="500" prefHeight="80" wrapText="true"
+                             text="Anti-Stress est une application concue pour vous aider a gerer votre stress quotidien et ameliorer votre bien-etre global. Elle propose des consultations avec des specialistes, des exercices de respiration, des quiz de bien-etre et un suivi de votre sante mentale."
+                             style="-fx-font-size: 14px; -fx-text-fill: #333; -fx-background-color: #f5f5f5;"/>
+                </VBox>
+
+                <!-- Features -->
+                <VBox alignment="CENTER" spacing="10" style="-fx-padding: 15; -fx-background-color: white; -fx-background-radius: 15; -fx-border-color: #81c784; -fx-border-radius: 15;">
+                    <Label text="Fonctionnalites"
+                           style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2e7d32;"/>
+                    <TextArea editable="false" prefWidth="500" prefHeight="100" wrapText="true"
+                             text="- Consultation de medecins-specialialistes&#10;- Calcul du score de bien-etre&#10;- Exercices de relaxation et respiration&#10;- Quiz et questionnaires&#10;- Conseils en nutrition et fitness&#10;- Tableau de bord personnalise"
+                             style="-fx-font-size: 14px; -fx-text-fill: #333; -fx-background-color: #f5f5f5;"/>
+                </VBox>
+
+                <!-- Fake Doctor Comments -->
+                <VBox alignment="CENTER" spacing="10" style="-fx-padding: 15; -fx-background-color: white; -fx-background-radius: 15; -fx-border-color: #ba68c8; -fx-border-radius: 15;">
+                    <Label text="Temoignages de Medecins"
+                           style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #7b1fa2;"/>
+                    
+                    <VBox spacing="10" style="-fx-padding: 10;">
+                        <TextArea editable="false" prefWidth="480" prefHeight="60" wrapText="true"
+                                 text="Cette application est innovative et aide vraiment mes patients a gerer leur stress au quotidien. Je la recommande fortement! - Dr. Martin, Psychiatre"
+                                 style="-fx-font-size: 13px; -fx-text-fill: #333; -fx-font-style: italic; -fx-background-color: #f3e5f5;"/>
+                        
+                        <TextArea editable="false" prefWidth="480" prefHeight="60" wrapText="true"
+                                 text="Mes patients utilisent cette app pour pratiquer les exercices de respiration entre les seances. Les resultats sont remarquables! - Dr. Bernard, Psychologue"
+                                 style="-fx-font-size: 13px; -fx-text-fill: #333; -fx-font-style: italic; -fx-background-color: #f3e5f5;"/>
+                        
+                        <TextArea editable="false" prefWidth="480" prefHeight="60" wrapText="true"
+                                 text="Excellent outil de sensibilisation a la sante mentale. Vos exercises de respiration 4-7-8 sont tres efficaces! - Dr. Petit, Medecin Generaliste"
+                                 style="-fx-font-size: 13px; -fx-text-fill: #333; -fx-font-style: italic; -fx-background-color: #f3e5f5;"/>
+                    </VBox>
+                </VBox>
+
+                <!-- Happy Student Comments -->
+                <VBox alignment="CENTER" spacing="10" style="-fx-padding: 15; -fx-background-color: white; -fx-background-radius: 15; -fx-border-color: #ffb74d; -fx-border-radius: 15;">
+                    <Label text="Temoignages d-Etudiants"
+                           style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #e65100;"/>
+                    
+                    <VBox spacing="10" style="-fx-padding: 10;">
+                        <TextArea editable="false" prefWidth="480" prefHeight="60" wrapText="true"
+                                 text="Cette app m-a vraiment aidee pendant les partiels! Merci Muchan qui a cree cette application geniale! - Marie L., Etudiante en medecine"
+                                 style="-fx-font-size: 13px; -fx-text-fill: #333; -fx-font-style: italic; -fx-background-color: #fff3e0;"/>
+                        
+                        <TextArea editable="false" prefWidth="480" prefHeight="60" wrapText="true"
+                                 text="Je me sens beaucoup plus detendu depuis que j-utilise les exercises de respiration. Merci Anti-Stress! - Jean-Paul K., Etudiant en ingenierie"
+                                 style="-fx-font-size: 13px; -fx-text-fill: #333; -fx-font-style: italic; -fx-background-color: #fff3e0;"/>
+                        
+                        <TextArea editable="false" prefWidth="480" prefHeight="60" wrapText="true"
+                                 text="Les quiz de bien-etre m-aident a mieux comprendre mes emotions. Super! - Sophie M., Etudiante en psychologie"
+                                 style="-fx-font-size: 13px; -fx-text-fill: #333; -fx-font-style: italic; -fx-background-color: #fff3e0;"/>
+                        
+                        <TextArea editable="false" prefWidth="480" prefHeight="60" wrapText="true"
+                                 text="L-application est super! Je la recommande a tous mes amis etudiants! Ca a vraiment change ma vie. - Ahmed R., Etudiant en droit"
+                                 style="-fx-font-size: 13px; -fx-text-fill: #333; -fx-font-style: italic; -fx-background-color: #fff3e0;"/>
+                    </VBox>
+                </VBox>
+
+                <!-- Version -->
+                <Label text="Version 1.0 - 2024 Anti-Stress Application"
+                       style="-fx-font-size: 14px; -fx-text-fill: #757575;"/>
+
+            </VBox>
+        </ScrollPane>
+    </center>
+
+    <!-- Bottom Section - Navigation Buttons -->
+    <bottom>
+        <HBox alignment="CENTER" spacing="30" style="-fx-padding: 25;">
+            <Button fx:id="btnBack"
+                    text="Retour"
+                    onAction="#goBack"
+                    prefWidth="180" prefHeight="45"
+                    style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: white; -fx-background-color: #78909c; -fx-background-radius: 25;"/>
+            <Button fx:id="btnDashboard"
+                    text="Tableau de bord"
+                    onAction="#goToDashboard"
+                    prefWidth="180" prefHeight="45"
+                    style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: white; -fx-background-color: #1565c0; -fx-background-radius: 25;"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="edu.connexion3a36.Controller.CabinetPsychiatreController"
+      prefWidth="900" prefHeight="700"
+      style="-fx-background-color: #f5f5f5;">
+
+    <!-- Header -->
+    <HBox prefHeight="80" alignment="CENTER_LEFT" spacing="16"
+          style="-fx-background-color: linear-gradient(to right, #e3f2fd, #f3e5f5);
+                 -fx-border-color: transparent transparent #e0e0e0 transparent;
+                 -fx-border-width: 0 0 1 0;">
+        <padding><Insets top="0" right="28" bottom="0" left="28"/></padding>
+
+        <Button text="← Retour" onAction="#goBack"
+                style="-fx-background-color: white; -fx-border-color: #ddd;
+                       -fx-border-radius: 10; -fx-background-radius: 10;
+                       -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px;"/>
+
+        <VBox spacing="2">
+            <Label text="Cabinet Psychiatre"
+                   style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-font-family: 'Georgia';
+                          -fx-text-fill: #1565c0;"/>
+            <Label text="Scannez le QR code pour voir les médecins disponibles"
+                   style="-fx-font-size: 12px; -fx-text-fill: #6a8a76;"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label text="🏥" style="-fx-font-size: 40px;"/>
+    </HBox>
+
+    <!-- Content -->
+    <VBox VBox.vgrow="ALWAYS" alignment="CENTER" spacing="30">
+        <padding><Insets top="40" right="40" bottom="40" left="40"/></padding>
+
+        <!-- QR Code Container -->
+        <VBox spacing="20" alignment="CENTER"
+              style="-fx-background-color: white; -fx-background-radius: 20;
+                     -fx-padding: 30; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 15, 0, 0, 5);">
+            
+            <Label text="📱 Scannez ce QR Code"
+                   style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1565c0;"/>
+            
+            <!-- QR Code Image - URL will be set by controller -->
+            <ImageView fx:id="qrCodeImage" fitWidth="250" fitHeight="250" 
+                       preserveRatio="true"/>
+            
+            <Label text="Ce QR code contient la liste des cabinets de psychiatrie"
+                   style="-fx-font-size: 14px; -fx-text-fill: #666;"/>
+        </VBox>
+
+        <!-- Doctor List Display -->
+        <VBox spacing="15" alignment="CENTER" prefWidth="600">
+            <Label text="📋 Liste des Cabinets et Médecins"
+                   style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2e4a3e;"/>
+
+            <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 15; -fx-padding: 20;">
+                <!-- Doctor 1 -->
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="👨‍⚕️" style="-fx-font-size: 24px;"/>
+                    <VBox spacing="2">
+                        <Label text="Dr. Martin (Paris)" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+                        <Label text="Tél: 01 42 87 65 43" style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
+                    </VBox>
+                </HBox>
+                
+                <Separator/>
+                
+                <!-- Doctor 2 -->
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="👩‍⚕️" style="-fx-font-size: 24px;"/>
+                    <VBox spacing="2">
+                        <Label text="Dr. Bernard (Lyon)" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+                        <Label text="Tél: 04 78 92 15 67" style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
+                    </VBox>
+                </HBox>
+                
+                <Separator/>
+                
+                <!-- Doctor 3 -->
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="👨‍⚕️" style="-fx-font-size: 24px;"/>
+                    <VBox spacing="2">
+                        <Label text="Dr. Petit (Marseille)" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+                        <Label text="Tél: 04 91 76 54 32" style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
+                    </VBox>
+                </HBox>
+                
+                <Separator/>
+                
+                <!-- Doctor 4 -->
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="🏥" style="-fx-font-size: 24px;"/>
+                    <VBox spacing="2">
+                        <Label text="Cabinet Santé Mentale (Toulouse)" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+                        <Label text="Tél: 05 61 22 77 89" style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
+                    </VBox>
+                </HBox>
+                
+                <Separator/>
+                
+                <!-- Doctor 5 -->
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="👩‍⚕️" style="-fx-font-size: 24px;"/>
+                    <VBox spacing="2">
+                        <Label text="Dr. Durand (Nice)" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+                        <Label text="Tél: 04 93 88 55 21" style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+        </VBox>
+
+        <!-- Bottom Buttons -->
+        <HBox spacing="20" alignment="CENTER">
+            <Button text="← Retour aux options"
+                    onAction="#goBack"
+                    style="-fx-background-color: white; -fx-border-color: #1565c0;
+                           -fx-border-radius: 10; -fx-background-radius: 10;
+                           -fx-padding: 12 24; -fx-cursor: hand; -fx-font-size: 14px;
+                           -fx-text-fill: #1565c0;"/>
+            
+            <Button text="🏠 Retour au tableau de bord"
+                    onAction="#goToDashboard"
+                    style="-fx-background-color: #1565c0; -fx-text-fill: white;
+                           -fx-background-radius: 10; -fx-padding: 12 24;
+                           -fx-cursor: hand; -fx-font-size: 14px; -fx-font-weight: bold;"/>
+        </HBox>
+
+    </VBox>
+
+</VBox>

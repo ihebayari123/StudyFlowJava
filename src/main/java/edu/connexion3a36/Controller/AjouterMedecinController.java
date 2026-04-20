@@ -35,14 +35,14 @@ public class AjouterMedecinController {
         // Initialize combo box
         disponibiliteCB.getItems().addAll("disponible", "indisponible");
 
-        // Initialiser les codes pays et drapeaux
+
         paysDrapeaux.put("+212", "🇲🇦"); // Maroc
         paysDrapeaux.put("+337", "🇫🇷"); // France
         paysDrapeaux.put("+491", "🇩🇪"); // Allemagne
         paysDrapeaux.put("+346", "🇪🇸"); // Espagne
         paysDrapeaux.put("+447", "🇬🇧"); // Royaume Uni
         paysDrapeaux.put("+120", "🇺🇸"); // USA
-
+        paysDrapeaux.put("+216", "Tn");
         // Convertir automatiquement nom en majuscule
         nomTF.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.equals(newValue.toUpperCase())) {

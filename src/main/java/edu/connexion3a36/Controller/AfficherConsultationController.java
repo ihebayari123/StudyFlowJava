@@ -68,7 +68,7 @@ public class AfficherConsultationController {
         colMedecinId.setCellValueFactory(new PropertyValueFactory<>("medecin_id"));
         colSurveyId.setCellValueFactory(new PropertyValueFactory<>("stress_survey_id"));
 
-        // Configuration des ComboBox de saisie
+
         genreCB.getItems().addAll("Homme", "Femme");
         niveauCB.getItems().addAll("L1", "L2", "L3", "M1", "M2", "Doctorat");
 
