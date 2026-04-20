@@ -227,6 +227,9 @@ public class GestionUtilisateursController {
             stage.setTitle("Modifier un utilisateur");
             stage.setScene(new Scene(root));
             stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setWidth(500);
+            stage.setHeight(700);
+            stage.setResizable(true);
             stage.showAndWait();
             chargerDonnees();
         } catch (Exception e) { e.printStackTrace(); }

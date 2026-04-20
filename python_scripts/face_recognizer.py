@@ -5,12 +5,14 @@ import sys
 import json
 import face_recognition
 import numpy as np
+import cv2 
 
 def recognize_face(image_path, known_encoding_json):
     try:
         # Charger l'image à reconnaître
-        image = face_recognition.load_image_file(image_path)
-        encodings = face_recognition.face_encodings(image)
+        bgr_image = cv2.imread(image_path)
+        rgb_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2RGB)
+        encodings = face_recognition.face_encodings(rgb_image)
         
         if len(encodings) == 0:
             print(json.dumps({"success": False, "match": False, "error": "Aucun visage détecté"}))

@@ -25,8 +25,9 @@ public class WebcamCaptureUtil {
 
     // Démarre la webcam et affiche le flux dans un ImageView
     public void startCamera(ImageView imageView) {
+        AppContext.setActiveWebcam(this); // ← ajoute cette ligne
         // Charger OpenCV
-        System.loadLibrary(org.opencv.core.Core.NATIVE_LIBRARY_NAME);
+        System.load("C:\\opencv\\build\\java\\x64\\opencv_java490.dll");
 
         capture = new VideoCapture(0);
         if (!capture.isOpened()) {
@@ -56,8 +57,18 @@ public class WebcamCaptureUtil {
         Mat frame = new Mat();
         capture.read(frame);
 
+        // Debug — afficher info image
+        System.out.println("Channels: " + frame.channels());
+        System.out.println("Type: " + frame.type());
+        System.out.println("Size: " + frame.size());
+
         String path = FaceRecognitionUtil.getTempImagePath();
         Imgcodecs.imwrite(path, frame);
+
+        // Debug — vérifier que le fichier existe
+        System.out.println("Image sauvegardée : " + path);
+        System.out.println("Fichier existe : " + new java.io.File(path).exists());
+
         return path;
     }
 

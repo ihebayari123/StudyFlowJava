@@ -142,4 +142,42 @@ public class UtilisateurService implements IService<Utilisateur> {
         rs.next();
         return rs.getInt(1) > 0;
     }
+
+    // ═══════════════════════════════
+// FACE RECOGNITION
+// ═══════════════════════════════
+    public void saveFaceEncoding(long userId, String encoding) throws SQLException {
+        String requete = "UPDATE utilisateur SET face_encoding = ? WHERE id = ?";
+        PreparedStatement pst = cnx.prepareStatement(requete);
+        pst.setString(1, encoding);
+        pst.setLong(2, userId);
+        pst.executeUpdate();
+        System.out.println("Face encoding sauvegardé !");
+    }
+
+    public Utilisateur getUserByEmailWithFace(String email) throws SQLException {
+        String requete = "SELECT * FROM utilisateur WHERE email = ?";
+        PreparedStatement pst = cnx.prepareStatement(requete);
+        pst.setString(1, email);
+        ResultSet rs = pst.executeQuery();
+        if (rs.next()) {
+            Utilisateur u = mapRow(rs);
+            u.setFaceEncoding(rs.getString("face_encoding"));
+            return u;
+        }
+        return null;
+    }
+
+    public List<Utilisateur> getAllUsersWithFace() throws SQLException {
+        List<Utilisateur> data = new ArrayList<>();
+        String requete = "SELECT * FROM utilisateur WHERE face_encoding IS NOT NULL";
+        Statement st = cnx.createStatement();
+        ResultSet rs = st.executeQuery(requete);
+        while (rs.next()) {
+            Utilisateur u = mapRow(rs);
+            u.setFaceEncoding(rs.getString("face_encoding"));
+            data.add(u);
+        }
+        return data;
+    }
 }

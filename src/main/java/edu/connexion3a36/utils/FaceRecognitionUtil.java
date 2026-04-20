@@ -12,7 +12,7 @@ public class FaceRecognitionUtil {
     private static final String SCRIPTS_DIR = "python_scripts/";
     private static final String ENCODER_SCRIPT = SCRIPTS_DIR + "face_encoder.py";
     private static final String RECOGNIZER_SCRIPT = SCRIPTS_DIR + "face_recognizer.py";
-    private static final String TEMP_IMAGE_PATH = System.getProperty("java.io.tmpdir") + "\\face_capture.png";
+    private static final String TEMP_IMAGE_PATH = "C:\\temp\\face_capture.png";
 
     // Encode un visage depuis une image et retourne le vecteur JSON
     public static String encodeFace(String imagePath) throws Exception {
@@ -63,6 +63,8 @@ public class FaceRecognitionUtil {
 
     // Sauvegarde une image BufferedImage en fichier temporaire
     public static String getTempImagePath() {
+        // Créer le dossier si inexistant
+        new java.io.File("C:\\temp").mkdirs();
         return TEMP_IMAGE_PATH;
     }
 
