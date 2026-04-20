@@ -88,12 +88,16 @@
             <scope>runtime</scope>
         </dependency>
         <!-- Jackson (for facial recognition, oussema) -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>2.15.2</version>
-        </dependency>
+        <!--
+<dependency>
+    <groupId>com.fasterxml.jackson.core</groupId>
+    <artifactId>jackson-databind</artifactId>
+    <version>2.15.2</version>
+</dependency>
+-->
+
         <!-- opencv (for facial recognition, oussema) -->
+        <!--
         <dependency>
             <groupId>org.opencv</groupId>
             <artifactId>opencv</artifactId>
@@ -101,11 +105,15 @@
             <scope>system</scope>
             <systemPath>C:/opencv/build/java/opencv-490.jar</systemPath>
         </dependency>
+        -->
+
+        <!--
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-swing</artifactId>
             <version>21.0.2</version>
         </dependency>
+        -->
     </dependencies>
 
     <build>

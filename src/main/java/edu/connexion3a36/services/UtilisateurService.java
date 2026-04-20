@@ -130,6 +130,7 @@ public class UtilisateurService implements IService<Utilisateur> {
         u.setMotDePasse(rs.getString("mot_de_passe"));
         u.setRole(rs.getString("role"));
         u.setStatutCompte(rs.getString("statut_compte"));
+        u.setFaceAttempts(rs.getInt("face_attempts"));
         return u;
     }
 
@@ -179,5 +180,21 @@ public class UtilisateurService implements IService<Utilisateur> {
             data.add(u);
         }
         return data;
+    }
+
+    // Incrémenter tentatives échouées
+    public void incrementFaceAttempts(long userId) throws SQLException {
+        String requete = "UPDATE utilisateur SET face_attempts = face_attempts + 1 WHERE id = ?";
+        PreparedStatement pst = cnx.prepareStatement(requete);
+        pst.setLong(1, userId);
+        pst.executeUpdate();
+    }
+
+    // Reset tentatives après succès
+    public void resetFaceAttempts(long userId) throws SQLException {
+        String requete = "UPDATE utilisateur SET face_attempts = 0 WHERE id = ?";
+        PreparedStatement pst = cnx.prepareStatement(requete);
+        pst.setLong(1, userId);
+        pst.executeUpdate();
     }
 }
