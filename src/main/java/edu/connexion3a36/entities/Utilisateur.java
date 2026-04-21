@@ -61,10 +61,6 @@ public class Utilisateur {
     @Column(columnDefinition = "TEXT")
     private String bio;
 
-    @Column(name = "face_encoding", columnDefinition = "LONGTEXT")
-    private String faceEncoding;
-
-
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,
             orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Cours> cours = new ArrayList<>();
@@ -138,9 +134,6 @@ public class Utilisateur {
 
     public String getBio() { return bio; }
     public void setBio(String bio) { this.bio = bio; }
-
-    public String getFaceEncoding() { return faceEncoding; }
-    public void setFaceEncoding(String faceEncoding) { this.faceEncoding = faceEncoding; }
 
     public List<Cours> getCours() { return cours; }
     public void setCours(List<Cours> cours) { this.cours = cours; }

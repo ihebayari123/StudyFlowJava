@@ -41,11 +41,11 @@ public class CabinetPsychiatreController {
 
     // List of doctors/cabinets
     private static final List<String> DOCTOR_LIST = Arrays.asList(
-        "1. Dr. Martin (Paris) - 01 42 87 65 43",
-        "2. Dr. Bernard (Lyon) - 04 78 92 15 67",
-        "3. Dr. Petit (Marseille) - 04 91 76 54 32",
-        "4. Cabinet Santé Mentale (Toulouse) - 05 61 22 77 89",
-        "5. Dr. Durand (Nice) - 04 93 88 55 21"
+            "1. Dr. Martin (Paris) - 01 42 87 65 43",
+            "2. Dr. Bernard (Lyon) - 04 78 92 15 67",
+            "3. Dr. Petit (Marseille) - 04 91 76 54 32",
+            "4. Cabinet Santé Mentale (Toulouse) - 05 61 22 77 89",
+            "5. Dr. Durand (Nice) - 04 93 88 55 21"
     );
 
     @FXML

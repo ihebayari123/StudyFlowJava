@@ -960,6 +960,47 @@
                     </GridPane>
                     <!-- ══ FIN GRILLE ══════════════════════════════════ -->
 
+                    <!-- ══ BANNIÈRE VIP ════════════════════════════════ -->
+                    <HBox spacing="20" alignment="CENTER_LEFT"
+                          style="-fx-background-color: linear-gradient(to right, #1a1a2e, #16213e, #0f3460);
+                                 -fx-background-radius: 20;
+                                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 18, 0, 0, 6);">
+                        <padding><Insets top="22" right="28" bottom="22" left="28"/></padding>
+
+                        <VBox spacing="6" HBox.hgrow="ALWAYS">
+                            <HBox spacing="10" alignment="CENTER_LEFT">
+                                <Label text="👑"  style="-fx-font-size: 28px;"/>
+                                <Label text="ACCÈS VIP"
+                                       style="-fx-font-size: 20px; -fx-font-weight: bold;
+                                              -fx-text-fill: #ffd700; -fx-font-family: 'Georgia';"/>
+                                <Label text="PREMIUM"
+                                       style="-fx-background-color: #ffd700; -fx-text-fill: #1a1a2e;
+                                              -fx-font-size: 10px; -fx-font-weight: bold;
+                                              -fx-padding: 3 8; -fx-background-radius: 20;"/>
+                            </HBox>
+                            <Label text="Débloquez l'analyse de sommeil par IA, le suivi avancé et les fonctionnalités exclusives."
+                                   style="-fx-font-size: 12px; -fx-text-fill: #c0c0c0; -fx-wrap-text: true;"
+                                   prefWidth="500"/>
+                            <HBox spacing="16" style="-fx-padding: 4 0 0 0;">
+                                <Label text="✦ Analyse sommeil par caméra"
+                                       style="-fx-font-size: 11px; -fx-text-fill: #ffd700;"/>
+                                <Label text="✦ Chatbot IA avancé"
+                                       style="-fx-font-size: 11px; -fx-text-fill: #ffd700;"/>
+                                <Label text="✦ Rapports personnalisés"
+                                       style="-fx-font-size: 11px; -fx-text-fill: #ffd700;"/>
+                            </HBox>
+                        </VBox>
+
+                        <Button fx:id="btnVip"
+                                text="👑  Accès VIP"
+                                onAction="#handleVip"
+                                style="-fx-background-color: linear-gradient(to bottom, #ffd700, #ffb300);
+                                       -fx-text-fill: #1a1a2e; -fx-font-size: 14px; -fx-font-weight: bold;
+                                       -fx-background-radius: 14; -fx-padding: 14 28; -fx-cursor: hand;
+                                       -fx-effect: dropshadow(gaussian, rgba(255,215,0,0.5), 12, 0, 0, 4);"/>
+                    </HBox>
+                    <!-- ══ FIN BANNIÈRE VIP ════════════════════════════ -->
+
                     <!-- CONSEILS QUOTIDIENS -->
                     <VBox spacing="12"
                           style="-fx-background-color: #f0fdf4; -fx-background-radius: 16;
@@ -997,6 +1038,60 @@
 
                 </VBox>
             </ScrollPane>
+        </VBox>
+
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!--  VUE VIP — PAIEMENT                                         -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <VBox fx:id="viewVip" spacing="0" visible="false" managed="false">
+
+            <HBox prefHeight="70" alignment="CENTER_LEFT" spacing="16"
+                  style="-fx-background-color: linear-gradient(to right, #1a1a2e, #16213e);
+                         -fx-border-color: transparent transparent #ffd700 transparent;
+                         -fx-border-width: 0 0 2 0;">
+                <padding><Insets top="0" right="28" bottom="0" left="28"/></padding>
+                <Button text="← Retour"
+                        onAction="#goToRelax"
+                        style="-fx-background-color: rgba(255,255,255,0.1); -fx-text-fill: white;
+                               -fx-border-color: rgba(255,255,255,0.3); -fx-border-radius: 10;
+                               -fx-background-radius: 10; -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px;"/>
+                <Label text="👑  Accès VIP — Paiement Sécurisé"
+                       style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-font-family: 'Georgia';
+                              -fx-text-fill: #ffd700;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label text="🔒 SSL"
+                       style="-fx-font-size: 12px; -fx-text-fill: #4caf50; -fx-font-weight: bold;"/>
+            </HBox>
+
+            <StackPane fx:id="vipArea" VBox.vgrow="ALWAYS"/>
+
+        </VBox>
+
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!--  VUE SLEEP — ANALYSE SOMMEIL IA                             -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <VBox fx:id="viewSleep" spacing="0" visible="false" managed="false">
+
+            <HBox prefHeight="70" alignment="CENTER_LEFT" spacing="16"
+                  style="-fx-background-color: linear-gradient(to right, #0d1b2a, #1b2838);
+                         -fx-border-color: transparent transparent #7c4dff transparent;
+                         -fx-border-width: 0 0 2 0;">
+                <padding><Insets top="0" right="28" bottom="0" left="28"/></padding>
+                <Button text="← Retour"
+                        onAction="#goToVip"
+                        style="-fx-background-color: rgba(255,255,255,0.1); -fx-text-fill: white;
+                               -fx-border-color: rgba(255,255,255,0.3); -fx-border-radius: 10;
+                               -fx-background-radius: 10; -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px;"/>
+                <Label text="😴  Analyse de Sommeil par IA"
+                       style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-font-family: 'Georgia';
+                              -fx-text-fill: #7c4dff;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label text="👑 VIP"
+                       style="-fx-font-size: 12px; -fx-text-fill: #ffd700; -fx-font-weight: bold;"/>
+            </HBox>
+
+            <StackPane fx:id="sleepArea" VBox.vgrow="ALWAYS"/>
+
         </VBox>
 
         <!-- ═══════════════════════════════════════════════════════════ -->

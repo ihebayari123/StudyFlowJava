@@ -64,75 +64,75 @@ public class AjouterConsultationEtudiantController {
             datePicker.requestFocus();
             return;
         }
-        
+
         String motif = motifTF.getText().trim();
         if (motif.isEmpty()) {
             showAlert(Alert.AlertType.WARNING, "Champ manquant", "Veuillez indiquer le motif de la consultation !");
             motifTF.requestFocus();
             return;
         }
-        
+
         String genre = genreTF.getText().trim();
         if (genre.isEmpty()) {
             showAlert(Alert.AlertType.WARNING, "Champ manquant", "Veuillez indiquer le genre !");
             genreTF.requestFocus();
             return;
         }
-        
+
         // ✅ Contrainte Genre : doit être Homme, Femme ou Etudiant (première lettre majuscule)
         if (!genre.equals("Homme") && !genre.equals("Femme") && !genre.equals("Etudiant")) {
             showAlert(Alert.AlertType.WARNING, "Genre invalide", "Le genre doit être : Homme, Femme ou Etudiant (première lettre majuscule) !");
             genreTF.requestFocus();
             return;
         }
-        
+
         String niveau = niveauTF.getText().trim();
         if (niveau.isEmpty()) {
             showAlert(Alert.AlertType.WARNING, "Champ manquant", "Veuillez indiquer le niveau d'étude !");
             niveauTF.requestFocus();
             return;
         }
-        
+
         // ✅ Contrainte longueur minimum Genre
         if (genre.length() < 3) {
             showAlert(Alert.AlertType.WARNING, "Genre invalide", "Le genre doit contenir au moins 3 caractères !");
             genreTF.requestFocus();
             return;
         }
-        
+
         // ✅ Contrainte longueur maximum Genre
         if (genre.length() > 30) {
             showAlert(Alert.AlertType.WARNING, "Genre trop long", "Le genre ne peut pas dépasser 30 caractères !");
             genreTF.requestFocus();
             return;
         }
-        
+
         // ✅ Contrainte longueur minimum Niveau
         if (niveau.length() < 2) {
             showAlert(Alert.AlertType.WARNING, "Niveau invalide", "Le niveau d'étude doit contenir au moins 2 caractères !");
             niveauTF.requestFocus();
             return;
         }
-        
+
         // ✅ Contrainte longueur maximum Niveau
         if (niveau.length() > 30) {
             showAlert(Alert.AlertType.WARNING, "Niveau trop long", "Le niveau d'étude ne peut pas dépasser 30 caractères !");
             niveauTF.requestFocus();
             return;
         }
-        
+
         if (medecinCB.getValue() == null) {
             showAlert(Alert.AlertType.WARNING, "Champ manquant", "Veuillez sélectionner un médecin !");
             medecinCB.requestFocus();
             return;
         }
-        
+
         if (surveyCB.getValue() == null) {
             showAlert(Alert.AlertType.WARNING, "Champ manquant", "Veuillez sélectionner un questionnaire de stress !");
             surveyCB.requestFocus();
             return;
         }
-        
+
         // 🔴 CONTROLE 2 : Date ne peut pas être dans le passé
         LocalDate selectedDate = datePicker.getValue();
         if (selectedDate.isBefore(LocalDate.now())) {
@@ -140,21 +140,21 @@ public class AjouterConsultationEtudiantController {
             datePicker.requestFocus();
             return;
         }
-        
+
         // 🔴 CONTROLE 3 : Longueur minimum du motif
         if (motif.length() < 5) {
             showAlert(Alert.AlertType.WARNING, "Motif invalide", "Le motif doit contenir au moins 5 caractères !");
             motifTF.requestFocus();
             return;
         }
-        
+
         // 🔴 CONTROLE 4 : Longueur maximum du motif
         if (motif.length() > 255) {
             showAlert(Alert.AlertType.WARNING, "Motif trop long", "Le motif ne peut pas dépasser 255 caractères !");
             motifTF.requestFocus();
             return;
         }
-        
+
         try {
             Timestamp ts = Timestamp.valueOf(datePicker.getValue().atStartOfDay());
             Consultation c = new Consultation(
@@ -168,7 +168,7 @@ public class AjouterConsultationEtudiantController {
             service.addEntity(c);
             showAlert(Alert.AlertType.INFORMATION, "Succès", "Consultation ajoutée avec succès !");
             clearFields();
-            
+
             // Navigation vers stress_options via le dashboard (embarqué)
             if (dashboardController != null) {
                 dashboardController.handleFormSubmitSuccess();
@@ -197,7 +197,7 @@ public class AjouterConsultationEtudiantController {
         a.setTitle(titre); a.setHeaderText(null); a.setContentText(msg);
         a.showAndWait();
     }
-    
+
     /**
      * Fallback : ouvre stress_options dans une nouvelle fenêtre si pas de dashboard
      */

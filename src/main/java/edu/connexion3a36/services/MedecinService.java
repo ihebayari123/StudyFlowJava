@@ -49,7 +49,7 @@ public class MedecinService implements IService {
         cnx.setAutoCommit(false);
         
         try {
-            // c.d.
+            // 1. Supprimer les consultations liées (CASCADE)
             String deleteConsultations = "DELETE FROM consultation WHERE medecin_id = ?";
             try (PreparedStatement pstConsult = cnx.prepareStatement(deleteConsultations)) {
                 pstConsult.setInt(1, medecinId);

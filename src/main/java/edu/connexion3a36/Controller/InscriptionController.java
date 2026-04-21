@@ -138,10 +138,9 @@ public class InscriptionController {
                 || !msgMdp.isEmpty() || !msgConfirm.isEmpty()) return;
 
         // Vérifier email non déjà utilisé
-        // ✅ Après
-        // ✅ Après
         try {
-            // Vérifier email non déjà utilisé directement depuis getData()
+            Utilisateur existant = service.login(email, mdp);
+            // On vérifie par email uniquement
             boolean emailExiste = service.getData().stream()
                     .anyMatch(u -> u.getEmail().equalsIgnoreCase(email));
 
@@ -150,9 +149,11 @@ public class InscriptionController {
                 return;
             }
 
+            // Créer l'utilisateur
             Utilisateur nouvel = new Utilisateur(nom, prenom, email, mdp);
             service.addEntity(nouvel);
 
+            // Succès → retour login
             Alert success = new Alert(Alert.AlertType.INFORMATION);
             success.setTitle("Inscription réussie");
             success.setHeaderText(null);

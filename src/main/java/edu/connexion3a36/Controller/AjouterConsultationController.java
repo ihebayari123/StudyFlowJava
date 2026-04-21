@@ -49,75 +49,75 @@ public class AjouterConsultationController {
             datePicker.requestFocus();
             return;
         }
-        
+
         String motif = motifTF.getText().trim();
         if (motif.isEmpty()) {
             showAlert(Alert.AlertType.WARNING, "Champ manquant", "Veuillez indiquer le motif de la consultation !");
             motifTF.requestFocus();
             return;
         }
-        
+
         String genre = genreTF.getText().trim();
         if (genre.isEmpty()) {
             showAlert(Alert.AlertType.WARNING, "Champ manquant", "Veuillez indiquer le genre !");
             genreTF.requestFocus();
             return;
         }
-        
+
 
         if (!genre.equals("Homme") && !genre.equals("Femme") && !genre.equals("Etudiant")) {
             showAlert(Alert.AlertType.WARNING, "Genre invalide", "Le genre doit être : Homme, Femme ou Etudiant (première lettre majuscule) !");
             genreTF.requestFocus();
             return;
         }
-        
+
         String niveau = niveauTF.getText().trim();
         if (niveau.isEmpty()) {
             showAlert(Alert.AlertType.WARNING, "Champ manquant", "Veuillez indiquer le niveau d'étude !");
             niveauTF.requestFocus();
             return;
         }
-        
+
 
         if (genre.length() < 3) {
             showAlert(Alert.AlertType.WARNING, "Genre invalide", "Le genre doit contenir au moins 3 caractères !");
             genreTF.requestFocus();
             return;
         }
-        
+
 
         if (genre.length() > 30) {
             showAlert(Alert.AlertType.WARNING, "Genre trop long", "Le genre ne peut pas dépasser 30 caractères !");
             genreTF.requestFocus();
             return;
         }
-        
+
 
         if (niveau.length() < 2) {
             showAlert(Alert.AlertType.WARNING, "Niveau invalide", "Le niveau d'étude doit contenir au moins 2 caractères !");
             niveauTF.requestFocus();
             return;
         }
-        
+
 
         if (niveau.length() > 30) {
             showAlert(Alert.AlertType.WARNING, "Niveau trop long", "Le niveau d'étude ne peut pas dépasser 30 caractères !");
             niveauTF.requestFocus();
             return;
         }
-        
+
         if (medecinCB.getValue() == null) {
             showAlert(Alert.AlertType.WARNING, "Champ manquant", "Veuillez sélectionner un médecin !");
             medecinCB.requestFocus();
             return;
         }
-        
+
         if (surveyCB.getValue() == null) {
             showAlert(Alert.AlertType.WARNING, "Champ manquant", "Veuillez sélectionner un questionnaire de stress !");
             surveyCB.requestFocus();
             return;
         }
-        
+
 
         LocalDate selectedDate = datePicker.getValue();
         if (selectedDate.isBefore(LocalDate.now())) {
@@ -125,21 +125,21 @@ public class AjouterConsultationController {
             datePicker.requestFocus();
             return;
         }
-        
+
 
         if (motif.length() < 5) {
             showAlert(Alert.AlertType.WARNING, "Motif invalide", "Le motif doit contenir au moins 5 caractères !");
             motifTF.requestFocus();
             return;
         }
-        
+
 
         if (motif.length() > 255) {
             showAlert(Alert.AlertType.WARNING, "Motif trop long", "Le motif ne peut pas dépasser 255 caractères !");
             motifTF.requestFocus();
             return;
         }
-        
+
         try {
             Timestamp ts = Timestamp.valueOf(datePicker.getValue().atStartOfDay());
             Consultation c = new Consultation(

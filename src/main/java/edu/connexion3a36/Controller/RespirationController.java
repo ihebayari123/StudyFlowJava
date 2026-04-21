@@ -32,35 +32,35 @@ public class RespirationController {
 
     // Motivational messages for each phase
     private static final String[] INHALE_MESSAGES = {
-        "Respirez profondément... sentez l'air frais entrer dans vos poumons.",
-        "Chaque inspiration vous apporte plus de calme et de détente.",
-        "Visualisez une lumière dorée qui vous envahit de sérénité.",
-        "Vous vous sentez de plus en plus détendu à chaque Inspiration.",
-        "L'oxygène purifie votre corps et votre esprit."
+            "Respirez profondément... sentez l'air frais entrer dans vos poumons.",
+            "Chaque inspiration vous apporte plus de calme et de détente.",
+            "Visualisez une lumière dorée qui vous envahit de sérénité.",
+            "Vous vous sentez de plus en plus détendu à chaque Inspiration.",
+            "L'oxygène purifie votre corps et votre esprit."
     };
 
     private static final String[] HOLD_MESSAGES = {
-        "Retenez votre souffle... laissez le calme s'installer en vous.",
-        "Ce moment de pause renforce votre intérieure peace.",
-        "Accumulez toute cette énergie thérapeutlque.",
-        "Votre corps se détend de plus en plus profondément.",
-        "Profitez de ce moment de stillness complète."
+            "Retenez votre souffle... laissez le calme s'installer en vous.",
+            "Ce moment de pause renforce votre intérieure peace.",
+            "Accumulez toute cette énergie thérapeutlque.",
+            "Votre corps se détend de plus en plus profondément.",
+            "Profitez de ce moment de stillness complète."
     };
 
     private static final String[] EXHALE_MESSAGES = {
-        "Expirez lentement... libérez toute la tension.",
-        "Laissez partir tout votre stress et votre anxiété.",
-        "Vous vous sentez plus léger à chaque expiration.",
-        "Libérez toutes les pensées négatives.",
-        "Votre esprit se clears, votre cœur se calme."
+            "Expirez lentement... libérez toute la tension.",
+            "Laissez partir tout votre stress et votre anxiété.",
+            "Vous vous sentez plus léger à chaque expiration.",
+            "Libérez toutes les pensées négatives.",
+            "Votre esprit se clears, votre cœur se calme."
     };
 
     private static final String[] COMPLETE_MESSAGES = {
-        "Félicitations! Vous avez completado l'exercice!",
-        "Bien joué! Vous êtes maintenant plus détendu.",
-        "Excellent travail! Votre stress a été réduite.",
-        "Vous avez fait un grand pas vers le bien-être!",
-        "Continuez comme ça! Votre esprit vous remercie."
+            "Félicitations! Vous avez completado l'exercice!",
+            "Bien joué! Vous êtes maintenant plus détendu.",
+            "Excellent travail! Votre stress a été réduite.",
+            "Vous avez fait un grand pas vers le bien-être!",
+            "Continuez comme ça! Votre esprit vous remercie."
     };
 
     // FXML elements
