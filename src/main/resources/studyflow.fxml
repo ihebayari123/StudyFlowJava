@@ -87,6 +87,7 @@
                             <Label style="-fx-font-size: 13; -fx-text-fill: #757575;"
                                    text="Mes Cours" />
                         </HBox>
+                        
 
                         <!-- Chapitres -->
                         <HBox fx:id="chapitresItem" alignment="CENTER_LEFT"
