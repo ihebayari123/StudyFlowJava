@@ -9,7 +9,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MedecinService implements IService {
-    private Connection cnx = MyConnection.getInstance().getCnx();
+    private Connection cnx;
+
+    // Default constructor uses MyConnection
+    public MedecinService() {
+        this.cnx = MyConnection.getInstance().getCnx();
+    }
+
+    // Constructor for testing - allows injecting a custom connection
+    public MedecinService(Connection testConnection) {
+        this.cnx = testConnection;
+    }
 
     @Override
     public void addEntity(Object o) throws SQLException {

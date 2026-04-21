@@ -65,6 +65,12 @@
                     userData="relax"
                     onAction="#handleNav"
                     style="-fx-font-size: 20px; -fx-background-color: transparent; -fx-text-fill: #888888; -fx-cursor: hand;"/>
+
+            <Button fx:id="btnQuiz"
+                    text="📝"
+                    userData="quiz"
+                    onAction="#handleNav"
+                    style="-fx-font-size: 20px; -fx-background-color: transparent; -fx-text-fill: #888888; -fx-cursor: hand;"/>
         </VBox>
 
         <Button fx:id="btnLogout"
@@ -76,7 +82,7 @@
     <!-- ═══════════════════════════════════════════════════════════════ -->
     <!--  MAIN CONTENT  — StackPane pour superposer les vues            -->
     <!-- ═══════════════════════════════════════════════════════════════ -->
-    <StackPane fx:id="mainStackPane" HBox.hgrow="ALWAYS">
+    <StackPane HBox.hgrow="ALWAYS" fx:id="mainStackPane">
 
         <!-- ═══════════════════════════════════════════════════════════════ -->
         <!--  VUE BOUTIQUE                                                   -->
@@ -430,7 +436,6 @@
                     <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
                     <Label text="Modifier le profil"
                            style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
-                    <!-- ✅ Après -->
                     <Label text="Prénom" style="-fx-font-size: 11px; -fx-text-fill: #888;"/>
                     <TextField fx:id="fieldFirstName" text="Josh"
                                style="-fx-border-radius: 8; -fx-background-radius: 8;
@@ -623,6 +628,7 @@
 
                     <HBox spacing="20">
 
+                        <!-- CARTE MÉDECIN -->
                         <VBox spacing="16" HBox.hgrow="ALWAYS" prefWidth="340"
                               style="-fx-background-color: white; -fx-background-radius: 20;
                                      -fx-border-color: #dceefb; -fx-border-radius: 20; -fx-border-width: 1.5;
@@ -675,6 +681,7 @@
                                            -fx-font-weight: bold; -fx-padding: 12 20; -fx-cursor: hand;"/>
                         </VBox>
 
+                        <!-- CARTE SCORE BIEN-ÊTRE -->
                         <VBox spacing="16" HBox.hgrow="ALWAYS" prefWidth="340"
                               style="-fx-background-color: white; -fx-background-radius: 20;
                                      -fx-border-color: #ede7f6; -fx-border-radius: 20; -fx-border-width: 1.5;
@@ -766,6 +773,61 @@
                 </VBox>
             </ScrollPane>
         </VBox>
+
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!--  VUE CONSULTER MÉDECIN  (chargée dans le dashboard)        -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <VBox fx:id="viewMedecin" spacing="0" visible="false" managed="false">
+
+            <HBox prefHeight="70" alignment="CENTER_LEFT" spacing="16"
+                  style="-fx-background-color: linear-gradient(to right, #e3f2fd, #e8f5e9);
+                         -fx-border-color: transparent transparent #e0e0e0 transparent;
+                         -fx-border-width: 0 0 1 0;">
+                <padding><Insets top="0" right="28" bottom="0" left="28"/></padding>
+                <Button text="← Retour"
+                        onAction="#goToRelax"
+                        style="-fx-background-color: white; -fx-border-color: #ddd;
+                               -fx-border-radius: 10; -fx-background-radius: 10;
+                               -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px;"/>
+                <Label text="🩺  Consulter un Médecin"
+                       style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-font-family: 'Georgia';
+                              -fx-text-fill: #1565c0;"/>
+            </HBox>
+
+            <!-- Le contenu de ajouteetudiant.fxml sera injecté ici -->
+            <StackPane fx:id="medecinArea" VBox.vgrow="ALWAYS"/>
+
+        </VBox>
+
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!--  VUE CALCULER SCORE STRESS  (chargée dans le dashboard)    -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <VBox fx:id="viewStress" spacing="0" visible="false" managed="false">
+
+            <HBox prefHeight="70" alignment="CENTER_LEFT" spacing="16"
+                  style="-fx-background-color: linear-gradient(to right, #f3e5f5, #ede7f6);
+                         -fx-border-color: transparent transparent #e0e0e0 transparent;
+                         -fx-border-width: 0 0 1 0;">
+                <padding><Insets top="0" right="28" bottom="0" left="28"/></padding>
+                <Button text="← Retour"
+                        onAction="#goToRelax"
+                        style="-fx-background-color: white; -fx-border-color: #ddd;
+                               -fx-border-radius: 10; -fx-background-radius: 10;
+                               -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px;"/>
+                <Label text="📊  Calculer mon Score de Bien-Être"
+                       style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-font-family: 'Georgia';
+                              -fx-text-fill: #6a1b9a;"/>
+            </HBox>
+
+            <!-- Le contenu de AjouterStressSurveyEtudiant.fxml sera injecté ici -->
+            <StackPane fx:id="stressArea" VBox.vgrow="ALWAYS"/>
+
+        </VBox>
+
+        <!-- ─────────────────────────────────────────────────────────── -->
+        <!--  VUE QUIZ                                                    -->
+        <!-- ─────────────────────────────────────────────────────────── -->
+        <StackPane fx:id="contentArea" visible="false" managed="false"/>
 
     </StackPane>
 </HBox>
