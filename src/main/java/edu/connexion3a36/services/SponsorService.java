@@ -60,6 +60,33 @@ public class SponsorService {
     }
 
     // ══════════════════════════════════════════════════════
+    //  SUPPRIMER TOUS LES SPONSORS D'UN ÉVÉNEMENT (CASCADE)
+    // ══════════════════════════════════════════════════════
+    public void supprimerParEventId(int eventId) throws SQLException {
+        String sql = "DELETE FROM sponsor WHERE event_titre_id = ?";
+
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1, eventId);
+        ps.executeUpdate();
+    }
+
+    // ══════════════════════════════════════════════════════
+    //  COMPTER LES SPONSORS D'UN ÉVÉNEMENT
+    // ══════════════════════════════════════════════════════
+    public int compterParEventId(int eventId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM sponsor WHERE event_titre_id = ?";
+
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1, eventId);
+        ResultSet rs = ps.executeQuery();
+
+        if (rs.next()) {
+            return rs.getInt(1);
+        }
+        return 0;
+    }
+
+    // ══════════════════════════════════════════════════════
     //  RÉCUPÉRER TOUS les sponsors
     // ══════════════════════════════════════════════════════
     public List<Sponsor> recupererTous() throws SQLException {
