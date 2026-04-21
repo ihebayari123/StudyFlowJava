@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.lang.ProcessBuilder;
 import javafx.animation.FadeTransition;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -72,11 +74,19 @@ public class FitnessDashboardController implements Initializable {
     @FXML private VBox viewCatchStress;
     @FXML private VBox viewFitness;
     @FXML private VBox viewNutrition;
+    @FXML private VBox viewChatbot;
+    @FXML private VBox viewCabinet;
+    @FXML private VBox viewRespiration;
+    @FXML private VBox viewAPropos;
     @FXML private StackPane medecinArea;
     @FXML private StackPane stressArea;
     @FXML private StackPane catchStressArea;
     @FXML private StackPane fitnessArea;
     @FXML private StackPane nutritionArea;
+    @FXML private StackPane chatbotArea;
+    @FXML private StackPane cabinetArea;
+    @FXML private StackPane respirationArea;
+    @FXML private StackPane aProposArea;
 
     // ─── Home ────────────────────────────────────────────────────────
     @FXML private Label lblGreeting;
@@ -145,6 +155,9 @@ public class FitnessDashboardController implements Initializable {
     @FXML private TextArea reclamationTextArea;
     @FXML private Button btnEnvoyer;
 
+    // ─── Medecin header ──────────────────────────────────────────────
+    @FXML private Label lblMedecinTitle;
+
     // ─── Données ─────────────────────────────────────────────────────
     private record Course(String emoji, String name, String author,
                           int progress, double rating, boolean isNew, boolean isPopular) {}
@@ -208,6 +221,13 @@ public class FitnessDashboardController implements Initializable {
         allViews = new ArrayList<>(navMap.values());
         allViews.add(viewMedecin);
         allViews.add(viewStress);
+        allViews.add(viewCatchStress);
+        allViews.add(viewFitness);
+        allViews.add(viewNutrition);
+        allViews.add(viewChatbot);
+        allViews.add(viewCabinet);
+        allViews.add(viewRespiration);
+        allViews.add(viewAPropos);
         allViews.add(viewReclamation);
         allViews.add(contentArea);
     }
@@ -338,6 +358,119 @@ public class FitnessDashboardController implements Initializable {
         setActiveNav(btnRelax);
     }
 
+    /**
+     * Affiche viewMedecin (accessible depuis StressOptionsController).
+     */
+    public void showViewMedecin() {
+        showView(viewMedecin);
+        setActiveNav(btnRelax);
+    }
+
+    /**
+     * Retour vers viewMedecin (stress_options) depuis viewChatbot.
+     */
+    @FXML
+    public void goToMedecin(ActionEvent e) {
+        showView(viewMedecin);
+        setActiveNav(btnRelax);
+    }
+
+    /**
+     * Ouvre le chatbot EduWell (happiness_chatbot.fxml) dans viewChatbot.
+     * Appelé par StressOptionsController via callback.
+     */
+    public void handleOpenChatbot() {
+        if (chatbotArea.getChildren().isEmpty()) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/happiness_chatbot.fxml"));
+                Node vue = loader.load();
+                HappinessChatbotController ctrl = loader.getController();
+                ctrl.setDashboardController(this);
+                chatbotArea.getChildren().setAll(vue);
+            } catch (IOException ex) {
+                Label err = new Label("❌ Impossible de charger le chatbot : " + ex.getMessage());
+                err.setStyle("-fx-text-fill: #e24b4a; -fx-font-size: 13px; -fx-padding: 24;");
+                chatbotArea.getChildren().setAll(err);
+            }
+        }
+        showView(viewChatbot);
+        setActiveNav(btnRelax);
+    }
+
+    /**
+     * Ouvre cabinet_psychiatre.fxml dans viewCabinet.
+     * Appelé par StressOptionsController via callback.
+     */
+    public void handleOpenCabinet() {
+        if (cabinetArea.getChildren().isEmpty()) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/cabinet_psychiatre.fxml"));
+                Node vue = loader.load();
+                CabinetPsychiatreController ctrl = loader.getController();
+                ctrl.setDashboardController(this);
+                cabinetArea.getChildren().setAll(vue);
+            } catch (IOException ex) {
+                Label err = new Label("❌ Impossible de charger le cabinet : " + ex.getMessage());
+                err.setStyle("-fx-text-fill: #e24b4a; -fx-font-size: 13px; -fx-padding: 24;");
+                cabinetArea.getChildren().setAll(err);
+            }
+        }
+        showView(viewCabinet);
+        setActiveNav(btnRelax);
+    }
+
+    /**
+     * Ouvre respiration.fxml dans viewRespiration.
+     * Appelé par StressOptionsController via callback.
+     */
+    public void handleOpenRespiration() {
+        // Rechargé à chaque fois pour réinitialiser l'exercice
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/respiration.fxml"));
+            Node vue = loader.load();
+            RespirationController ctrl = loader.getController();
+            ctrl.setDashboardController(this);
+            respirationArea.getChildren().setAll(vue);
+        } catch (IOException ex) {
+            Label err = new Label("❌ Impossible de charger l'exercice : " + ex.getMessage());
+            err.setStyle("-fx-text-fill: #e24b4a; -fx-font-size: 13px; -fx-padding: 24;");
+            respirationArea.getChildren().setAll(err);
+        }
+        showView(viewRespiration);
+        setActiveNav(btnRelax);
+    }
+
+    /**
+     * Ouvre a_propos.fxml dans viewAPropos.
+     * Appelé par StressOptionsController via callback.
+     */
+    public void handleOpenAPropos() {
+        if (aProposArea.getChildren().isEmpty()) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/a_propos.fxml"));
+                Node vue = loader.load();
+                AProposController ctrl = loader.getController();
+                ctrl.setDashboardController(this);
+                aProposArea.getChildren().setAll(vue);
+            } catch (IOException ex) {
+                Label err = new Label("❌ Impossible de charger la page : " + ex.getMessage());
+                err.setStyle("-fx-text-fill: #e24b4a; -fx-font-size: 13px; -fx-padding: 24;");
+                aProposArea.getChildren().setAll(err);
+            }
+        }
+        showView(viewAPropos);
+        setActiveNav(btnRelax);
+    }
+
+    /**
+     * Retour vers stress_options (viewMedecin) depuis cabinet/respiration/apropos/chatbot.
+     */
+    @FXML
+    public void goToStressOptions(ActionEvent e) {
+        showView(viewMedecin);
+        setActiveNav(btnRelax);
+    }
+
     // ═════════════════════════════════════════════════════════════════
     //  RÉCLAMATION
     // ═════════════════════════════════════════════════════════════════
@@ -367,51 +500,42 @@ public class FitnessDashboardController implements Initializable {
         }
 
         try {
-            // On Windows, utiliser cmd.exe /c pour exécuter curl
-            String os = System.getProperty("os.name").toLowerCase();
-            String curlCommand;
-            
-            // URL encoder le message pour les données POST
-            String encodedMessage = message.replace(" ", "%20").replace("\n", "%0A");
-            
-            if (os.contains("win")) {
-                // Windows - utiliser cmd /c
-                String fullCommand = "curl https://api.twilio.com/2010-04-01/Accounts/AC487b3b729bca8e8690dbd4d8e8666327/Messages.json -X POST --data-urlencode To=+21652176756 --data-urlencode MessagingServiceSid=MG132a322f96e964c43e508bba78e7bb84 --data-urlencode Body=" + encodedMessage + " -u AC487b3b729bca8e8690dbd4d8e8666327:4d8bca8e8690dbd4d8e8666327";
-                ProcessBuilder pb = new ProcessBuilder("cmd", "/c", fullCommand);
-                pb.redirectErrorStream(true);
-                Process process = pb.start();
+            // Twilio credentials
+            String accountSid  = "AC487b3b729bca8e8690dbd4d8e8666327";
+            String authToken   = "8feb86522f875124a68730d6b5a40e99";
+            String toNumber    = "+21652176756";
+            String messagingSid = "MG132a322f96e964c43e508bba78e7bb84";
+            String url = "https://api.twilio.com/2010-04-01/Accounts/" + accountSid + "/Messages.json";
 
-                int exitCode = process.waitFor();
+            // Construire la commande curl avec des arguments séparés (fonctionne sur Windows et Linux)
+            ProcessBuilder pb = new ProcessBuilder(
+                "curl", "-s", "-w", "\n%{http_code}",
+                url,
+                "-X", "POST",
+                "--data-urlencode", "To=" + toNumber,
+                "--data-urlencode", "MessagingServiceSid=" + messagingSid,
+                "--data-urlencode", "Body=" + message,
+                "-u", accountSid + ":" + authToken
+            );
+            pb.redirectErrorStream(true);
+            Process process = pb.start();
 
-                if (exitCode == 0) {
-                    showAlert("Réclamation envoyée avec succès !");
-                    reclamationTextArea.clear();
-                } else {
-                    showAlert("Erreur lors de l'envoi de la réclamation. Veuillez réessayer.");
-                }
+            // Lire la réponse complète
+            String response = new String(process.getInputStream().readAllBytes());
+            process.waitFor();
+
+            // Vérifier le code HTTP (dernière ligne)
+            String[] lines = response.trim().split("\n");
+            String httpCode = lines[lines.length - 1].trim();
+
+            if (httpCode.startsWith("2")) {
+                // Code 2xx = succès
+                showAlert("✅ Réclamation envoyée avec succès !");
+                reclamationTextArea.clear();
             } else {
-                // Linux/Mac - exécuter directement curl
-                String[] commands = {
-                    "curl", "https://api.twilio.com/2010-04-01/Accounts/AC487b3b729bca8e8690dbd4d8e8666327/Messages.json",
-                    "-X", "POST",
-                    "--data-urlencode", "To=+21652176756",
-                    "--data-urlencode", "MessagingServiceSid=MG132a322f96e964c43e508bba78e7bb84",
-                    "--data-urlencode", "Body=" + message,
-                    "-u", "AC487b3b729bca8e8690dbd4d8e8666327:4d8bca8e8690dbd4d8e8666327"
-                };
-
-                ProcessBuilder pb = new ProcessBuilder(commands);
-                pb.redirectErrorStream(true);
-                Process process = pb.start();
-
-                int exitCode = process.waitFor();
-
-                if (exitCode == 0) {
-                    showAlert("Réclamation envoyée avec succès !");
-                    reclamationTextArea.clear();
-                } else {
-                    showAlert("Erreur lors de l'envoi de la réclamation. Veuillez réessayer.");
-                }
+                // Afficher la réponse Twilio pour diagnostiquer
+                String body = lines.length > 1 ? lines[0] : response;
+                showAlert("❌ Erreur lors de l'envoi (HTTP " + httpCode + ").\n" + body);
             }
         } catch (Exception ex) {
             showAlert("Erreur : " + ex.getMessage());
@@ -430,21 +554,52 @@ public class FitnessDashboardController implements Initializable {
 
     /**
      * Ouvre ajouteetudiant.fxml DANS le dashboard (viewMedecin).
-     * Lazy loading : le contenu n'est chargé qu'une seule fois.
+     * Formulaire de consultation étudiant.
+     * Rechargé à chaque appel pour permettre un nouveau formulaire vierge.
      */
     @FXML
     public void handleConsulterMedecin(ActionEvent e) {
-        if (medecinArea.getChildren().isEmpty()) {
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/ajouteetudiant.fxml"));
-                Node vue = loader.load();
-                medecinArea.getChildren().setAll(vue);
-            } catch (IOException ex) {
-                Label err = new Label("❌ Impossible de charger le formulaire : " + ex.getMessage());
-                err.setStyle("-fx-text-fill: #e24b4a; -fx-font-size: 13px; -fx-padding: 24;");
-                medecinArea.getChildren().setAll(err);
-            }
+        loadConsultationForm();
+        showView(viewMedecin);
+        setActiveNav(btnRelax);
+    }
+
+    /**
+     * Charge (ou recharge) ajouteetudiant.fxml dans medecinArea.
+     */
+    public void loadConsultationForm() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ajouteetudiant.fxml"));
+            Node vue = loader.load();
+            AjouterConsultationEtudiantController ctrl = loader.getController();
+            ctrl.setDashboardController(this);
+            medecinArea.getChildren().setAll(vue);
+            if (lblMedecinTitle != null) lblMedecinTitle.setText("🩺  Consulter un Médecin");
+        } catch (IOException ex) {
+            Label err = new Label("❌ Impossible de charger le formulaire : " + ex.getMessage());
+            err.setStyle("-fx-text-fill: #e24b4a; -fx-font-size: 13px; -fx-padding: 24;");
+            medecinArea.getChildren().setAll(err);
         }
+    }
+
+    /**
+     * Appelé par AjouterConsultationEtudiantController après enregistrement réussi.
+     * Charge stress_options.fxml dans medecinArea et met à jour le titre.
+     */
+    public void handleFormSubmitSuccess() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/stress_options.fxml"));
+            Node vue = loader.load();
+            StressOptionsController ctrl = loader.getController();
+            ctrl.setDashboardController(this);
+            medecinArea.getChildren().setAll(vue);
+            if (lblMedecinTitle != null) lblMedecinTitle.setText("🧘  Options Anti-Stress");
+        } catch (IOException ex) {
+            Label err = new Label("❌ Impossible de charger les options : " + ex.getMessage());
+            err.setStyle("-fx-text-fill: #e24b4a; -fx-font-size: 13px; -fx-padding: 24;");
+            medecinArea.getChildren().setAll(err);
+        }
+        
         showView(viewMedecin);
         setActiveNav(btnRelax);
     }
@@ -475,44 +630,301 @@ public class FitnessDashboardController implements Initializable {
     public void handleCatchStress(ActionEvent e) {
         if (catchStressArea.getChildren().isEmpty()) {
             VBox catchStressContent = new VBox(20);
-            catchStressContent.setPadding(new Insets(20));
+            catchStressContent.setPadding(new Insets(30));
             catchStressContent.setStyle("-fx-background-color: #f5f5f5;");
             
-            Label title = new Label("🎯 Catch the Stress");
-            title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #c62828;");
+            // Titre principal
+            Label title = new Label("🎯 Catch the Stress - Exercices Anti-Stress");
+            title.setStyle("-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #c62828;");
             
-            Label desc = new Label("Techniques pour identifier et gerer le stress:");
-            desc.setStyle("-fx-font-size: 14px; -fx-text-fill: #555;");
+            Label subtitle = new Label("Libérez vos tensions avec ces exercices simples et efficaces");
+            subtitle.setStyle("-fx-font-size: 14px; -fx-text-fill: #666; -fx-font-style: italic;");
             
-            VBox techniques = new VBox(15);
+            // Zone de chronomètre et messages de motivation
+            VBox timerBox = new VBox(15);
+            timerBox.setAlignment(Pos.CENTER);
+            timerBox.setStyle("-fx-background-color: linear-gradient(to bottom, #ffebee, #ffcdd2); " +
+                             "-fx-background-radius: 15; -fx-padding: 25; -fx-border-color: #ef5350; " +
+                             "-fx-border-width: 2; -fx-border-radius: 15;");
             
-            String[][] techs = {
-                {"Respiration 4-7-8", "Inspirez 4s, retenez 7s, expirez 8s"},
-                {" Meditation guidee", "10 min de meditation quotidienne"},
-                {"Journal du stress", "Notez vos moments de stress"},
-                {"Exercice physique", "Liberez les tensions"}
+            Label timerLabel = new Label("00:00");
+            timerLabel.setStyle("-fx-font-size: 48px; -fx-font-weight: bold; -fx-text-fill: #c62828;");
+            
+            Label motivationLabel = new Label("💪 Prêt à commencer ? Choisissez un exercice !");
+            motivationLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: #d32f2f; -fx-font-weight: bold; " +
+                                    "-fx-wrap-text: true; -fx-text-alignment: center;");
+            motivationLabel.setMaxWidth(500);
+            
+            HBox timerControls = new HBox(15);
+            timerControls.setAlignment(Pos.CENTER);
+            
+            Button startTimerBtn = new Button("▶ Démarrer");
+            startTimerBtn.setStyle("-fx-background-color: #4caf50; -fx-text-fill: white; " +
+                                  "-fx-font-size: 14px; -fx-padding: 10 25; -fx-background-radius: 20; -fx-cursor: hand;");
+            
+            Button pauseTimerBtn = new Button("⏸ Pause");
+            pauseTimerBtn.setStyle("-fx-background-color: #ff9800; -fx-text-fill: white; " +
+                                  "-fx-font-size: 14px; -fx-padding: 10 25; -fx-background-radius: 20; -fx-cursor: hand;");
+            pauseTimerBtn.setDisable(true);
+            
+            Button resetTimerBtn = new Button("⏹ Reset");
+            resetTimerBtn.setStyle("-fx-background-color: #f44336; -fx-text-fill: white; " +
+                                  "-fx-font-size: 14px; -fx-padding: 10 25; -fx-background-radius: 20; -fx-cursor: hand;");
+            resetTimerBtn.setDisable(true);
+            
+            timerControls.getChildren().addAll(startTimerBtn, pauseTimerBtn, resetTimerBtn);
+            timerBox.getChildren().addAll(timerLabel, motivationLabel, timerControls);
+            
+            // Messages de motivation qui changent pendant l'exercice
+            String[] motivationMessages = {
+                "💪 Excellent ! Continue comme ça !",
+                "🔥 Tu es en feu ! Ne lâche rien !",
+                "⭐ Bravo ! Chaque seconde compte !",
+                "🎯 Parfait ! Tu gères ton stress !",
+                "✨ Superbe effort ! Tu es incroyable !",
+                "🌟 Continue ! Tu es sur la bonne voie !",
+                "💯 Fantastique ! Tu es un champion !",
+                "🚀 Incroyable ! Tu dépasses tes limites !"
             };
             
-            for (String[] t : techs) {
-                HBox card = new HBox(15);
-                card.setStyle("-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 15;");
-                Label name = new Label(t[0]);
-                name.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #c62828;");
-                Label descTech = new Label(t[1]);
-                descTech.setStyle("-fx-font-size: 12px; -fx-text-fill: #555;");
-                card.getChildren().addAll(name, descTech);
-                techniques.getChildren().add(card);
-            }
+            // Timer logic avec Timeline
+            final int[] seconds = {0};
+            final boolean[] isRunning = {false};
+            final Timeline[] timeline = {null};
             
-            Button backBtn = new Button("← Retour au Dashboard");
-            backBtn.setStyle("-fx-background-color: #c62828; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 12 30; -fx-background-radius: 10; -fx-cursor: hand;");
-            backBtn.setOnAction(ev -> goHome(ev));
+            startTimerBtn.setOnAction(ev -> {
+                if (!isRunning[0]) {
+                    isRunning[0] = true;
+                    startTimerBtn.setDisable(true);
+                    pauseTimerBtn.setDisable(false);
+                    resetTimerBtn.setDisable(false);
+                    
+                    timeline[0] = new Timeline(
+                        new KeyFrame(Duration.seconds(1), event -> {
+                            seconds[0]++;
+                            int mins = seconds[0] / 60;
+                            int secs = seconds[0] % 60;
+                            timerLabel.setText(String.format("%02d:%02d", mins, secs));
+                            
+                            // Changer le message de motivation toutes les 10 secondes
+                            if (seconds[0] % 10 == 0) {
+                                int index = (seconds[0] / 10) % motivationMessages.length;
+                                motivationLabel.setText(motivationMessages[index]);
+                            }
+                        })
+                    );
+                    timeline[0].setCycleCount(Timeline.INDEFINITE);
+                    timeline[0].play();
+                }
+            });
             
-            catchStressContent.getChildren().addAll(title, desc, techniques, backBtn);
+            pauseTimerBtn.setOnAction(ev -> {
+                if (isRunning[0] && timeline[0] != null) {
+                    timeline[0].pause();
+                    isRunning[0] = false;
+                    startTimerBtn.setDisable(false);
+                    pauseTimerBtn.setDisable(true);
+                    motivationLabel.setText("⏸ Pause - Reprends quand tu es prêt !");
+                }
+            });
+            
+            resetTimerBtn.setOnAction(ev -> {
+                if (timeline[0] != null) {
+                    timeline[0].stop();
+                }
+                seconds[0] = 0;
+                isRunning[0] = false;
+                timerLabel.setText("00:00");
+                startTimerBtn.setDisable(false);
+                pauseTimerBtn.setDisable(true);
+                resetTimerBtn.setDisable(true);
+                motivationLabel.setText("💪 Prêt à recommencer ? Tu peux le faire !");
+            });
+            
+            // Séparateur
+            Label exercisesTitle = new Label("📋 Exercices Anti-Stress Simples");
+            exercisesTitle.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #c62828; -fx-padding: 20 0 10 0;");
+            
+            // ScrollPane pour les exercices
+            ScrollPane exercisesScroll = new ScrollPane();
+            exercisesScroll.setFitToWidth(true);
+            exercisesScroll.setStyle("-fx-background-color: transparent; -fx-border-color: transparent;");
+            
+            VBox exercisesList = new VBox(15);
+            
+            // Exercice 1: Étirements du cou
+            VBox ex1 = createExerciseCard(
+                "1️⃣ Étirements du Cou",
+                "Durée: 2-3 minutes",
+                new String[]{
+                    "• Asseyez-vous confortablement, dos droit",
+                    "• Inclinez lentement la tête vers la droite (10 sec)",
+                    "• Revenez au centre, puis inclinez vers la gauche (10 sec)",
+                    "• Inclinez la tête vers l'avant, menton vers la poitrine (10 sec)",
+                    "• Faites 3 rotations complètes douces dans chaque sens",
+                    "• Respirez profondément pendant l'exercice"
+                },
+                "#e3f2fd",
+                "#1976d2"
+            );
+            
+            // Exercice 2: Respiration profonde
+            VBox ex2 = createExerciseCard(
+                "2️⃣ Respiration Profonde 4-7-8",
+                "Durée: 3-4 minutes",
+                new String[]{
+                    "• Asseyez-vous confortablement, fermez les yeux",
+                    "• Inspirez par le nez pendant 4 secondes",
+                    "• Retenez votre souffle pendant 7 secondes",
+                    "• Expirez lentement par la bouche pendant 8 secondes",
+                    "• Répétez ce cycle 4 fois minimum",
+                    "• Sentez votre corps se détendre à chaque expiration"
+                },
+                "#f3e5f5",
+                "#7b1fa2"
+            );
+            
+            // Exercice 3: Étirements des épaules
+            VBox ex3 = createExerciseCard(
+                "3️⃣ Étirements des Épaules",
+                "Durée: 2-3 minutes",
+                new String[]{
+                    "• Debout ou assis, dos droit",
+                    "• Levez les épaules vers les oreilles (5 sec)",
+                    "• Relâchez brusquement - répétez 5 fois",
+                    "• Faites 10 rotations d'épaules vers l'arrière",
+                    "• Faites 10 rotations d'épaules vers l'avant",
+                    "• Croisez les bras et étirez le haut du dos (15 sec)"
+                },
+                "#e8f5e9",
+                "#388e3c"
+            );
+            
+            // Exercice 4: Étirements des poignets
+            VBox ex4 = createExerciseCard(
+                "4️⃣ Étirements des Poignets et Mains",
+                "Durée: 2 minutes",
+                new String[]{
+                    "• Tendez le bras droit devant vous, paume vers le haut",
+                    "• Avec la main gauche, tirez doucement les doigts vers vous (15 sec)",
+                    "• Répétez avec la paume vers le bas (15 sec)",
+                    "• Changez de bras et répétez",
+                    "• Faites 10 rotations de poignets dans chaque sens",
+                    "• Serrez les poings fort puis ouvrez grand les mains (10 fois)"
+                },
+                "#fff3e0",
+                "#f57c00"
+            );
+            
+            // Exercice 5: Marche sur place
+            VBox ex5 = createExerciseCard(
+                "5️⃣ Marche Active sur Place",
+                "Durée: 3-5 minutes",
+                new String[]{
+                    "• Debout, dos droit, regardez devant vous",
+                    "• Marchez sur place en levant bien les genoux",
+                    "• Balancez les bras naturellement",
+                    "• Augmentez progressivement le rythme",
+                    "• Ajoutez des montées de genoux plus hautes",
+                    "• Ralentissez progressivement les 30 dernières secondes"
+                },
+                "#fce4ec",
+                "#c2185b"
+            );
+            
+            // Exercice 6: Étirements du dos
+            VBox ex6 = createExerciseCard(
+                "6️⃣ Étirements du Dos (Chat-Vache)",
+                "Durée: 2-3 minutes",
+                new String[]{
+                    "• À quatre pattes, mains sous les épaules, genoux sous les hanches",
+                    "• Inspirez: creusez le dos, levez la tête (position vache)",
+                    "• Expirez: arrondissez le dos, rentrez le menton (position chat)",
+                    "• Alternez lentement 10 fois",
+                    "• Sentez chaque vertèbre bouger",
+                    "• Terminez en position neutre, respirez profondément"
+                },
+                "#e0f2f1",
+                "#00796b"
+            );
+            
+            exercisesList.getChildren().addAll(ex1, ex2, ex3, ex4, ex5, ex6);
+            exercisesScroll.setContent(exercisesList);
+            exercisesScroll.setPrefHeight(400);
+            
+            // Conseils finaux
+            VBox tipsBox = new VBox(10);
+            tipsBox.setStyle("-fx-background-color: #fff8e1; -fx-background-radius: 10; -fx-padding: 20; " +
+                            "-fx-border-color: #fbc02d; -fx-border-width: 2; -fx-border-radius: 10;");
+            
+            Label tipsTitle = new Label("💡 Conseils pour Maximiser les Bienfaits");
+            tipsTitle.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #f57f17;");
+            
+            Label tips = new Label(
+                "✓ Pratiquez ces exercices 2-3 fois par jour\n" +
+                "✓ Choisissez un endroit calme et confortable\n" +
+                "✓ Portez des vêtements amples\n" +
+                "✓ Ne forcez jamais - l'étirement doit être agréable\n" +
+                "✓ Respirez profondément pendant chaque exercice\n" +
+                "✓ Hydratez-vous avant et après\n" +
+                "✓ Soyez régulier pour des résultats durables"
+            );
+            tips.setStyle("-fx-font-size: 13px; -fx-text-fill: #555; -fx-line-spacing: 5;");
+            
+            tipsBox.getChildren().addAll(tipsTitle, tips);
+            
+            // Bouton retour
+            Button backBtn = new Button("← Retour aux Options Anti-Stress");
+            backBtn.setStyle("-fx-background-color: #c62828; -fx-text-fill: white; -fx-font-size: 14px; " +
+                           "-fx-padding: 12 30; -fx-background-radius: 10; -fx-cursor: hand;");
+            backBtn.setOnAction(ev -> goToRelax(ev));
+            
+            catchStressContent.getChildren().addAll(
+                title, subtitle, timerBox, exercisesTitle, exercisesScroll, tipsBox, backBtn
+            );
+            
             catchStressArea.getChildren().setAll(catchStressContent);
         }
         showView(viewCatchStress);
         setActiveNav(btnRelax);
+    }
+    
+    /**
+     * Crée une carte d'exercice avec titre, durée et instructions
+     */
+    private VBox createExerciseCard(String title, String duration, String[] steps, 
+                                    String bgColor, String accentColor) {
+        VBox card = new VBox(12);
+        card.setStyle("-fx-background-color: " + bgColor + "; -fx-background-radius: 12; " +
+                     "-fx-padding: 20; -fx-border-color: " + accentColor + "; " +
+                     "-fx-border-width: 2; -fx-border-radius: 12; " +
+                     "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 2);");
+        
+        HBox header = new HBox(15);
+        header.setAlignment(Pos.CENTER_LEFT);
+        
+        Label titleLabel = new Label(title);
+        titleLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: " + accentColor + ";");
+        
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        
+        Label durationLabel = new Label(duration);
+        durationLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: " + accentColor + "; " +
+                              "-fx-background-color: white; -fx-padding: 5 12; -fx-background-radius: 15;");
+        
+        header.getChildren().addAll(titleLabel, spacer, durationLabel);
+        
+        VBox stepsBox = new VBox(6);
+        for (String step : steps) {
+            Label stepLabel = new Label(step);
+            stepLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #333; -fx-wrap-text: true;");
+            stepLabel.setMaxWidth(Double.MAX_VALUE);
+            stepsBox.getChildren().add(stepLabel);
+        }
+        
+        card.getChildren().addAll(header, stepsBox);
+        return card;
     }
 
     @FXML
@@ -573,9 +985,9 @@ public class FitnessDashboardController implements Initializable {
             
             advancedExercises.getChildren().addAll(btnYoga, btnPilates, btnHIIT, btnMeditation);
             
-            Button backBtn = new Button("← Retour au Dashboard");
+            Button backBtn = new Button("← Retour");
             backBtn.setStyle("-fx-background-color: #0277bd; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 12 30; -fx-background-radius: 10; -fx-cursor: hand;");
-            backBtn.setOnAction(ev -> goHome(ev));
+            backBtn.setOnAction(ev -> goToRelax(ev));
             
             Label infoLabel = new Label("Selectnez un type d'exercice et ajustez la duree selon vos besoins.");
             infoLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #888; -fx-padding: 10 0 0 0;");
@@ -684,9 +1096,9 @@ public class FitnessDashboardController implements Initializable {
             
             nutritionContent.getChildren().addAll(title, foodLabel, foodGrid, calcTitle, calcRow, joyLabel, joyGrid);
             
-            Button backBtn = new Button("← Retour au Dashboard");
+            Button backBtn = new Button("← Retour");
             backBtn.setStyle("-fx-background-color: #2e7d32; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 12 30; -fx-background-radius: 10; -fx-cursor: hand;");
-            backBtn.setOnAction(ev -> goHome(ev));
+            backBtn.setOnAction(ev -> goToRelax(ev));
             nutritionContent.getChildren().add(backBtn);
             nutritionArea.getChildren().setAll(nutritionContent);
         }

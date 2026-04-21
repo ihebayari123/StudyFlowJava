@@ -1014,7 +1014,7 @@
                         style="-fx-background-color: white; -fx-border-color: #ddd;
                                -fx-border-radius: 10; -fx-background-radius: 10;
                                -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px;"/>
-                <Label text="🩺  Consulter un Médecin"
+                <Label fx:id="lblMedecinTitle" text="🩺  Consulter un Médecin"
                        style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-font-family: 'Georgia';
                               -fx-text-fill: #1565c0;"/>
             </HBox>
@@ -1164,6 +1164,102 @@
                                -fx-background-radius: 12; -fx-font-size: 14px;
                                -fx-font-weight: bold; -fx-padding: 12 24; -fx-cursor: hand;"/>
             </VBox>
+
+        </VBox>
+
+        <!-- ─────────────────────────────────────────────────────────── -->
+        <!--  VUE CHATBOT EDUWEL (Happiness Model)                       -->
+        <!-- ─────────────────────────────────────────────────────────── -->
+        <VBox fx:id="viewChatbot" spacing="0" visible="false" managed="false">
+
+            <HBox prefHeight="70" alignment="CENTER_LEFT" spacing="16"
+                  style="-fx-background-color: linear-gradient(to right, #e8eaf6, #c5cae9);
+                         -fx-border-color: transparent transparent #e0e0e0 transparent;
+                         -fx-border-width: 0 0 1 0;">
+                <padding><Insets top="0" right="28" bottom="0" left="28"/></padding>
+                <Button text="← Retour"
+                        onAction="#goToStressOptions"
+                        style="-fx-background-color: white; -fx-border-color: #ddd;
+                               -fx-border-radius: 10; -fx-background-radius: 10;
+                               -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px;"/>
+                <Label text="🤖  Assistant EduWell — Analyse de Bonheur"
+                       style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-font-family: 'Georgia';
+                              -fx-text-fill: #1a237e;"/>
+            </HBox>
+
+            <StackPane fx:id="chatbotArea" VBox.vgrow="ALWAYS"/>
+
+        </VBox>
+
+        <!-- ─────────────────────────────────────────────────────────── -->
+        <!--  VUE CABINET PSYCHIATRE                                      -->
+        <!-- ─────────────────────────────────────────────────────────── -->
+        <VBox fx:id="viewCabinet" spacing="0" visible="false" managed="false">
+
+            <HBox prefHeight="70" alignment="CENTER_LEFT" spacing="16"
+                  style="-fx-background-color: linear-gradient(to right, #e3f2fd, #f3e5f5);
+                         -fx-border-color: transparent transparent #e0e0e0 transparent;
+                         -fx-border-width: 0 0 1 0;">
+                <padding><Insets top="0" right="28" bottom="0" left="28"/></padding>
+                <Button text="← Retour"
+                        onAction="#goToStressOptions"
+                        style="-fx-background-color: white; -fx-border-color: #ddd;
+                               -fx-border-radius: 10; -fx-background-radius: 10;
+                               -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px;"/>
+                <Label text="🏥  Cabinet Psychiatre"
+                       style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-font-family: 'Georgia';
+                              -fx-text-fill: #1565c0;"/>
+            </HBox>
+
+            <StackPane fx:id="cabinetArea" VBox.vgrow="ALWAYS"/>
+
+        </VBox>
+
+        <!-- ─────────────────────────────────────────────────────────── -->
+        <!--  VUE EXERCICE DE RESPIRATION                                 -->
+        <!-- ─────────────────────────────────────────────────────────── -->
+        <VBox fx:id="viewRespiration" spacing="0" visible="false" managed="false">
+
+            <HBox prefHeight="70" alignment="CENTER_LEFT" spacing="16"
+                  style="-fx-background-color: linear-gradient(to right, #e8f5e9, #c8e6c9);
+                         -fx-border-color: transparent transparent #e0e0e0 transparent;
+                         -fx-border-width: 0 0 1 0;">
+                <padding><Insets top="0" right="28" bottom="0" left="28"/></padding>
+                <Button text="← Retour"
+                        onAction="#goToStressOptions"
+                        style="-fx-background-color: white; -fx-border-color: #ddd;
+                               -fx-border-radius: 10; -fx-background-radius: 10;
+                               -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px;"/>
+                <Label text="🌬️  Exercice de Respiration"
+                       style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-font-family: 'Georgia';
+                              -fx-text-fill: #2e7d32;"/>
+            </HBox>
+
+            <StackPane fx:id="respirationArea" VBox.vgrow="ALWAYS"/>
+
+        </VBox>
+
+        <!-- ─────────────────────────────────────────────────────────── -->
+        <!--  VUE À PROPOS                                                -->
+        <!-- ─────────────────────────────────────────────────────────── -->
+        <VBox fx:id="viewAPropos" spacing="0" visible="false" managed="false">
+
+            <HBox prefHeight="70" alignment="CENTER_LEFT" spacing="16"
+                  style="-fx-background-color: linear-gradient(to right, #e3f2fd, #bbdefb);
+                         -fx-border-color: transparent transparent #e0e0e0 transparent;
+                         -fx-border-width: 0 0 1 0;">
+                <padding><Insets top="0" right="28" bottom="0" left="28"/></padding>
+                <Button text="← Retour"
+                        onAction="#goToStressOptions"
+                        style="-fx-background-color: white; -fx-border-color: #ddd;
+                               -fx-border-radius: 10; -fx-background-radius: 10;
+                               -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px;"/>
+                <Label text="ℹ️  À propos — Anti-Stress"
+                       style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-font-family: 'Georgia';
+                              -fx-text-fill: #1565c0;"/>
+            </HBox>
+
+            <StackPane fx:id="aProposArea" VBox.vgrow="ALWAYS"/>
 
         </VBox>
 

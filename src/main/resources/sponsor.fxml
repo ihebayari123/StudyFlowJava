@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="edu.connexion3a36.controllers.SponsorController"
+      spacing="0"
+      style="-fx-background-color: #f0f4f8;">
+
+    <!-- ══════════════════════════════════════
+         HEADER — couleur bleue comme Event
+    ══════════════════════════════════════ -->
+    <HBox alignment="CENTER_LEFT" spacing="16"
+          style="-fx-background-color: linear-gradient(to right, #2979FF, #1565C0);
+                 -fx-padding: 18 28 18 28;">
+        <Button text="← Retour" onAction="#handleRetour"
+                style="-fx-background-color: rgba(255,255,255,0.15);
+                       -fx-text-fill: white; -fx-font-weight: bold;
+                       -fx-font-size: 12px; -fx-padding: 7 16;
+                       -fx-background-radius: 20; -fx-cursor: hand;
+                       -fx-border-color: rgba(255,255,255,0.4);
+                       -fx-border-radius: 20;"/>
+        <Label text="💼 Gestion des Sponsors"
+               style="-fx-font-size: 20px; -fx-font-weight: bold;
+                      -fx-text-fill: white;"/>
+    </HBox>
+
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                style="-fx-background-color: transparent;
+                       -fx-background: transparent;
+                       -fx-border-color: transparent;">
+
+        <VBox spacing="20"
+              style="-fx-padding: 24 28 28 28;
+                     -fx-background-color: #f0f4f8;">
+
+            <!-- ══════════════════════════════════════
+                 FORMULAIRE
+            ══════════════════════════════════════ -->
+            <VBox spacing="14"
+                  style="-fx-background-color: white;
+                         -fx-padding: 22;
+                         -fx-background-radius: 14;
+                         -fx-effect: dropshadow(gaussian,
+                                     rgba(0,0,0,0.08), 12, 0, 0, 4);">
+
+                <HBox alignment="CENTER_LEFT" spacing="8">
+                    <Label text="📝" style="-fx-font-size: 16px;"/>
+                    <Label text="Formulaire Sponsor"
+                           style="-fx-font-size: 15px; -fx-font-weight: bold;
+                                  -fx-text-fill: #1a1a2e;"/>
+                </HBox>
+
+                <Region prefHeight="1" style="-fx-background-color: #f0f0f0;"/>
+
+                <!-- Ligne 1 : Nom + Type + Montant -->
+                <HBox spacing="16">
+
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Label text="Nom du Sponsor *"
+                               style="-fx-text-fill: #555; -fx-font-size: 12px;
+                                      -fx-font-weight: bold;"/>
+                        <TextField fx:id="nomSponsorField"
+                                   promptText="Ex: Samsung"
+                                   style="-fx-pref-height: 38; -fx-background-radius: 8;
+                                          -fx-border-color: #e0e0e0; -fx-border-radius: 8;
+                                          -fx-padding: 0 12; -fx-font-size: 13px;"/>
+                    </VBox>
+
+                    <VBox spacing="6">
+                        <Label text="Type *"
+                               style="-fx-text-fill: #555; -fx-font-size: 12px;
+                                      -fx-font-weight: bold;"/>
+                        <ComboBox fx:id="typeCombo"
+                                  promptText="Choisir un type"
+                                  style="-fx-pref-width: 200; -fx-pref-height: 38;"/>
+                    </VBox>
+
+                    <VBox spacing="6">
+                        <Label text="Montant (DT) *"
+                               style="-fx-text-fill: #555; -fx-font-size: 12px;
+                                      -fx-font-weight: bold;"/>
+                        <TextField fx:id="montantField"
+                                   promptText="Ex: 5000"
+                                   style="-fx-pref-width: 150; -fx-pref-height: 38;
+                                          -fx-background-radius: 8; -fx-border-color: #e0e0e0;
+                                          -fx-border-radius: 8; -fx-padding: 0 12;
+                                          -fx-font-size: 13px;"/>
+                    </VBox>
+
+                </HBox>
+
+                <!-- Ligne 2 : Événement lié -->
+                <VBox spacing="6">
+                    <Label text="Événement lié *"
+                           style="-fx-text-fill: #555; -fx-font-size: 12px;
+                                  -fx-font-weight: bold;"/>
+                    <ComboBox fx:id="eventCombo"
+                              promptText="Choisir un événement"
+                              style="-fx-pref-width: 400; -fx-pref-height: 38;"/>
+                </VBox>
+
+                <!-- Boutons -->
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Button text="➕ Ajouter" onAction="#handleAjouter"
+                            style="-fx-background-color: #2979FF; -fx-text-fill: white;
+                                   -fx-font-weight: bold; -fx-font-size: 13px;
+                                   -fx-pref-width: 120; -fx-pref-height: 40;
+                                   -fx-background-radius: 8; -fx-cursor: hand;"/>
+                    <Button text="✏️ Modifier" onAction="#handleModifier"
+                            style="-fx-background-color: #f39c12; -fx-text-fill: white;
+                                   -fx-font-weight: bold; -fx-font-size: 13px;
+                                   -fx-pref-width: 120; -fx-pref-height: 40;
+                                   -fx-background-radius: 8; -fx-cursor: hand;"/>
+                    <Button text="🗑️ Supprimer" onAction="#handleSupprimer"
+                            style="-fx-background-color: #e74c3c; -fx-text-fill: white;
+                                   -fx-font-weight: bold; -fx-font-size: 13px;
+                                   -fx-pref-width: 130; -fx-pref-height: 40;
+                                   -fx-background-radius: 8; -fx-cursor: hand;"/>
+                    <Button text="🔄 Vider" onAction="#handleVider"
+                            style="-fx-background-color: #95a5a6; -fx-text-fill: white;
+                                   -fx-font-weight: bold; -fx-font-size: 13px;
+                                   -fx-pref-width: 100; -fx-pref-height: 40;
+                                   -fx-background-radius: 8; -fx-cursor: hand;"/>
+                </HBox>
+
+                <Label fx:id="messageLabel" text="" wrapText="true"
+                       style="-fx-font-size: 12px; -fx-font-weight: bold;"/>
+
+            </VBox>
+
+            <!-- ══════════════════════════════════════
+                 TABLEAU
+            ══════════════════════════════════════ -->
+            <VBox spacing="12"
+                  style="-fx-background-color: white; -fx-padding: 22;
+                         -fx-background-radius: 14;
+                         -fx-effect: dropshadow(gaussian,
+                                     rgba(0,0,0,0.08), 12, 0, 0, 4);">
+
+                <HBox alignment="CENTER_LEFT" spacing="8">
+                    <Label text="📋" style="-fx-font-size: 16px;"/>
+                    <Label text="Liste des Sponsors"
+                           style="-fx-font-size: 15px; -fx-font-weight: bold;
+                                  -fx-text-fill: #1a1a2e;"/>
+                </HBox>
+
+                <Region prefHeight="1" style="-fx-background-color: #eef0f4;"/>
+
+                <TableView fx:id="sponsorTable"
+                           VBox.vgrow="ALWAYS" prefHeight="350"
+                           style="-fx-background-color: transparent;
+                                  -fx-border-color: transparent;
+                                  -fx-background-radius: 10;
+                                  -fx-table-cell-border-color: #f0f4f8;
+                                  -fx-selection-bar: #E8F0FE;
+                                  -fx-selection-bar-non-focused: #EEF2FF;
+                                  -fx-focus-color: transparent;
+                                  -fx-faint-focus-color: transparent;">
+                    <columns>
+                        <TableColumn fx:id="colId" text="ID" prefWidth="55"
+                                     style="-fx-alignment: CENTER;"/>
+                        <TableColumn fx:id="colNom" text="Nom Sponsor" prefWidth="200"
+                                     style="-fx-alignment: CENTER_LEFT;"/>
+                        <TableColumn fx:id="colType" text="Type" prefWidth="120"
+                                     style="-fx-alignment: CENTER;"/>
+                        <TableColumn fx:id="colMontant" text="Montant" prefWidth="130"
+                                     style="-fx-alignment: CENTER;"/>
+                        <TableColumn fx:id="colEvent" text="Événement" prefWidth="250"
+                                     style="-fx-alignment: CENTER_LEFT;"/>
+                    </columns>
+
+                    <placeholder>
+                        <VBox alignment="CENTER" spacing="10">
+                            <Label text="💼" style="-fx-font-size: 36px;"/>
+                            <Label text="Aucun sponsor trouvé"
+                                   style="-fx-text-fill: #aaa; -fx-font-size: 14px;
+                                          -fx-font-weight: bold;"/>
+                            <Label text="Ajoutez votre premier sponsor ci-dessus"
+                                   style="-fx-text-fill: #ccc; -fx-font-size: 12px;"/>
+                        </VBox>
+                    </placeholder>
+
+                </TableView>
+            </VBox>
+        </VBox>
+    </ScrollPane>
+</VBox>

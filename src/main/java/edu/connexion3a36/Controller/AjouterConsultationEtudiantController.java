@@ -36,6 +36,13 @@ public class AjouterConsultationEtudiantController {
     private final MedecinService medecinService = new MedecinService();
     private final StressSurveyService surveyService = new StressSurveyService();
 
+    /** Référence au dashboard pour la navigation embarquée */
+    private FitnessDashboardController dashboardController;
+
+    public void setDashboardController(FitnessDashboardController ctrl) {
+        this.dashboardController = ctrl;
+    }
+
     @FXML
     public void initialize() {
         try {
@@ -160,10 +167,14 @@ public class AjouterConsultationEtudiantController {
             );
             service.addEntity(c);
             showAlert(Alert.AlertType.INFORMATION, "Succès", "Consultation ajoutée avec succès !");
-            
-            // Navigate to stress options page after successful save
-            navigateToStressOptions();
             clearFields();
+            
+            // Navigation vers stress_options via le dashboard (embarqué)
+            if (dashboardController != null) {
+                dashboardController.handleFormSubmitSuccess();
+            } else {
+                navigateToStressOptionsFallback();
+            }
         } catch (SQLException e) {
             showAlert(Alert.AlertType.ERROR, "Erreur BDD", "Erreur : " + e.getMessage());
         }
@@ -188,17 +199,14 @@ public class AjouterConsultationEtudiantController {
     }
     
     /**
-     * Navigate to stress options page after successful form submission
+     * Fallback : ouvre stress_options dans une nouvelle fenêtre si pas de dashboard
      */
-    private void navigateToStressOptions() {
+    private void navigateToStressOptionsFallback() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/stress_options.fxml"));
             Parent root = loader.load();
-            
-            // Get the stage from any of the form fields
             Stage stage = (Stage) datePicker.getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
+            stage.setScene(new Scene(root));
             stage.show();
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible de naviguer vers les options : " + e.getMessage());
