@@ -554,8 +554,8 @@ public class FitnessDashboardController implements Initializable {
 
         try {
             // Twilio credentials
-            String accountSid  = "AC487b3b729bca8e8690dbd4d8e8666327";
-            String authToken   = "8feb86522f875124a68730d6b5a40e99";
+            String accountSid = System.getenv("TWILIO_ACCOUNT_SID");
+            String authToken  = System.getenv("TWILIO_AUTH_TOKEN");
             String toNumber    = "+21652176756";
             String messagingSid = "MG132a322f96e964c43e508bba78e7bb84";
             String url = "https://api.twilio.com/2010-04-01/Accounts/" + accountSid + "/Messages.json";
