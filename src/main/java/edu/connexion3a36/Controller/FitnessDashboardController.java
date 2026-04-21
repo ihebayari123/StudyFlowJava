@@ -1,5 +1,9 @@
 package edu.connexion3a36.Controller;
+import edu.connexion3a36.entities.CartItem;
 import edu.connexion3a36.entities.Utilisateur;
+import edu.connexion3a36.services.CartService;
+import edu.connexion3a36.services.EmailService;
+import edu.connexion3a36.services.StripeService;
 import edu.connexion3a36.services.UtilisateurService;
 import edu.connexion3a36.utils.Validation;
 import javafx.scene.control.ButtonBar;
@@ -39,6 +43,7 @@ public class FitnessDashboardController implements Initializable {
     @FXML private VBox viewBoutique;
     @FXML private FlowPane boutiqueProduitGrid;
     @FXML private TextField boutiqueSearchField;
+    @FXML private Label cartBadge;
 
     // ─── Quiz ────────────────────────────────────────────────────────
     @FXML private Button btnQuiz;
@@ -112,6 +117,171 @@ public class FitnessDashboardController implements Initializable {
     @FXML private Label erreurPrenom;
     @FXML private Label erreurNom;
     @FXML private Label erreurEmail;
+
+    //______________________paiment_______________
+    private void updateCartBadge() {
+        int n = CartService.getInstance().getNombreArticles();
+        cartBadge.setText(String.valueOf(n));
+        cartBadge.setVisible(n > 0);
+    }
+
+    @FXML
+    public void handleOpenCart(javafx.scene.input.MouseEvent e) {
+        showView(viewCart);
+        renderCart();
+        setActiveNav(btnBoutique);
+
+    }
+
+    @FXML private VBox viewCart;
+    @FXML private VBox cartItemList;
+    @FXML private Label cartTotalLabel;
+
+// Dans buildNavMap(), ajoute viewCart à allViews :
+
+
+    @FXML
+    public void handleOpenBoutique(ActionEvent e) {
+        showView(viewBoutique);
+        setActiveNav(btnBoutique);
+    }
+
+    @FXML
+    public void handleViderCart(ActionEvent e) {
+        CartService.getInstance().vider();
+        updateCartBadge();
+        renderCart();
+    }
+
+    private void renderCart() {
+        cartItemList.getChildren().clear();
+        List<CartItem> items = CartService.getInstance().getItems();
+
+        if (items.isEmpty()) {
+            Label empty = new Label("🛒 Votre panier est vide.");
+            empty.setStyle("-fx-font-size: 15px; -fx-text-fill: #888; -fx-padding: 20;");
+            cartItemList.getChildren().add(empty);
+        } else {
+            items.forEach(item -> cartItemList.getChildren().add(buildCartRow(item)));
+        }
+        cartTotalLabel.setText(String.format("Total : %.2f DT", CartService.getInstance().getTotal()));
+    }
+
+    private HBox buildCartRow(CartItem item) {
+        HBox row = new HBox(14);
+        row.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+        row.setPadding(new javafx.geometry.Insets(14));
+        row.setStyle("-fx-background-color: white; -fx-background-radius: 14;" +
+                "-fx-border-color: #f0f0f0; -fx-border-radius: 14;");
+
+        Label nom = new Label(item.getProduit().getNom());
+        nom.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
+        HBox.setHgrow(nom, javafx.scene.layout.Priority.ALWAYS);
+
+        Label qte = new Label("x" + item.getQuantite());
+        qte.setStyle("-fx-font-size: 13px; -fx-text-fill: #666;");
+
+        Label prix = new Label(String.format("%.2f DT", item.getSousTotal()));
+        prix.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #2979FF;");
+
+        Button suppr = new Button("✕");
+        suppr.setStyle("-fx-background-color: #fff0f0; -fx-text-fill: #e24b4a;" +
+                "-fx-background-radius: 8; -fx-cursor: hand; -fx-padding: 4 8;");
+        suppr.setOnAction(e -> {
+            CartService.getInstance().supprimerItem(item);
+            updateCartBadge();
+            renderCart();
+        });
+
+        row.getChildren().addAll(nom, qte, prix, suppr);
+        return row;
+    }
+
+    @FXML private VBox viewCheckout;
+    @FXML private TextField checkoutNom, checkoutEmail, checkoutAdresse;
+    @FXML private Label checkoutTotalLabel;
+
+// Dans buildNavMap() → allViews.add(viewCheckout);
+
+    @FXML
+    public void handlePayer(ActionEvent e) {
+        if (CartService.getInstance().getItems().isEmpty()) {
+            showAlert("Panier vide", "Ajoutez des produits avant de payer.");
+            return;
+        }
+        checkoutTotalLabel.setText(String.format("Total : %.2f DT",
+                CartService.getInstance().getTotal()));
+        showView(viewCheckout);
+    }
+
+    @FXML
+    public void handleBackToCart(ActionEvent e) {
+        showView(viewCart);
+        renderCart();
+    }
+
+    @FXML
+    public void handleConfirmerPaiement(ActionEvent e) {
+        String nom     = checkoutNom.getText().trim();
+        String email   = checkoutEmail.getText().trim();
+        String adresse = checkoutAdresse.getText().trim();
+
+        if (nom.isEmpty() || email.isEmpty() || adresse.isEmpty()) {
+            showAlert("Champs manquants", "Veuillez remplir tous les champs.");
+            return;
+        }
+        if (!email.contains("@")) {
+            showAlert("Email invalide", "Veuillez entrer un email valide.");
+            return;
+        }
+
+        List<CartItem> items = CartService.getInstance().getItems();
+        double total = CartService.getInstance().getTotal();
+
+        try {
+            // 1️⃣ Ouvrir Stripe
+            String stripeUrl = StripeService.creerSession(email, items);
+            java.awt.Desktop.getDesktop().browse(new java.net.URI(stripeUrl));
+
+            // 2️⃣ Envoyer email en arrière-plan (Thread pour ne pas bloquer l'UI)
+            new Thread(() -> {
+                EmailService.envoyerConfirmation(email, nom, items, total);
+            }).start();
+
+            // 3️⃣ Vider panier et retour boutique
+            CartService.getInstance().vider();
+            updateCartBadge();
+
+            showAlert("✅ Commande confirmée !",
+                    "Redirection vers Stripe...\nUn email de confirmation sera envoyé à : " + email);
+
+            showView(viewBoutique);
+
+        } catch (Exception ex) {
+            showAlert("❌ Erreur", "Erreur : " + ex.getMessage());
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //___________________________________
+
+
+
 
     // ─── Messages / Settings ─────────────────────────────────────────
     @FXML private VBox messageList;
@@ -189,6 +359,7 @@ public class FitnessDashboardController implements Initializable {
         allViews.add(viewMedecin);
         allViews.add(viewStress);
         allViews.add(contentArea);
+        allViews.add(viewCart);
     }
 
     // ═════════════════════════════════════════════════════════════════
@@ -405,6 +576,7 @@ public class FitnessDashboardController implements Initializable {
         }
         produits.forEach(p -> boutiqueProduitGrid.getChildren().add(buildProduitCard(p, catMap)));
     }
+    //-----------------------------------------------------------------------------------------------
     private VBox buildProduitCard(edu.connexion3a36.entities.Produit p,
                                   Map<Integer, String> catMap) {
         VBox card = new VBox(10);
@@ -423,6 +595,7 @@ public class FitnessDashboardController implements Initializable {
                         + "-fx-border-color: #f0f0f0; -fx-border-radius: 18;"
                         + "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.07), 10, 0, 0, 3); -fx-cursor: hand;"));
 
+        // ── Image ──────────────────────────────────────────────────
         ImageView imageView = new ImageView();
         imageView.setFitWidth(200);
         imageView.setFitHeight(130);
@@ -433,32 +606,25 @@ public class FitnessDashboardController implements Initializable {
         imgContainer.setStyle("-fx-background-color: #E8F0FE; -fx-background-radius: 18 18 0 0;");
 
         String imageUrl = p.getImage();
-
         if (imageUrl != null && !imageUrl.trim().isEmpty()) {
             try {
                 Image image = new Image(imageUrl.trim(), 200, 130, false, true, true);
-                imageView.setImage(image);
-
                 image.errorProperty().addListener((obs, wasError, isError) -> {
                     if (isError) {
-                        imgContainer.getChildren().clear();
-                        imgContainer.getChildren().add(placeholderLabel());
+                        imgContainer.getChildren().setAll(placeholderLabel());
                     }
                 });
-
                 image.progressProperty().addListener((obs, oldVal, newVal) -> {
                     if (newVal.doubleValue() >= 1.0 && !image.isError()) {
-                        imgContainer.getChildren().clear();
-                        imgContainer.getChildren().add(imageView);
+                        imgContainer.getChildren().setAll(imageView);
                     }
                 });
-
+                imageView.setImage(image);
                 if (image.getProgress() >= 1.0 && !image.isError()) {
                     imgContainer.getChildren().add(imageView);
                 } else {
                     imgContainer.getChildren().add(placeholderLabel());
                 }
-
             } catch (Exception ex) {
                 imgContainer.getChildren().add(placeholderLabel());
             }
@@ -466,6 +632,7 @@ public class FitnessDashboardController implements Initializable {
             imgContainer.getChildren().add(placeholderLabel());
         }
 
+        // ── Infos ──────────────────────────────────────────────────
         VBox info = new VBox(6);
         info.setPadding(new Insets(0, 14, 0, 14));
 
@@ -481,11 +648,40 @@ public class FitnessDashboardController implements Initializable {
         Label prixLabel = new Label(p.getPrix() + " DT");
         prixLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2979FF;");
 
-        info.getChildren().addAll(nomLabel, catLabel, prixLabel);
-        card.getChildren().addAll(imgContainer, info);
+        // ── Bouton Ajouter ─────────────────────────────────────────
+        Button btnAjouter = new Button("＋ Ajouter");
+        String styleNormal = "-fx-background-color: #2979FF; -fx-text-fill: white;"
+                + "-fx-background-radius: 10; -fx-font-size: 12px;"
+                + "-fx-font-weight: bold; -fx-padding: 8 0; -fx-cursor: hand;";
+        String styleAdded  = "-fx-background-color: #4CAF50; -fx-text-fill: white;"
+                + "-fx-background-radius: 10; -fx-font-size: 12px;"
+                + "-fx-font-weight: bold; -fx-padding: 8 0; -fx-cursor: hand;";
 
+        btnAjouter.setStyle(styleNormal);
+        btnAjouter.setMaxWidth(Double.MAX_VALUE);
+
+        btnAjouter.setOnAction(ev -> {
+            CartService.getInstance().ajouterProduit(p);
+            updateCartBadge();
+
+            // ✅ Animation feedback SANS double-brace
+            btnAjouter.setText("✔ Ajouté !");
+            btnAjouter.setStyle(styleAdded);
+
+            javafx.animation.PauseTransition pause =
+                    new javafx.animation.PauseTransition(javafx.util.Duration.seconds(1.5));
+            pause.setOnFinished(e -> {
+                btnAjouter.setText("＋ Ajouter");
+                btnAjouter.setStyle(styleNormal);
+            });
+            pause.play();
+        });
+
+        info.getChildren().addAll(nomLabel, catLabel, prixLabel, btnAjouter);
+        card.getChildren().addAll(imgContainer, info);
         return card;
     }
+    //---------------------------------------------------------------------------------------------
 
     private Label placeholderLabel() {
         Label lbl = new Label("🖼️");
