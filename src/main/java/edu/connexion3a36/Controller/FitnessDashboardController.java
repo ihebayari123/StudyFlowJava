@@ -1,4 +1,5 @@
 package edu.connexion3a36.Controller;
+
 import edu.connexion3a36.entities.Utilisateur;
 import edu.connexion3a36.services.UtilisateurService;
 import edu.connexion3a36.utils.Validation;
@@ -35,14 +36,14 @@ import java.util.*;
 public class FitnessDashboardController implements Initializable {
 
     // ─── Boutique ────────────────────────────────────────────────────
-    @FXML private Button btnBoutique;
-    @FXML private VBox viewBoutique;
+    @FXML private Button   btnBoutique;
+    @FXML private VBox     viewBoutique;
     @FXML private FlowPane boutiqueProduitGrid;
     @FXML private TextField boutiqueSearchField;
 
     // ─── Quiz ────────────────────────────────────────────────────────
-    @FXML private Button btnQuiz;
-    @FXML private StackPane contentArea;
+    @FXML private Button     btnQuiz;
+    @FXML private StackPane  contentArea;
 
     // ─── Sidebar buttons ─────────────────────────────────────────────
     @FXML private Button btnHome;
@@ -61,23 +62,23 @@ public class FitnessDashboardController implements Initializable {
     @FXML private VBox viewCourses;
     @FXML private VBox viewRelax;
 
-    // ─── Nouvelles vues embarquées ───────────────────────────────────
-    @FXML private VBox viewMedecin;
-    @FXML private VBox viewStress;
+    // ─── Vues embarquées (Médecin & Stress) ──────────────────────────
+    @FXML private VBox     viewMedecin;
+    @FXML private VBox     viewStress;
     @FXML private StackPane medecinArea;
     @FXML private StackPane stressArea;
 
     // ─── Home ────────────────────────────────────────────────────────
-    @FXML private Label lblGreeting;
-    @FXML private Label lblCompleted;
-    @FXML private Label lblInProgress;
-    @FXML private Label lblHours;
-    @FXML private Label lblBadges;
+    @FXML private Label     lblGreeting;
+    @FXML private Label     lblCompleted;
+    @FXML private Label     lblInProgress;
+    @FXML private Label     lblHours;
+    @FXML private Label     lblBadges;
     @FXML private TextField searchField;
-    @FXML private Circle avatarCircle;
-    @FXML private Button btnNotif;
+    @FXML private Circle    avatarCircle;
+    @FXML private Button    btnNotif;
 
-    @FXML private HBox currentCourseBox;
+    @FXML private HBox  currentCourseBox;
     @FXML private Label currentCourseEmoji;
     @FXML private Label currentCourseName;
     @FXML private Label currentCourseAuthor;
@@ -85,33 +86,33 @@ public class FitnessDashboardController implements Initializable {
     @FXML private Button btnPrevCourse;
     @FXML private Button btnNextCourse;
 
-    @FXML private VBox courseList;
+    @FXML private VBox       courseList;
     @FXML private ScrollPane courseScrollPane;
-    @FXML private Button filterAll;
-    @FXML private Button filterNew;
-    @FXML private Button filterTop;
-    @FXML private Button filterPopular;
+    @FXML private Button     filterAll;
+    @FXML private Button     filterNew;
+    @FXML private Button     filterTop;
+    @FXML private Button     filterPopular;
 
     @FXML private LineChart<String, Number> learningChart;
     @FXML private CategoryAxis xAxis;
-    @FXML private NumberAxis yAxis;
-    @FXML private Button chartTabHours;
-    @FXML private Button chartTabCourses;
+    @FXML private NumberAxis   yAxis;
+    @FXML private Button       chartTabHours;
+    @FXML private Button       chartTabCourses;
     @FXML private ComboBox<String> weeklyFilter;
 
     @FXML private Button btnGoPremium;
 
     // ─── Profil ──────────────────────────────────────────────────────
-    @FXML private Label profileFullName;
-    @FXML private Label profileCompleted;
-    @FXML private Label profileInProgress;
+    @FXML private Label     profileFullName;
+    @FXML private Label     profileCompleted;
+    @FXML private Label     profileInProgress;
     @FXML private TextField fieldFirstName;
     @FXML private TextField fieldLastName;
     @FXML private TextField fieldEmail;
     @FXML private TextField fieldBio;
-    @FXML private Label erreurPrenom;
-    @FXML private Label erreurNom;
-    @FXML private Label erreurEmail;
+    @FXML private Label     erreurPrenom;
+    @FXML private Label     erreurNom;
+    @FXML private Label     erreurEmail;
 
     // ─── Messages / Settings ─────────────────────────────────────────
     @FXML private VBox messageList;
@@ -122,20 +123,21 @@ public class FitnessDashboardController implements Initializable {
     @FXML private FlowPane allCoursesGrid;
 
     // ─── Relax buttons ───────────────────────────────────────────────
-    @FXML private Button btnConsulterMedecin;
-    @FXML private Button btnCalculerScore;
+    @FXML private Button     btnConsulterMedecin;
+    @FXML private Button     btnCalculerScore;
+    @FXML private StackPane  mainStackPane;
 
     // ─── Données ─────────────────────────────────────────────────────
     private record Course(String emoji, String name, String author,
                           int progress, double rating, boolean isNew, boolean isPopular) {}
 
     private final List<Course> allCourses = new ArrayList<>();
-    private String currentFilter = "all";
-    private int currentCourseIndex = 0;
+    private String currentFilter      = "all";
+    private int    currentCourseIndex = 0;
 
     /**
      * navMap : associe chaque bouton sidebar à sa VBox.
-     * Les vues sans bouton (viewMedecin, viewStress) sont dans allViews.
+     * Les vues sans bouton (viewMedecin, viewStress, contentArea) sont dans allViews.
      */
     private Map<Button, VBox> navMap;
 
@@ -149,6 +151,8 @@ public class FitnessDashboardController implements Initializable {
     private Utilisateur utilisateurConnecte;
 
     private Button activeNavButton;
+
+    // ─── Produits boutique ───────────────────────────────────────────
     private List<edu.connexion3a36.entities.Produit> allProduits = new ArrayList<>();
 
     // ═════════════════════════════════════════════════════════════════
@@ -173,18 +177,19 @@ public class FitnessDashboardController implements Initializable {
 
     /**
      * Construit navMap (bouton → vue) et allViews (toutes les vues du StackPane).
+     * Inclut btnCourses (branch Gestion_CoursEtChapitres le supprimait par erreur).
      */
     private void buildNavMap() {
         navMap = new LinkedHashMap<>();
         navMap.put(btnHome,     viewHome);
-        navMap.put(btnCourses,  viewCourses);
+        navMap.put(btnCourses,  viewCourses);   // kept from main
         navMap.put(btnProfile,  viewProfile);
         navMap.put(btnMessages, viewMessages);
         navMap.put(btnSettings, viewSettings);
         navMap.put(btnRelax,    viewRelax);
         navMap.put(btnBoutique, viewBoutique);
 
-        // Toutes les vues, y compris celles sans bouton sidebar
+        // All views — including those without a sidebar button
         allViews = new ArrayList<>(navMap.values());
         allViews.add(viewMedecin);
         allViews.add(viewStress);
@@ -198,17 +203,18 @@ public class FitnessDashboardController implements Initializable {
     public void setUtilisateurConnecte(Utilisateur u) {
         this.utilisateurConnecte = u;
 
-        int hour = LocalTime.now().getHour();
+        int    hour  = LocalTime.now().getHour();
         String greet = hour < 12 ? "Bonjour" : hour < 18 ? "Bon après-midi" : "Bonsoir";
-        String prenom = (u.getPrenom() != null && !u.getPrenom().isEmpty()) ? u.getPrenom() : u.getNom();
+        String prenom = (u.getPrenom() != null && !u.getPrenom().isEmpty())
+                ? u.getPrenom() : u.getNom();
         lblGreeting.setText(greet + ", " + prenom + " !");
 
-        if (fieldFirstName != null) fieldFirstName.setText(u.getPrenom());
-        if (fieldLastName  != null) fieldLastName.setText(u.getNom());
-        if (fieldEmail     != null) fieldEmail.setText(u.getEmail());
+        if (fieldFirstName  != null) fieldFirstName.setText(u.getPrenom());
+        if (fieldLastName   != null) fieldLastName.setText(u.getNom());
+        if (fieldEmail      != null) fieldEmail.setText(u.getEmail());
         if (profileFullName != null) profileFullName.setText(u.getNom() + " " + u.getPrenom());
 
-        // Validation en temps réel
+        // Real-time validation
         fieldFirstName.textProperty().addListener((obs, old, val) -> {
             String msg = Validation.messageNom(val);
             erreurPrenom.setText(msg);
@@ -239,10 +245,32 @@ public class FitnessDashboardController implements Initializable {
     @FXML
     public void handleNav(ActionEvent e) {
         Button src = (Button) e.getSource();
+
         if (src == btnQuiz) {
             handleQuizNav();
             return;
         }
+
+        // Courses button: load external FXML into mainStackPane
+        if (src == btnCourses) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/coursesfront.fxml"));
+                Parent view = loader.load();
+                mainStackPane.getChildren().setAll(view);
+
+                FadeTransition ft = new FadeTransition(Duration.millis(220), view);
+                ft.setFromValue(0);
+                ft.setToValue(1);
+                ft.play();
+
+            } catch (IOException ex) {
+                ex.printStackTrace();
+                showAlert("Erreur", "Impossible de charger les cours");
+            }
+            setActiveNav(src);
+            return;
+        }
+
         VBox target = navMap.get(src);
         if (target == null) return;
         showView(target);
@@ -303,28 +331,20 @@ public class FitnessDashboardController implements Initializable {
         ft.setFromValue(0); ft.setToValue(1); ft.play();
     }
 
-    @FXML public void goHome(ActionEvent e)    { showView(viewHome); setActiveNav(btnHome); }
+    @FXML public void goHome(ActionEvent e) { showView(viewHome); setActiveNav(btnHome); }
+
     @FXML public void goToProfile(javafx.scene.input.MouseEvent e) {
         showView(viewProfile); setActiveNav(btnProfile);
     }
 
-    /**
-     * Retour vers la vue Relaxation depuis viewMedecin ou viewStress.
-     */
-    @FXML
-    public void goToRelax(ActionEvent e) {
-        showView(viewRelax);
-        setActiveNav(btnRelax);
-    }
+    /** Retour vers la vue Relaxation depuis viewMedecin ou viewStress. */
+    @FXML public void goToRelax(ActionEvent e) { showView(viewRelax); setActiveNav(btnRelax); }
 
     // ═════════════════════════════════════════════════════════════════
     //  RELAXATION — Consulter Médecin & Calculer Score
     // ═════════════════════════════════════════════════════════════════
 
-    /**
-     * Ouvre ajouteetudiant.fxml DANS le dashboard (viewMedecin).
-     * Lazy loading : le contenu n'est chargé qu'une seule fois.
-     */
+    /** Ouvre ajouteetudiant.fxml DANS le dashboard (viewMedecin). Lazy loading. */
     @FXML
     public void handleConsulterMedecin(ActionEvent e) {
         if (medecinArea.getChildren().isEmpty()) {
@@ -342,10 +362,7 @@ public class FitnessDashboardController implements Initializable {
         setActiveNav(btnRelax);
     }
 
-    /**
-     * Ouvre AjouterStressSurveyEtudiant.fxml DANS le dashboard (viewStress).
-     * Lazy loading : le contenu n'est chargé qu'une seule fois.
-     */
+    /** Ouvre AjouterStressSurveyEtudiant.fxml DANS le dashboard (viewStress). Lazy loading. */
     @FXML
     public void handleCalculerScore(ActionEvent e) {
         if (stressArea.getChildren().isEmpty()) {
@@ -369,8 +386,10 @@ public class FitnessDashboardController implements Initializable {
 
     private void initBoutique() {
         try {
-            edu.connexion3a36.services.ProduitService produitService = new edu.connexion3a36.services.ProduitService();
-            edu.connexion3a36.services.TypeCategorieService categorieService = new edu.connexion3a36.services.TypeCategorieService();
+            edu.connexion3a36.services.ProduitService produitService =
+                    new edu.connexion3a36.services.ProduitService();
+            edu.connexion3a36.services.TypeCategorieService categorieService =
+                    new edu.connexion3a36.services.TypeCategorieService();
 
             allProduits = produitService.getData();
             List<edu.connexion3a36.entities.TypeCategorie> categories = categorieService.getData();
@@ -405,6 +424,7 @@ public class FitnessDashboardController implements Initializable {
         }
         produits.forEach(p -> boutiqueProduitGrid.getChildren().add(buildProduitCard(p, catMap)));
     }
+
     private VBox buildProduitCard(edu.connexion3a36.entities.Produit p,
                                   Map<Integer, String> catMap) {
         VBox card = new VBox(10);
@@ -433,7 +453,6 @@ public class FitnessDashboardController implements Initializable {
         imgContainer.setStyle("-fx-background-color: #E8F0FE; -fx-background-radius: 18 18 0 0;");
 
         String imageUrl = p.getImage();
-
         if (imageUrl != null && !imageUrl.trim().isEmpty()) {
             try {
                 Image image = new Image(imageUrl.trim(), 200, 130, false, true, true);
@@ -445,7 +464,6 @@ public class FitnessDashboardController implements Initializable {
                         imgContainer.getChildren().add(placeholderLabel());
                     }
                 });
-
                 image.progressProperty().addListener((obs, oldVal, newVal) -> {
                     if (newVal.doubleValue() >= 1.0 && !image.isError()) {
                         imgContainer.getChildren().clear();
@@ -458,7 +476,6 @@ public class FitnessDashboardController implements Initializable {
                 } else {
                     imgContainer.getChildren().add(placeholderLabel());
                 }
-
             } catch (Exception ex) {
                 imgContainer.getChildren().add(placeholderLabel());
             }
@@ -483,7 +500,6 @@ public class FitnessDashboardController implements Initializable {
 
         info.getChildren().addAll(nomLabel, catLabel, prixLabel);
         card.getChildren().addAll(imgContainer, info);
-
         return card;
     }
 
@@ -532,7 +548,7 @@ public class FitnessDashboardController implements Initializable {
     }
 
     private void initGreeting() {
-        int hour = LocalTime.now().getHour();
+        int    hour  = LocalTime.now().getHour();
         String greet = hour < 12 ? "Bonjour" : hour < 18 ? "Bon après-midi" : "Bonsoir";
         lblGreeting.setText(greet + ", Josh !");
     }
@@ -687,13 +703,11 @@ public class FitnessDashboardController implements Initializable {
         String inactiveStyle = "-fx-background-color: transparent; -fx-font-size: 12px;"
                 + " -fx-text-fill: #aaa; -fx-cursor: hand;";
 
-        chartTabHours.setStyle("hours".equals(type)   ? activeStyle : inactiveStyle);
+        chartTabHours.setStyle("hours".equals(type)    ? activeStyle : inactiveStyle);
         chartTabCourses.setStyle("courses".equals(type) ? activeStyle : inactiveStyle);
     }
 
-    @FXML public void handlePeriodChange(ActionEvent e) {
-        loadChartData("hours");
-    }
+    @FXML public void handlePeriodChange(ActionEvent e) { loadChartData("hours"); }
 
     // ═════════════════════════════════════════════════════════════════
     //  RECHERCHE
@@ -716,11 +730,11 @@ public class FitnessDashboardController implements Initializable {
     private void initMessages() {
         messageList.getChildren().clear();
         List<String[]> msgs = List.of(
-                new String[]{"👩‍🏫", "Sophie Martin",       "Votre progression en Python est excellente !", "Il y a 5 min", "true"},
-                new String[]{"🤖", "Système",              "Nouveau badge débloqué : ⚡ Rapide !",           "Il y a 1 h",   "true"},
-                new String[]{"👨‍💼", "Marc Dupont",         "Avez-vous terminé le module 4 en Data Science ?", "Hier",        "false"},
-                new String[]{"🎓", "Alejandro Velazquez",  "¡ Muy bien ! Continuez ainsi en espagnol.",      "Il y a 2 j",  "false"},
-                new String[]{"🔔", "Système",              "Rappel : cours de Machine Learning demain à 10h.", "Il y a 3 j", "false"}
+                new String[]{"👩‍🏫", "Sophie Martin",       "Votre progression en Python est excellente !",     "Il y a 5 min", "true"},
+                new String[]{"🤖",  "Système",              "Nouveau badge débloqué : ⚡ Rapide !",              "Il y a 1 h",   "true"},
+                new String[]{"👨‍💼", "Marc Dupont",          "Avez-vous terminé le module 4 en Data Science ?", "Hier",         "false"},
+                new String[]{"🎓",  "Alejandro Velazquez",  "¡ Muy bien ! Continuez ainsi en espagnol.",        "Il y a 2 j",   "false"},
+                new String[]{"🔔",  "Système",              "Rappel : cours de Machine Learning demain à 10h.", "Il y a 3 j",   "false"}
         );
         msgs.forEach(m -> messageList.getChildren().add(buildMessageRow(m)));
     }
@@ -743,11 +757,14 @@ public class FitnessDashboardController implements Initializable {
         Label content = new Label(m[2]); content.setStyle("-fx-font-size: 12px; -fx-text-fill: #555;");
         body.getChildren().addAll(sender, content);
 
-        VBox right = new VBox(4); right.setAlignment(Pos.TOP_RIGHT);
-        Label time = new Label(m[3]); time.setStyle("-fx-font-size: 10px; -fx-text-fill: #aaa;");
+        VBox right = new VBox(4);
+        right.setAlignment(Pos.TOP_RIGHT);
+        Label time = new Label(m[3]);
+        time.setStyle("-fx-font-size: 10px; -fx-text-fill: #aaa;");
         right.getChildren().add(time);
         if ("true".equals(m[4])) {
-            Label dot = new Label("●"); dot.setStyle("-fx-text-fill: #4f46e5; -fx-font-size: 10px;");
+            Label dot = new Label("●");
+            dot.setStyle("-fx-text-fill: #4f46e5; -fx-font-size: 10px;");
             right.getChildren().add(dot);
         }
         row.getChildren().addAll(avatar, body, right);
@@ -760,15 +777,15 @@ public class FitnessDashboardController implements Initializable {
 
     private void initSettings() {
         List<String[]> notifSettings = List.of(
-                new String[]{"Notifications push",          "true"},
-                new String[]{"Rappels de cours",            "true"},
-                new String[]{"Nouveaux badges",             "true"},
-                new String[]{"Messages des instructeurs",   "false"}
+                new String[]{"Notifications push",        "true"},
+                new String[]{"Rappels de cours",          "true"},
+                new String[]{"Nouveaux badges",           "true"},
+                new String[]{"Messages des instructeurs", "false"}
         );
         List<String[]> privacySettings = List.of(
-                new String[]{"Profil public",               "false"},
-                new String[]{"Partager ma progression",     "true"},
-                new String[]{"Afficher mes badges",         "true"}
+                new String[]{"Profil public",             "false"},
+                new String[]{"Partager ma progression",   "true"},
+                new String[]{"Afficher mes badges",       "true"}
         );
         notifSettings.forEach(s  -> settingsNotifList.getChildren().add(buildSettingRow(s[0], "true".equals(s[1]))));
         privacySettings.forEach(s -> settingsPrivacyList.getChildren().add(buildSettingRow(s[0], "true".equals(s[1]))));
@@ -780,10 +797,14 @@ public class FitnessDashboardController implements Initializable {
         row.setPrefHeight(44);
         row.setStyle("-fx-border-color: transparent transparent #f0f0f0 transparent; -fx-border-width: 0 0 1 0;");
 
-        Label lbl = new Label(label); lbl.setStyle("-fx-font-size: 13px;");
+        Label lbl = new Label(label);
+        lbl.setStyle("-fx-font-size: 13px;");
         HBox.setHgrow(lbl, Priority.ALWAYS);
 
-        CheckBox cb = new CheckBox(); cb.setSelected(defaultVal); cb.setStyle("-fx-cursor: hand;");
+        CheckBox cb = new CheckBox();
+        cb.setSelected(defaultVal);
+        cb.setStyle("-fx-cursor: hand;");
+
         row.getChildren().addAll(lbl, cb);
         return row;
     }
@@ -814,7 +835,9 @@ public class FitnessDashboardController implements Initializable {
                 utilisateurConnecte.setMotDePasse(mdp);
                 new UtilisateurService().updateEntity(utilisateurConnecte.getId().intValue(), utilisateurConnecte);
                 showAlert("✅ Succès", "Mot de passe changé avec succès !");
-            } catch (SQLException ex) { showAlert("❌ Erreur", "Erreur : " + ex.getMessage()); }
+            } catch (SQLException ex) {
+                showAlert("❌ Erreur", "Erreur : " + ex.getMessage());
+            }
         });
     }
 
@@ -922,7 +945,7 @@ public class FitnessDashboardController implements Initializable {
 
         if (!msgPrenom.isEmpty() || !msgNom.isEmpty() || !msgEmail.isEmpty()) return;
 
-        // ✅ TEST UNICITÉ EMAIL — AJOUTER ICI
+        // Check email uniqueness
         try {
             if (new UtilisateurService().emailExiste(email, utilisateurConnecte.getId().intValue())) {
                 erreurEmail.setText("Cet email est déjà utilisé par un autre compte.");
@@ -952,8 +975,8 @@ public class FitnessDashboardController implements Initializable {
     //  DIVERS
     // ═════════════════════════════════════════════════════════════════
 
-    @FXML public void handleNotif(ActionEvent e)    { showAlert("Notifications", "🔔 Vous avez 3 nouvelles notifications."); }
-    @FXML public void handlePremium(ActionEvent e)  { showAlert("Premium", "🌟 Passez Premium pour 9,99 € / mois et accédez à plus de 500 cours !"); }
+    @FXML public void handleNotif(ActionEvent e)   { showAlert("Notifications", "🔔 Vous avez 3 nouvelles notifications."); }
+    @FXML public void handlePremium(ActionEvent e) { showAlert("Premium", "🌟 Passez Premium pour 9,99 € / mois et accédez à plus de 500 cours !"); }
 
     @FXML public void handleLogout(ActionEvent e) {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
