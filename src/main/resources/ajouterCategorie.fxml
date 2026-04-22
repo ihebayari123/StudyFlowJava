@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="20" style="-fx-padding: 32; -fx-background-color: #F5F6FA; -fx-max-width: 500;"
+      xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="edu.connexion3a36.Controller.AjouterCategorieController">
+
+    <Label style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #1A1A2E;" text="➕ Ajouter une Catégorie" />
+
+    <VBox spacing="6">
+        <Label style="-fx-font-size: 13; -fx-text-fill: #757575;" text="Nom de la catégorie" />
+        <TextField fx:id="nomField"
+                   promptText="Ex: Electronique"
+                   style="-fx-background-color: #FFFFFF; -fx-background-radius: 8; -fx-padding: 10; -fx-font-size: 13;" />
+    </VBox>
+
+    <VBox spacing="6">
+        <Label style="-fx-font-size: 13; -fx-text-fill: #757575;" text="Description" />
+        <TextArea fx:id="descField"
+                  promptText="Ex: Produits électroniques..."
+                  prefRowCount="3"
+                  style="-fx-background-color: #FFFFFF; -fx-background-radius: 8; -fx-padding: 10; -fx-font-size: 13;" />
+    </VBox>
+
+    <Button fx:id="ajouterBtn"
+            text="✅ Ajouter"
+            maxWidth="Infinity"
+            style="-fx-background-color: #2979FF; -fx-text-fill: white; -fx-font-size: 14;
+                   -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 12; -fx-cursor: hand;" />
+
+    <Label fx:id="statusLabel" style="-fx-font-size: 13;" text="" />
+
+</VBox>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="16" style="-fx-padding: 24; -fx-background-color: #F5F6FA;"
+      xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="edu.connexion3a36.Controller.AfficherCategorieController">
+
+    <!-- HEADER -->
+    <HBox alignment="CENTER_LEFT" spacing="12">
+        <Label style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #1A1A2E;" text="📋 Liste des Catégories" />
+        <Button fx:id="refreshBtn"
+                style="-fx-background-color: #2979FF; -fx-text-fill: white; -fx-background-radius: 8;"
+                text="🔄 Actualiser" />
+    </HBox>
+
+    <!-- 🔍 RECHERCHE + 🔽 TRI -->
+    <HBox spacing="10">
+        <TextField fx:id="searchField"
+                   promptText="🔍 Rechercher..."
+                   HBox.hgrow="ALWAYS"
+                   style="-fx-background-radius: 8; -fx-padding: 8;" />
+
+        <ComboBox fx:id="sortCombo"
+                  promptText="Trier"
+                  prefWidth="150"/>
+    </HBox>
+
+    <!-- TABLE -->
+    <TableView fx:id="tableView" VBox.vgrow="ALWAYS"
+               style="-fx-background-color: #FFFFFF; -fx-background-radius: 12;">
+        <columns>
+            <TableColumn fx:id="colId" prefWidth="60" text="ID" />
+            <TableColumn fx:id="colNom" prefWidth="200" text="Nom Catégorie" />
+            <TableColumn fx:id="colDescription" prefWidth="300" text="Description" />
+            <TableColumn fx:id="colActions" prefWidth="180" text="Actions" />
+        </columns>
+    </TableView>
+
+    <Label fx:id="statusLabel" style="-fx-text-fill: #2979FF; -fx-font-size: 13;" text="" />
+
+</VBox>

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="edu.connexion3a36.Controller.QuizController"
+      spacing="0" style="-fx-background-color: #F5F6FA;">
+
+    <!-- ── HEADER ── -->
+    <HBox alignment="CENTER_LEFT" spacing="16"
+          style="-fx-background-color: #FFFFFF; -fx-padding: 16 24; -fx-border-color: #E8EAED; -fx-border-width: 0 0 1 0;">
+        <Label text="❓" style="-fx-font-size: 22;"/>
+        <VBox>
+            <Label text="Gestion des Quiz"
+                   style="-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: #1A1A2E;"/>
+            <Label text="Ajouter, modifier, supprimer et rechercher des quiz"
+                   style="-fx-font-size: 12; -fx-text-fill: #9E9E9E;"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <!-- Stats -->
+        <VBox alignment="CENTER" style="-fx-background-color: #E8F0FE; -fx-background-radius: 8; -fx-padding: 8 16;">
+            <Label fx:id="lblTotalQuiz" text="0"
+                   style="-fx-font-size: 22; -fx-font-weight: bold; -fx-text-fill: #2979FF;"/>
+            <Label text="Quiz" style="-fx-font-size: 11; -fx-text-fill: #757575;"/>
+        </VBox>
+        <VBox alignment="CENTER" style="-fx-background-color: #F3E5F5; -fx-background-radius: 8; -fx-padding: 8 16;">
+            <Label fx:id="lblMoyenneDuree" text="0 min"
+                   style="-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: #7B1FA2;"/>
+            <Label text="Durée moy." style="-fx-font-size: 11; -fx-text-fill: #757575;"/>
+        </VBox>
+    </HBox>
+
+    <!-- ── CORPS ── -->
+    <HBox spacing="0" VBox.vgrow="ALWAYS">
+
+        <!-- TABLE + Contrôles -->
+        <VBox spacing="12" HBox.hgrow="ALWAYS"
+              style="-fx-padding: 16;">
+
+            <!-- Barre recherche + tri -->
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <TextField fx:id="tfRecherche" promptText="🔍  Rechercher par titre..."
+                           prefWidth="260"
+                           style="-fx-background-radius: 20; -fx-border-radius: 20; -fx-border-color: #DADCE0; -fx-padding: 8 14;"/>
+                <Label text="Trier par :" style="-fx-font-size: 13; -fx-text-fill: #757575;"/>
+                <ComboBox fx:id="cbTri" prefWidth="180"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="+ Nouveau Quiz" onAction="#ajouterQuiz"
+                        style="-fx-background-color: #2979FF; -fx-text-fill: white; -fx-background-radius: 8; -fx-padding: 8 20; -fx-font-weight: bold;"/>
+            </HBox>
+
+            <!-- TableView -->
+            <TableView fx:id="tableQuiz" VBox.vgrow="ALWAYS"
+                       style="-fx-background-color: white; -fx-background-radius: 10; -fx-border-color: #E8EAED; -fx-border-radius: 10;">
+                <columns>
+                    <TableColumn fx:id="colId"       text="ID"        prefWidth="60"/>
+                    <TableColumn fx:id="colTitre"    text="Titre"     prefWidth="280"/>
+                    <TableColumn fx:id="colDuree"    text="Durée (min)" prefWidth="110"/>
+                    <TableColumn fx:id="colCourseId" text="Cours ID"  prefWidth="90"/>
+                </columns>
+                <placeholder>
+                    <Label text="Aucun quiz disponible" style="-fx-text-fill: #BDBDBD;"/>
+                </placeholder>
+            </TableView>
+
+            <!-- Boutons action -->
+            <HBox spacing="10">
+                <Button text="✏ Modifier"     onAction="#modifierQuiz"
+                        style="-fx-background-color: #FB8C00; -fx-text-fill: white; -fx-background-radius: 8; -fx-padding: 8 18; -fx-font-weight: bold;"/>
+                <Button text="🗑 Supprimer"   onAction="#supprimerQuiz"
+                        style="-fx-background-color: #E53935; -fx-text-fill: white; -fx-background-radius: 8; -fx-padding: 8 18; -fx-font-weight: bold;"/>
+                <Button text="📋 Voir Questions" onAction="#voirQuestions"
+                        style="-fx-background-color: #43A047; -fx-text-fill: white; -fx-background-radius: 8; -fx-padding: 8 18; -fx-font-weight: bold;"/>
+            </HBox>
+        </VBox>
+
+        <!-- FORMULAIRE -->
+        <VBox prefWidth="290" spacing="14"
+              style="-fx-background-color: #FFFFFF; -fx-padding: 20; -fx-border-color: #E8EAED; -fx-border-width: 0 0 0 1;">
+
+            <Label text="Formulaire Quiz"
+                   style="-fx-font-size: 15; -fx-font-weight: bold; -fx-text-fill: #1A1A2E;"/>
+
+            <!-- Titre -->
+            <VBox spacing="3">
+                <Label text="Titre *" style="-fx-font-size: 12; -fx-text-fill: #757575;"/>
+                <TextField fx:id="tfTitre" promptText="Ex : Quiz Algorithmique"
+                           style="-fx-background-radius: 6; -fx-border-radius: 6; -fx-border-color: #DADCE0; -fx-padding: 8 10;"/>
+                <Label fx:id="lblErreurTitre" text="" style="-fx-text-fill: #E53935; -fx-font-size: 11;"/>
+            </VBox>
+
+            <!-- Durée -->
+            <VBox spacing="3">
+                <Label text="Durée (minutes) *" style="-fx-font-size: 12; -fx-text-fill: #757575;"/>
+                <TextField fx:id="tfDuree" promptText="Ex : 30"
+                           style="-fx-background-radius: 6; -fx-border-radius: 6; -fx-border-color: #DADCE0; -fx-padding: 8 10;"/>
+                <Label fx:id="lblErreurDuree" text="" style="-fx-text-fill: #E53935; -fx-font-size: 11;"/>
+            </VBox>
+
+            <!-- Cours ID -->
+            <VBox spacing="3">
+                <Label text="ID du Cours *" style="-fx-font-size: 12; -fx-text-fill: #757575;"/>
+                <TextField fx:id="tfCourseId" promptText="Ex : 1"
+                           style="-fx-background-radius: 6; -fx-border-radius: 6; -fx-border-color: #DADCE0; -fx-padding: 8 10;"/>
+            </VBox>
+
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <!-- Boutons formulaire -->
+            <Button text="✚  Ajouter" onAction="#ajouterQuiz"
+                    prefWidth="250"
+                    style="-fx-background-color: #2979FF; -fx-text-fill: white; -fx-background-radius: 8; -fx-padding: 10 0; -fx-font-weight: bold; -fx-font-size: 14;"/>
+            <Button text="✏  Modifier" onAction="#modifierQuiz"
+                    prefWidth="250"
+                    style="-fx-background-color: #FB8C00; -fx-text-fill: white; -fx-background-radius: 8; -fx-padding: 10 0; -fx-font-weight: bold;"/>
+        </VBox>
+    </HBox>
+</VBox>

@@ -1,12 +1,16 @@
 package edu.connexion3a36.Controller;
 
+import edu.connexion3a36.entities.Utilisateur;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.logging.Level;
@@ -16,44 +20,126 @@ public class DashboardController {
 
     private static final Logger LOGGER = Logger.getLogger(DashboardController.class.getName());
 
+    private Utilisateur utilisateurConnecte;
+
+    // ── Sidebar items principaux ──────────────────────────────────────────────
     @FXML private HBox homeItem;
     @FXML private HBox coursItem;
     @FXML private HBox chapitresItem;
     @FXML private HBox quizItem;
     @FXML private HBox exercicesItem;
+
+    // ── Ta version (gestion_event) ────────────────────────────────────────────
     @FXML private HBox eventsItem;
-    @FXML private HBox sponsorsItem;   // ── NOUVEAU
+    @FXML private HBox sponsorsItem;
+
+    // ── Version main ──────────────────────────────────────────────────────────
+    @FXML private HBox categorieItem;
+    @FXML private HBox produitItem;
+    @FXML private HBox administrationItem;
+    @FXML private HBox utilisateursItem;
+
+    // ── Commun ────────────────────────────────────────────────────────────────
     @FXML private HBox progressionItem;
     @FXML private HBox settingsItem;
 
+    // ── Sous-menu Anti-Stress (main) ──────────────────────────────────────────
+    @FXML private VBox antiStressSubMenu;
+    @FXML private Label antiStressArrow;
+
+    @FXML private HBox ajouterMedecinItem;
+    @FXML private HBox listeMedecinsItem;
+    @FXML private HBox ajouterConsultationItem;
+    @FXML private HBox listeConsultationsItem;
+    @FXML private HBox antiStresseItem;
+    @FXML private HBox ajouterScoreEtudiantItem;
+    @FXML private HBox ajouterBienEtreItem;
+    @FXML private HBox voirScoreItem;
+    @FXML private HBox deconnexionItem;
+
     @FXML private StackPane contentArea;
+
+    private boolean antiStressMenuOpen = false;
 
     @FXML
     public void initialize() {
+        System.out.println("DashboardController initialisé");
         setupNavigation();
         loadView("cours");
     }
 
     private void setupNavigation() {
-        homeItem.setOnMouseClicked(event       -> loadView("dashboard"));
-        coursItem.setOnMouseClicked(event      -> loadView("cours"));
-        chapitresItem.setOnMouseClicked(event  -> loadView("chapitres"));
-        quizItem.setOnMouseClicked(event       -> loadView("quiz"));
-        exercicesItem.setOnMouseClicked(event  -> loadView("exercices"));
-        eventsItem.setOnMouseClicked(event     -> loadView("eventList"));
-        sponsorsItem.setOnMouseClicked(event   -> loadView("sponsor")); // ── NOUVEAU
-        progressionItem.setOnMouseClicked(event-> loadView("progression"));
-        settingsItem.setOnMouseClicked(event   -> loadView("settings"));
+        // ── Commun aux deux versions ──
+        homeItem.setOnMouseClicked(e       -> loadView("dashboard"));
+        coursItem.setOnMouseClicked(e      -> loadView("cours"));
+        chapitresItem.setOnMouseClicked(e  -> loadView("chapitres"));
+        quizItem.setOnMouseClicked(e       -> loadView("QuizView"));
+        exercicesItem.setOnMouseClicked(e  -> loadView("exercices"));
+        settingsItem.setOnMouseClicked(e   -> loadView("settings"));
 
-        addHoverEffect(homeItem);
-        addHoverEffect(coursItem);
-        addHoverEffect(chapitresItem);
-        addHoverEffect(quizItem);
-        addHoverEffect(exercicesItem);
-        addHoverEffect(eventsItem);
-        addHoverEffect(sponsorsItem);    // ── NOUVEAU
-        addHoverEffect(progressionItem);
-        addHoverEffect(settingsItem);
+        // ── Ta version (gestion_event) ──
+        if (eventsItem != null)
+            eventsItem.setOnMouseClicked(e -> loadView("eventList"));
+        if (sponsorsItem != null)
+            sponsorsItem.setOnMouseClicked(e -> loadView("sponsor"));
+
+        // ── Version main ──
+        if (categorieItem != null)
+            categorieItem.setOnMouseClicked(e -> loadView("categorieMenu"));
+        if (produitItem != null)
+            produitItem.setOnMouseClicked(e -> loadView("produitMenu"));
+        if (administrationItem != null)
+            administrationItem.setOnMouseClicked(e -> loadView("admin"));
+        if (utilisateursItem != null)
+            utilisateursItem.setOnMouseClicked(e -> loadView("gestionUtilisateurs"));
+
+        // ── Anti-Stress toggle ──
+        progressionItem.setOnMouseClicked(e -> toggleAntiStressMenu());
+
+        // ── Sous-menu Anti-Stress ──
+        if (ajouterMedecinItem != null)
+            ajouterMedecinItem.setOnMouseClicked(e -> loadView("AjouterMedecin"));
+        if (listeMedecinsItem != null)
+            listeMedecinsItem.setOnMouseClicked(e -> loadView("AfficherMedecin"));
+        if (ajouterConsultationItem != null)
+            ajouterConsultationItem.setOnMouseClicked(e -> loadView("AjouterConsultation"));
+        if (listeConsultationsItem != null)
+            listeConsultationsItem.setOnMouseClicked(e -> loadView("AfficherConsultation"));
+        if (antiStresseItem != null)
+            antiStresseItem.setOnMouseClicked(e -> loadView("AfficherStressSurvey"));
+        if (ajouterScoreEtudiantItem != null)
+            ajouterScoreEtudiantItem.setOnMouseClicked(e -> loadView("AjouterStressSurvey"));
+        if (ajouterBienEtreItem != null)
+            ajouterBienEtreItem.setOnMouseClicked(e -> loadView("AjouterWellBeingScore"));
+        if (voirScoreItem != null)
+            voirScoreItem.setOnMouseClicked(e -> loadView("AfficherWellBeingScore"));
+        if (deconnexionItem != null)
+            deconnexionItem.setOnMouseClicked(e -> handleDeconnexion());
+
+        // ── Hover effects ──
+        HBox[] allItems = {
+                homeItem, coursItem, chapitresItem, quizItem, exercicesItem,
+                eventsItem, sponsorsItem,
+                categorieItem, produitItem, progressionItem,
+                administrationItem, settingsItem, utilisateursItem,
+                ajouterMedecinItem, listeMedecinsItem, ajouterConsultationItem,
+                listeConsultationsItem, antiStresseItem,
+                ajouterScoreEtudiantItem, ajouterBienEtreItem, voirScoreItem
+        };
+        for (HBox item : allItems) {
+            if (item != null) addHoverEffect(item);
+        }
+    }
+
+    private void toggleAntiStressMenu() {
+        antiStressMenuOpen = !antiStressMenuOpen;
+        if (antiStressSubMenu != null) {
+            antiStressSubMenu.setVisible(antiStressMenuOpen);
+            antiStressSubMenu.setManaged(antiStressMenuOpen);
+        }
+        if (antiStressArrow != null) {
+            antiStressArrow.setText(antiStressMenuOpen ? "▼" : "▶");
+        }
     }
 
     private void loadView(String viewName) {
@@ -80,16 +166,36 @@ public class DashboardController {
             Node view = loader.load();
 
             Object controller = loader.getController();
-            if (controller instanceof CoursController) {
-                ((CoursController) controller).setDashboardController(this);
+            if (controller != null) {
+                // Essai générique (main)
+                try {
+                    controller.getClass()
+                            .getMethod("setDashboardController", DashboardController.class)
+                            .invoke(controller, this);
+                } catch (Exception ignored) {}
+
+                // Essai spécifique CoursController (ta version)
+                if (controller instanceof CoursController) {
+                    ((CoursController) controller).setDashboardController(this);
+                }
             }
 
-            contentArea.getChildren().clear();
-            contentArea.getChildren().add(view);
+            contentArea.getChildren().setAll(view);
 
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Erreur chargement: " + viewName, e);
             showErrorView(viewName);
+        }
+    }
+
+    private void handleDeconnexion() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Login.fxml"));
+            Scene scene = new Scene(loader.load());
+            Stage stage = (Stage) contentArea.getScene().getWindow();
+            stage.setScene(scene);
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Erreur déconnexion", e);
         }
     }
 
@@ -102,16 +208,15 @@ public class DashboardController {
         );
         errorLabel.setStyle("-fx-text-fill: #F44336; -fx-font-size: 14;");
         errorBox.getChildren().add(errorLabel);
-        contentArea.getChildren().clear();
-        contentArea.getChildren().add(errorBox);
+        contentArea.getChildren().setAll(errorBox);
     }
 
     private void resetActiveStyles() {
-        // ── Tableau incluant sponsorsItem
         HBox[] items = {
                 homeItem, coursItem, chapitresItem, quizItem,
                 exercicesItem, eventsItem, sponsorsItem,
-                progressionItem, settingsItem
+                categorieItem, produitItem, progressionItem,
+                administrationItem, settingsItem, utilisateursItem
         };
         for (HBox item : items) {
             if (item != null) {
@@ -124,8 +229,7 @@ public class DashboardController {
                     if (node instanceof Label) {
                         Label label = (Label) node;
                         String text = label.getText();
-                        // Ne pas modifier les icônes emoji
-                        if (text != null && !text.matches("🏠|📚|📖|❓|✏️|🎉|💼|📊|⚙️")) {
+                        if (text != null && !text.matches("🏠|📚|📖|❓|✏️|🎉|💼|📊|⚙️|🏷️|🛒|🏛️|👤")) {
                             label.setStyle(
                                     "-fx-font-size: 13; " +
                                             "-fx-text-fill: #757575; " +
@@ -141,15 +245,18 @@ public class DashboardController {
     private void setActiveStyle(String viewName) {
         HBox activeItem = null;
         switch (viewName) {
-            case "dashboard":  activeItem = homeItem;        break;
-            case "cours":      activeItem = coursItem;       break;
-            case "chapitres":  activeItem = chapitresItem;   break;
-            case "quiz":       activeItem = quizItem;        break;
-            case "exercices":  activeItem = exercicesItem;   break;
-            case "eventList":  activeItem = eventsItem;      break;
-            case "sponsor":    activeItem = sponsorsItem;    break; // ── NOUVEAU
-            case "progression":activeItem = progressionItem; break;
-            case "settings":   activeItem = settingsItem;    break;
+            case "dashboard":           activeItem = homeItem;           break;
+            case "cours":               activeItem = coursItem;          break;
+            case "chapitres":           activeItem = chapitresItem;      break;
+            case "QuizView":            activeItem = quizItem;           break;
+            case "exercices":           activeItem = exercicesItem;      break;
+            case "eventList":           activeItem = eventsItem;         break;
+            case "sponsor":             activeItem = sponsorsItem;       break;
+            case "categorieMenu":       activeItem = categorieItem;      break;
+            case "produitMenu":         activeItem = produitItem;        break;
+            case "admin":               activeItem = administrationItem; break;
+            case "gestionUtilisateurs": activeItem = utilisateursItem;   break;
+            case "settings":            activeItem = settingsItem;       break;
             default: break;
         }
 
@@ -163,7 +270,7 @@ public class DashboardController {
                 if (node instanceof Label) {
                     Label label = (Label) node;
                     String text = label.getText();
-                    if (text != null && !text.matches("🏠|📚|📖|❓|✏️|🎉|💼|📊|⚙️")) {
+                    if (text != null && !text.matches("🏠|📚|📖|❓|✏️|🎉|💼|📊|⚙️|🏷️|🛒|🏛️|👤")) {
                         label.setStyle(
                                 "-fx-font-size: 13; " +
                                         "-fx-font-weight: bold; " +
@@ -200,5 +307,25 @@ public class DashboardController {
 
     public void navigateTo(String viewName) {
         loadView(viewName);
+    }
+
+    public void setUtilisateurConnecte(Utilisateur u) {
+        this.utilisateurConnecte = u;
+
+        if (u.getRole().equals("ENSEIGNANT")) {
+            hideItem(utilisateursItem);
+            hideItem(administrationItem);
+            hideItem(categorieItem);
+            hideItem(produitItem);
+            hideItem(settingsItem);
+            hideItem(homeItem);
+        }
+    }
+
+    private void hideItem(HBox item) {
+        if (item != null) {
+            item.setVisible(false);
+            item.setManaged(false);
+        }
     }
 }
