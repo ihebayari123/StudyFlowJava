@@ -38,12 +38,9 @@ public class FitnessDashboardController implements Initializable {
     @FXML private FlowPane boutiqueProduitGrid;
     @FXML private TextField boutiqueSearchField;
 
-<<<<<<< HEAD
-=======
     @FXML private Button btnQuiz;
     @FXML private StackPane contentArea;
 
->>>>>>> fab611f (fixed commit)
     @FXML private Button btnHome;
     @FXML private Button btnCourses;
     @FXML private Button btnProfile;
@@ -203,6 +200,10 @@ public class FitnessDashboardController implements Initializable {
     @FXML
     public void handleNav(ActionEvent e) {
         Button src = (Button) e.getSource();
+        if (src == btnQuiz) {
+            handleQuizNav();
+            return;
+        }
         VBox target = navMap.get(src);
         if (target == null) return;
         showView(target);
@@ -238,10 +239,6 @@ public class FitnessDashboardController implements Initializable {
         for (Button b : navMap.keySet()) {
             b.setStyle(b == active ? activeStyle : inactiveStyle);
         }
-<<<<<<< HEAD
-    }
-
-=======
         // Also handle btnQuiz which is not in navMap
         if (btnQuiz != null)
             btnQuiz.setStyle(btnQuiz == active ? activeStyle : inactiveStyle);
@@ -277,7 +274,6 @@ public class FitnessDashboardController implements Initializable {
         ft.setFromValue(0); ft.setToValue(1); ft.play();
     }
 
->>>>>>> fab611f (fixed commit)
     @FXML public void goHome(ActionEvent e) { showView(viewHome); setActiveNav(btnHome); }
     @FXML public void goToProfile(javafx.scene.input.MouseEvent e) {
         showView(viewProfile); setActiveNav(btnProfile);
