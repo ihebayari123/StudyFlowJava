@@ -65,6 +65,12 @@
                     userData="relax"
                     onAction="#handleNav"
                     style="-fx-font-size: 20px; -fx-background-color: transparent; -fx-text-fill: #888888; -fx-cursor: hand;"/>
+
+            <Button fx:id="btnQuiz"
+                    text="📝"
+                    userData="quiz"
+                    onAction="#handleNav"
+                    style="-fx-font-size: 20px; -fx-background-color: transparent; -fx-text-fill: #888888; -fx-cursor: hand;"/>
         </VBox>
 
         <Button fx:id="btnLogout"
@@ -76,7 +82,7 @@
     <!-- ═══════════════════════════════════════════════════════════════ -->
     <!--  MAIN CONTENT  — StackPane pour superposer les vues            -->
     <!-- ═══════════════════════════════════════════════════════════════ -->
-    <StackPane HBox.hgrow="ALWAYS">
+    <StackPane HBox.hgrow="ALWAYS" fx:id="mainStackPane">
 
         <!-- ═══════════════════════════════════════════════════════════════ -->
         <!--  VUE BOUTIQUE                                                   -->
@@ -766,6 +772,11 @@
                 </VBox>
             </ScrollPane>
         </VBox>
+
+        <!-- ─────────────────────────────────────────────────────────── -->
+        <!--  VUE QUIZ                                                    -->
+        <!-- ─────────────────────────────────────────────────────────── -->
+        <StackPane fx:id="contentArea" visible="false" managed="false"/>
 
     </StackPane>
 </HBox>
