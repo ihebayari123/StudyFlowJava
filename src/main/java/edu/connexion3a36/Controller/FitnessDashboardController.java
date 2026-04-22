@@ -107,7 +107,6 @@ public class FitnessDashboardController implements Initializable {
 
     @FXML private Button btnConsulterMedecin;
     @FXML private Button btnCalculerScore;
-    @FXML private StackPane mainStackPane;
 
     private record Course(String emoji, String name, String author,
                           int progress, double rating, boolean isNew, boolean isPopular) {}
@@ -187,7 +186,7 @@ public class FitnessDashboardController implements Initializable {
     private void buildNavMap() {
         navMap = new LinkedHashMap<>();
         navMap.put(btnHome, viewHome);
-        //navMap.put(btnCourses, viewCourses);
+        navMap.put(btnCourses, viewCourses);
         navMap.put(btnProfile, viewProfile);
         navMap.put(btnMessages, viewMessages);
         navMap.put(btnSettings, viewSettings);
@@ -199,61 +198,11 @@ public class FitnessDashboardController implements Initializable {
     public void handleNav(ActionEvent e) {
         Button src = (Button) e.getSource();
         VBox target = navMap.get(src);
-        if (src == btnCourses) {
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/coursesfront.fxml"));
-                Parent view = loader.load();
-                mainStackPane.getChildren().setAll(view);
-
-                FadeTransition ft = new FadeTransition(Duration.millis(220), view);
-                ft.setFromValue(0);
-                ft.setToValue(1);
-                ft.play();
-
-            } catch (IOException ex) {
-                ex.printStackTrace();
-                showAlert("Erreur", "Impossible de charger les cours");
-            }
-            setActiveNav(src);
-            return;
-        }
         if (target == null) return;
         showView(target);
         setActiveNav(src);
     }
-    private void loadCoursesView() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fitness_courses.fxml"));
-            Parent view = loader.load();
 
-            // Hide all other views first
-            for (VBox v : navMap.values()) {
-                v.setVisible(false);
-                v.setManaged(false);
-            }
-
-            // Replace the content in your main container
-            // You need to add a StackPane or similar container to your main layout
-            // For now, assuming you have mainStackPane defined
-            if (mainStackPane != null) {
-                mainStackPane.getChildren().setAll(view);
-            } else {
-                // Alternative: replace the scene root
-                Scene scene = btnHome.getScene();
-                scene.setRoot(view);
-            }
-
-            // Fade transition for smooth loading
-            FadeTransition ft = new FadeTransition(Duration.millis(220), view);
-            ft.setFromValue(0);
-            ft.setToValue(1);
-            ft.play();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            showAlert("Erreur", "Impossible de charger la vue des cours: " + e.getMessage());
-        }
-    }
     private void showView(VBox target) {
         for (VBox v : navMap.values()) {
             v.setVisible(false);

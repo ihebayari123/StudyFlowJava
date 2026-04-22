@@ -76,7 +76,7 @@
     <!-- ═══════════════════════════════════════════════════════════════ -->
     <!--  MAIN CONTENT  — StackPane pour superposer les vues            -->
     <!-- ═══════════════════════════════════════════════════════════════ -->
-    <StackPane fx:id="mainStackPane" HBox.hgrow="ALWAYS">
+    <StackPane HBox.hgrow="ALWAYS">
 
         <!-- ═══════════════════════════════════════════════════════════════ -->
         <!--  VUE BOUTIQUE                                                   -->
