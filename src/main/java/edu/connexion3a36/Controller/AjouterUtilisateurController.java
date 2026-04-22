@@ -89,16 +89,6 @@ public class AjouterUtilisateurController {
         // Bloquer si invalide
         if (!Validation.validerTout(nom, prenom, email, mdp, role, statut)) return;
 
-        try {
-            if (service.emailExiste(email, 0)) {
-                afficherErreur(emailError, emailField, "Cet email est déjà utilisé.");
-                return;
-            }
-        } catch (SQLException e) {
-            afficherAlert(Alert.AlertType.ERROR, "Erreur", "❌ Erreur vérification email : " + e.getMessage());
-            return;
-        }
-
         Utilisateur u = new Utilisateur(nom, prenom, email, mdp, role);
         u.setStatus(statut);
 
