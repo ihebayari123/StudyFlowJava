@@ -767,5 +767,13 @@
             </ScrollPane>
         </VBox>
 
+<<<<<<< HEAD
+=======
+        <!-- ─────────────────────────────────────────────────────────── -->
+        <!--  VUE QUIZ                                                    -->
+        <!-- ─────────────────────────────────────────────────────────── -->
+        <StackPane fx:id="contentArea" visible="false" managed="false"/>
+
+>>>>>>> fab611f (fixed commit)
     </StackPane>
 </HBox>

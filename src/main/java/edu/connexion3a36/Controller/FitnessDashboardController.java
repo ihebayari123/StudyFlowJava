@@ -38,6 +38,12 @@ public class FitnessDashboardController implements Initializable {
     @FXML private FlowPane boutiqueProduitGrid;
     @FXML private TextField boutiqueSearchField;
 
+<<<<<<< HEAD
+=======
+    @FXML private Button btnQuiz;
+    @FXML private StackPane contentArea;
+
+>>>>>>> fab611f (fixed commit)
     @FXML private Button btnHome;
     @FXML private Button btnCourses;
     @FXML private Button btnProfile;
@@ -208,6 +214,11 @@ public class FitnessDashboardController implements Initializable {
             v.setVisible(false);
             v.setManaged(false);
         }
+        // Also hide quiz contentArea
+        if (contentArea != null) {
+            contentArea.setVisible(false);
+            contentArea.setManaged(false);
+        }
         target.setVisible(true);
         target.setManaged(true);
 
@@ -227,8 +238,46 @@ public class FitnessDashboardController implements Initializable {
         for (Button b : navMap.keySet()) {
             b.setStyle(b == active ? activeStyle : inactiveStyle);
         }
+<<<<<<< HEAD
     }
 
+=======
+        // Also handle btnQuiz which is not in navMap
+        if (btnQuiz != null)
+            btnQuiz.setStyle(btnQuiz == active ? activeStyle : inactiveStyle);
+    }
+
+    private void handleQuizNav() {
+        // Hide all VBox views
+        for (VBox v : navMap.values()) {
+            v.setVisible(false);
+            v.setManaged(false);
+        }
+        // Show contentArea (StackPane for quiz)
+        contentArea.setVisible(true);
+        contentArea.setManaged(true);
+        setActiveNav(btnQuiz);
+
+        // Load UserHomeView if not already loaded
+        if (contentArea.getChildren().isEmpty()) {
+            try {
+                javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
+                        getClass().getResource("/views/UserHomeView.fxml")
+                );
+                javafx.scene.Node vue = loader.load();
+                UserHomeController ctrl = loader.getController();
+                ctrl.setContentArea(contentArea);
+                contentArea.getChildren().setAll(vue);
+            } catch (java.io.IOException ex) {
+                showAlert("❌ Erreur", "Impossible de charger le module Quiz : " + ex.getMessage());
+            }
+        }
+
+        FadeTransition ft = new FadeTransition(javafx.util.Duration.millis(220), contentArea);
+        ft.setFromValue(0); ft.setToValue(1); ft.play();
+    }
+
+>>>>>>> fab611f (fixed commit)
     @FXML public void goHome(ActionEvent e) { showView(viewHome); setActiveNav(btnHome); }
     @FXML public void goToProfile(javafx.scene.input.MouseEvent e) {
         showView(viewProfile); setActiveNav(btnProfile);
