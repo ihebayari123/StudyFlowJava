@@ -28,7 +28,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.shape.Circle;
@@ -41,17 +40,14 @@ import java.util.*;
 
 public class FitnessDashboardController implements Initializable {
 
-    // ─── Boutique ────────────────────────────────────────────────────
     @FXML private Button btnBoutique;
     @FXML private VBox viewBoutique;
     @FXML private FlowPane boutiqueProduitGrid;
     @FXML private TextField boutiqueSearchField;
 
-    // ─── Quiz ────────────────────────────────────────────────────────
     @FXML private Button btnQuiz;
     @FXML private StackPane contentArea;
 
-    // ─── Sidebar buttons ─────────────────────────────────────────────
     @FXML private Button btnHome;
     @FXML private Button btnCourses;
     @FXML private Button btnProfile;
@@ -60,7 +56,6 @@ public class FitnessDashboardController implements Initializable {
     @FXML private Button btnRelax;
     @FXML private Button btnLogout;
 
-    // ─── Vues principales ────────────────────────────────────────────
     @FXML private VBox viewHome;
     @FXML private VBox viewProfile;
     @FXML private VBox viewMessages;
@@ -126,7 +121,6 @@ public class FitnessDashboardController implements Initializable {
 
     @FXML private Button btnGoPremium;
 
-    // ─── Profil ──────────────────────────────────────────────────────
     @FXML private Label profileFullName;
     @FXML private Label profileCompleted;
     @FXML private Label profileInProgress;
@@ -134,19 +128,18 @@ public class FitnessDashboardController implements Initializable {
     @FXML private TextField fieldLastName;
     @FXML private TextField fieldEmail;
     @FXML private TextField fieldBio;
+
+    @FXML private VBox messageList;
+
     @FXML private Label erreurPrenom;
     @FXML private Label erreurNom;
     @FXML private Label erreurEmail;
 
-    // ─── Messages / Settings ─────────────────────────────────────────
-    @FXML private VBox messageList;
     @FXML private VBox settingsNotifList;
     @FXML private VBox settingsPrivacyList;
 
-    // ─── Cours (grille) ──────────────────────────────────────────────
     @FXML private FlowPane allCoursesGrid;
 
-    // ─── Relax buttons ───────────────────────────────────────────────
     @FXML private Button btnConsulterMedecin;
     @FXML private Button btnCalculerScore;
     @FXML private Button btnCatchStress;
@@ -163,7 +156,6 @@ public class FitnessDashboardController implements Initializable {
     // ─── Medecin header ──────────────────────────────────────────────
     @FXML private Label lblMedecinTitle;
 
-    // ─── Données ─────────────────────────────────────────────────────
     private record Course(String emoji, String name, String author,
                           int progress, double rating, boolean isNew, boolean isPopular) {}
 
@@ -171,19 +163,10 @@ public class FitnessDashboardController implements Initializable {
     private String currentFilter = "all";
     private int currentCourseIndex = 0;
 
-    /**
-     * navMap : associe chaque bouton sidebar à sa VBox.
-     * Les vues sans bouton (viewMedecin, viewStress) sont dans allViews.
-     */
     private Map<Button, VBox> navMap;
-
-    /**
-     * Liste complète de TOUTES les vues du StackPane.
-     * Utilisée par showView() pour tout masquer avant d'afficher la cible.
-     */
-    private List<Region> allViews;
-
-    // ─── Utilisateur connecté ────────────────────────────────────────
+    // ═══════════════════════════════
+// UTILISATEUR CONNECTE
+// ═══════════════════════════════
     private Utilisateur utilisateurConnecte;
 
     private Button activeNavButton;
@@ -246,11 +229,13 @@ public class FitnessDashboardController implements Initializable {
     public void setUtilisateurConnecte(Utilisateur u) {
         this.utilisateurConnecte = u;
 
+        // Greeting personnalisé
         int hour = LocalTime.now().getHour();
         String greet = hour < 12 ? "Bonjour" : hour < 18 ? "Bon après-midi" : "Bonsoir";
         String prenom = (u.getPrenom() != null && !u.getPrenom().isEmpty()) ? u.getPrenom() : u.getNom();
         lblGreeting.setText(greet + ", " + prenom + " !");
 
+        // Pré-remplir les champs profil
         if (fieldFirstName != null) fieldFirstName.setText(u.getPrenom());
         if (fieldLastName  != null) fieldLastName.setText(u.getNom());
         if (fieldEmail     != null) fieldEmail.setText(u.getEmail());
@@ -264,6 +249,7 @@ public class FitnessDashboardController implements Initializable {
                     ? "-fx-border-color: #4CAF50; -fx-border-radius: 8; -fx-border-width: 1.5; -fx-padding: 8 12;"
                     : "-fx-border-color: #F44336; -fx-border-radius: 8; -fx-border-width: 1.5; -fx-padding: 8 12;");
         });
+
         fieldLastName.textProperty().addListener((obs, old, val) -> {
             String msg = Validation.messageNom(val);
             erreurNom.setText(msg);
@@ -271,6 +257,7 @@ public class FitnessDashboardController implements Initializable {
                     ? "-fx-border-color: #4CAF50; -fx-border-radius: 8; -fx-border-width: 1.5; -fx-padding: 8 12;"
                     : "-fx-border-color: #F44336; -fx-border-radius: 8; -fx-border-width: 1.5; -fx-padding: 8 12;");
         });
+
         fieldEmail.textProperty().addListener((obs, old, val) -> {
             String msg = Validation.messageEmail(val);
             erreurEmail.setText(msg);
@@ -278,11 +265,39 @@ public class FitnessDashboardController implements Initializable {
                     ? "-fx-border-color: #4CAF50; -fx-border-radius: 8; -fx-border-width: 1.5; -fx-padding: 8 12;"
                     : "-fx-border-color: #F44336; -fx-border-radius: 8; -fx-border-width: 1.5; -fx-padding: 8 12;");
         });
+
+        System.out.println("✅ Étudiant connecté : " + u.getNom() + " " + u.getPrenom());
+    }
+    private Button activeNavButton;
+
+    private List<edu.connexion3a36.entities.Produit> allProduits = new ArrayList<>();
+
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+        buildNavMap();
+        populateCourses();
+        initStats();
+        initGreeting();
+        initChart();
+        initMessages();
+        initSettings();
+        initAllCoursesGrid();
+        renderCourseList(currentFilter);
+        updateCurrentCourse();
+        setActiveNav(btnHome);
+        initBoutique();
     }
 
-    // ═════════════════════════════════════════════════════════════════
-    //  NAVIGATION
-    // ═════════════════════════════════════════════════════════════════
+    private void buildNavMap() {
+        navMap = new LinkedHashMap<>();
+        navMap.put(btnHome, viewHome);
+        navMap.put(btnCourses, viewCourses);
+        navMap.put(btnProfile, viewProfile);
+        navMap.put(btnMessages, viewMessages);
+        navMap.put(btnSettings, viewSettings);
+        navMap.put(btnRelax, viewRelax);
+        navMap.put(btnBoutique, viewBoutique);
+    }
 
     @FXML
     public void handleNav(ActionEvent e) {
@@ -297,14 +312,15 @@ public class FitnessDashboardController implements Initializable {
         setActiveNav(src);
     }
 
-    /**
-     * Masque toutes les vues puis affiche la cible avec une transition fade.
-     * Accepte n'importe quel Region (VBox ou StackPane).
-     */
-    private void showView(Region target) {
-        for (Region v : allViews) {
+    private void showView(VBox target) {
+        for (VBox v : navMap.values()) {
             v.setVisible(false);
             v.setManaged(false);
+        }
+        // Also hide quiz contentArea
+        if (contentArea != null) {
+            contentArea.setVisible(false);
+            contentArea.setManaged(false);
         }
         target.setVisible(true);
         target.setManaged(true);
@@ -317,7 +333,7 @@ public class FitnessDashboardController implements Initializable {
 
     private void setActiveNav(Button active) {
         activeNavButton = active;
-        String activeStyle   = "-fx-font-size: 20px; -fx-background-color: #333333;"
+        String activeStyle = "-fx-font-size: 20px; -fx-background-color: #333333;"
                 + " -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 10;";
         String inactiveStyle = "-fx-font-size: 20px; -fx-background-color: transparent;"
                 + " -fx-text-fill: #888888; -fx-cursor: hand;";
@@ -325,33 +341,42 @@ public class FitnessDashboardController implements Initializable {
         for (Button b : navMap.keySet()) {
             b.setStyle(b == active ? activeStyle : inactiveStyle);
         }
+        // Also handle btnQuiz which is not in navMap
         if (btnQuiz != null)
             btnQuiz.setStyle(btnQuiz == active ? activeStyle : inactiveStyle);
     }
 
     private void handleQuizNav() {
-        for (Region v : allViews) { v.setVisible(false); v.setManaged(false); }
+        // Hide all VBox views
+        for (VBox v : navMap.values()) {
+            v.setVisible(false);
+            v.setManaged(false);
+        }
+        // Show contentArea (StackPane for quiz)
         contentArea.setVisible(true);
         contentArea.setManaged(true);
         setActiveNav(btnQuiz);
 
+        // Load UserHomeView if not already loaded
         if (contentArea.getChildren().isEmpty()) {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/UserHomeView.fxml"));
-                Node vue = loader.load();
+                javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
+                        getClass().getResource("/views/UserHomeView.fxml")
+                );
+                javafx.scene.Node vue = loader.load();
                 UserHomeController ctrl = loader.getController();
                 ctrl.setContentArea(contentArea);
                 contentArea.getChildren().setAll(vue);
-            } catch (IOException ex) {
+            } catch (java.io.IOException ex) {
                 showAlert("❌ Erreur", "Impossible de charger le module Quiz : " + ex.getMessage());
             }
         }
 
-        FadeTransition ft = new FadeTransition(Duration.millis(220), contentArea);
+        FadeTransition ft = new FadeTransition(javafx.util.Duration.millis(220), contentArea);
         ft.setFromValue(0); ft.setToValue(1); ft.play();
     }
 
-    @FXML public void goHome(ActionEvent e)    { showView(viewHome); setActiveNav(btnHome); }
+    @FXML public void goHome(ActionEvent e) { showView(viewHome); setActiveNav(btnHome); }
     @FXML public void goToProfile(javafx.scene.input.MouseEvent e) {
         showView(viewProfile); setActiveNav(btnProfile);
     }
@@ -1183,15 +1208,14 @@ public class FitnessDashboardController implements Initializable {
                 renderBoutique(filtered, catMap);
             });
 
-        } catch (SQLException ex) {
-            Label err = new Label("❌ Erreur chargement produits : " + ex.getMessage());
+        } catch (java.sql.SQLException e) {
+            Label err = new Label("❌ Erreur chargement produits : " + e.getMessage());
             err.setStyle("-fx-text-fill: #F44336;");
             boutiqueProduitGrid.getChildren().add(err);
         }
     }
 
-    private void renderBoutique(List<edu.connexion3a36.entities.Produit> produits,
-                                Map<Integer, String> catMap) {
+    private void renderBoutique(List<edu.connexion3a36.entities.Produit> produits, Map<Integer, String> catMap) {
         boutiqueProduitGrid.getChildren().clear();
         if (produits.isEmpty()) {
             Label empty = new Label("Aucun produit trouvé.");
@@ -1201,8 +1225,8 @@ public class FitnessDashboardController implements Initializable {
         }
         produits.forEach(p -> boutiqueProduitGrid.getChildren().add(buildProduitCard(p, catMap)));
     }
-    private VBox buildProduitCard(edu.connexion3a36.entities.Produit p,
-                                  Map<Integer, String> catMap) {
+
+    private VBox buildProduitCard(edu.connexion3a36.entities.Produit p, Map<Integer, String> catMap) {
         VBox card = new VBox(10);
         card.setPrefWidth(200);
         card.setPadding(new Insets(0, 0, 16, 0));
@@ -1223,43 +1247,41 @@ public class FitnessDashboardController implements Initializable {
         imageView.setFitWidth(200);
         imageView.setFitHeight(130);
         imageView.setPreserveRatio(false);
+        imageView.setStyle("-fx-background-radius: 18 18 0 0;");
 
         StackPane imgContainer = new StackPane();
         imgContainer.setPrefHeight(130);
         imgContainer.setStyle("-fx-background-color: #E8F0FE; -fx-background-radius: 18 18 0 0;");
 
         String imageUrl = p.getImage();
+        boolean isValidUrl = false;
+        try {
+            new java.net.URL(imageUrl);
+            isValidUrl = true;
+        } catch (Exception ex) {
+            // URL invalide
+        }
 
-        if (imageUrl != null && !imageUrl.trim().isEmpty()) {
+        if (isValidUrl && imageUrl != null && !imageUrl.trim().isEmpty()) {
             try {
-                Image image = new Image(imageUrl.trim(), 200, 130, false, true, true);
-                imageView.setImage(image);
-
-                image.errorProperty().addListener((obs, wasError, isError) -> {
-                    if (isError) {
-                        imgContainer.getChildren().clear();
-                        imgContainer.getChildren().add(placeholderLabel());
-                    }
-                });
-
-                image.progressProperty().addListener((obs, oldVal, newVal) -> {
-                    if (newVal.doubleValue() >= 1.0 && !image.isError()) {
-                        imgContainer.getChildren().clear();
-                        imgContainer.getChildren().add(imageView);
-                    }
-                });
-
-                if (image.getProgress() >= 1.0 && !image.isError()) {
+                Image image = new Image(imageUrl, 200, 130, false, true);
+                if (!image.isError()) {
+                    imageView.setImage(image);
                     imgContainer.getChildren().add(imageView);
                 } else {
-                    imgContainer.getChildren().add(placeholderLabel());
+                    Label placeholder = new Label("🖼️");
+                    placeholder.setStyle("-fx-font-size: 40px;");
+                    imgContainer.getChildren().add(placeholder);
                 }
-
             } catch (Exception ex) {
-                imgContainer.getChildren().add(placeholderLabel());
+                Label placeholder = new Label("🖼️");
+                placeholder.setStyle("-fx-font-size: 40px;");
+                imgContainer.getChildren().add(placeholder);
             }
         } else {
-            imgContainer.getChildren().add(placeholderLabel());
+            Label placeholder = new Label("🖼️");
+            placeholder.setStyle("-fx-font-size: 40px;");
+            imgContainer.getChildren().add(placeholder);
         }
 
         VBox info = new VBox(6);
@@ -1279,47 +1301,36 @@ public class FitnessDashboardController implements Initializable {
 
         info.getChildren().addAll(nomLabel, catLabel, prixLabel);
         card.getChildren().addAll(imgContainer, info);
-
         return card;
     }
 
-    private Label placeholderLabel() {
-        Label lbl = new Label("🖼️");
-        lbl.setStyle("-fx-font-size: 40px;");
-        return lbl;
-    }
-
-    // ═════════════════════════════════════════════════════════════════
-    //  COURS
-    // ═════════════════════════════════════════════════════════════════
-
     private void populateCourses() {
         allCourses.addAll(List.of(
-                new Course("🇪🇸", "Spanish B2",         "Alejandro Velazquez", 83, 4.8, false, true),
-                new Course("🐍", "Python Avancé",        "Sophie Martin",       60, 4.9, true,  true),
-                new Course("🎨", "UI/UX Design",         "Léa Bernard",         45, 4.7, true,  false),
-                new Course("📊", "Data Science",         "Marc Dupont",         30, 4.6, false, true),
-                new Course("🇬🇧", "English C1",          "Emily Watson",        92, 4.5, false, false),
-                new Course("🧠", "Machine Learning",     "Karim Bensalem",      15, 5.0, true,  true),
-                new Course("🎸", "Guitare Classique",    "Pierre Moreau",       70, 4.4, false, false),
-                new Course("📱", "Flutter Mobile",       "Amira Khalil",        50, 4.8, true,  false),
-                new Course("🔐", "Cybersécurité",        "Julien Roux",         25, 4.7, true,  true),
-                new Course("📸", "Photographie",         "Céline Petit",        80, 4.3, false, false),
-                new Course("🇩🇪", "Allemand A2",         "Hans Müller",         10, 4.2, true,  false),
-                new Course("🧮", "Algorithmique",        "Nadia Benali",        65, 4.9, false, true),
-                new Course("🌐", "Développement Web",    "Tom Leroy",           55, 4.6, false, true),
-                new Course("🎬", "Montage Vidéo",        "Clara Simon",         35, 4.5, true,  false),
-                new Course("📝", "Rédaction Web",        "Isabelle Gautier",    40, 4.4, false, false)
+                new Course("🇪🇸", "Spanish B2", "Alejandro Velazquez", 83, 4.8, false, true),
+                new Course("🐍", "Python Avancé", "Sophie Martin", 60, 4.9, true, true),
+                new Course("🎨", "UI/UX Design", "Léa Bernard", 45, 4.7, true, false),
+                new Course("📊", "Data Science", "Marc Dupont", 30, 4.6, false, true),
+                new Course("🇬🇧", "English C1", "Emily Watson", 92, 4.5, false, false),
+                new Course("🧠", "Machine Learning", "Karim Bensalem", 15, 5.0, true, true),
+                new Course("🎸", "Guitare Classique", "Pierre Moreau", 70, 4.4, false, false),
+                new Course("📱", "Flutter Mobile", "Amira Khalil", 50, 4.8, true, false),
+                new Course("🔐", "Cybersécurité", "Julien Roux", 25, 4.7, true, true),
+                new Course("📸", "Photographie", "Céline Petit", 80, 4.3, false, false),
+                new Course("🇩🇪", "Allemand A2", "Hans Müller", 10, 4.2, true, false),
+                new Course("🧮", "Algorithmique", "Nadia Benali", 65, 4.9, false, true),
+                new Course("🌐", "Développement Web", "Tom Leroy", 55, 4.6, false, true),
+                new Course("🎬", "Montage Vidéo", "Clara Simon", 35, 4.5, true, false),
+                new Course("📝", "Rédaction Web", "Isabelle Gautier", 40, 4.4, false, false)
         ));
     }
 
     private void initStats() {
-        long completed  = allCourses.stream().filter(c -> c.progress() == 100).count();
+        long completed = allCourses.stream().filter(c -> c.progress() == 100).count();
         long inProgress = allCourses.stream().filter(c -> c.progress() > 0 && c.progress() < 100).count();
-        int  totalH     = allCourses.stream().mapToInt(c -> c.progress() / 2).sum();
+        int totalH = allCourses.stream().mapToInt(c -> c.progress() / 2).sum();
 
-        lblCompleted.setText(String.valueOf(completed  == 0 ? 11 : completed));
-        lblInProgress.setText(String.valueOf(inProgress == 0 ? 4  : inProgress));
+        lblCompleted.setText(String.valueOf(completed == 0 ? 11 : completed));
+        lblInProgress.setText(String.valueOf(inProgress == 0 ? 4 : inProgress));
         lblHours.setText(totalH + "h");
         lblBadges.setText("🏆 " + (completed + 1));
 
@@ -1335,14 +1346,18 @@ public class FitnessDashboardController implements Initializable {
 
     private void renderCourseList(String filter) {
         courseList.getChildren().clear();
-        allCourses.stream()
+        List<Course> filtered = allCourses.stream()
                 .filter(c -> switch (filter) {
-                    case "new"     -> c.isNew();
-                    case "top"     -> c.rating() >= 4.7;
+                    case "new" -> c.isNew();
+                    case "top" -> c.rating() >= 4.7;
                     case "popular" -> c.isPopular();
-                    default        -> true;
+                    default -> true;
                 })
-                .forEach(c -> courseList.getChildren().add(buildCourseRow(c)));
+                .toList();
+
+        for (Course c : filtered) {
+            courseList.getChildren().add(buildCourseRow(c));
+        }
     }
 
     private HBox buildCourseRow(Course c) {
@@ -1363,7 +1378,7 @@ public class FitnessDashboardController implements Initializable {
         emoji.setStyle("-fx-font-size: 22px;");
 
         VBox info = new VBox(2);
-        Label name   = new Label(c.name());
+        Label name = new Label(c.name());
         name.setStyle("-fx-font-weight: bold; -fx-font-size: 13px;");
         Label author = new Label("par " + c.author());
         author.setStyle("-fx-font-size: 11px; -fx-text-fill: #888;");
@@ -1418,7 +1433,8 @@ public class FitnessDashboardController implements Initializable {
     @FXML public void handleContinue(ActionEvent e) {
         List<Course> list = getInProgressCourses();
         if (list.isEmpty()) return;
-        showAlert("Continuer", "Reprise du cours : " + list.get(currentCourseIndex).name() + " 🚀");
+        Course c = list.get(currentCourseIndex);
+        showAlert("Continuer", "Reprise du cours : " + c.name() + " 🚀");
     }
 
     @FXML public void handleFilter(ActionEvent e) {
@@ -1426,20 +1442,17 @@ public class FitnessDashboardController implements Initializable {
         currentFilter = (String) src.getUserData();
         renderCourseList(currentFilter);
 
-        String activeStyle   = "-fx-background-color: transparent; -fx-text-fill: #111;"
+        String activeStyle = "-fx-background-color: transparent; -fx-text-fill: #111;"
                 + " -fx-font-weight: bold; -fx-cursor: hand; -fx-padding: 4 0;"
                 + " -fx-border-color: transparent transparent #111 transparent;"
                 + " -fx-border-width: 0 0 2 0;";
         String inactiveStyle = "-fx-background-color: transparent; -fx-text-fill: #888;"
                 + " -fx-cursor: hand; -fx-padding: 4 0;";
 
-        for (Button b : List.of(filterAll, filterNew, filterTop, filterPopular))
+        for (Button b : List.of(filterAll, filterNew, filterTop, filterPopular)) {
             b.setStyle(b == src ? activeStyle : inactiveStyle);
+        }
     }
-
-    // ═════════════════════════════════════════════════════════════════
-    //  CHART
-    // ═════════════════════════════════════════════════════════════════
 
     private void initChart() {
         weeklyFilter.setItems(FXCollections.observableArrayList(
@@ -1459,45 +1472,46 @@ public class FitnessDashboardController implements Initializable {
             double[] vals = {1.5, 2.0, 0.5, 3.0, 2.5, 4.0, 1.0};
             for (int i = 0; i < days.length; i++)
                 series.getData().add(new XYChart.Data<>(days[i], vals[i]));
-            yAxis.setUpperBound(5); yAxis.setTickUnit(1);
+            yAxis.setUpperBound(5);
+            yAxis.setTickUnit(1);
         } else {
             series.setName("Cours suivis");
             String[] weeks = {"S1", "S2", "S3", "S4"};
-            double[] vals  = {2, 4, 3, 5};
+            double[] vals = {2, 4, 3, 5};
             for (int i = 0; i < weeks.length; i++)
                 series.getData().add(new XYChart.Data<>(weeks[i], vals[i]));
-            yAxis.setUpperBound(7); yAxis.setTickUnit(1);
+            yAxis.setUpperBound(7);
+            yAxis.setTickUnit(1);
         }
         learningChart.getData().add(series);
     }
 
     @FXML public void handleChartTab(ActionEvent e) {
-        Button src  = (Button) e.getSource();
+        Button src = (Button) e.getSource();
         String type = (String) src.getUserData();
         loadChartData(type);
 
-        String activeStyle   = "-fx-background-color: transparent; -fx-font-weight: bold;"
+        String activeStyle = "-fx-background-color: transparent; -fx-font-weight: bold;"
                 + " -fx-font-size: 12px; -fx-text-fill: #111; -fx-cursor: hand;"
                 + " -fx-border-color: transparent transparent #111 transparent;"
                 + " -fx-border-width: 0 0 2 0;";
         String inactiveStyle = "-fx-background-color: transparent; -fx-font-size: 12px;"
                 + " -fx-text-fill: #aaa; -fx-cursor: hand;";
 
-        chartTabHours.setStyle("hours".equals(type)   ? activeStyle : inactiveStyle);
+        chartTabHours.setStyle("hours".equals(type) ? activeStyle : inactiveStyle);
         chartTabCourses.setStyle("courses".equals(type) ? activeStyle : inactiveStyle);
     }
 
     @FXML public void handlePeriodChange(ActionEvent e) {
-        loadChartData("hours");
+        loadChartData("hours".equals(chartTabHours.getUserData()) ? "hours" : "courses");
     }
-
-    // ═════════════════════════════════════════════════════════════════
-    //  RECHERCHE
-    // ═════════════════════════════════════════════════════════════════
 
     @FXML public void handleSearch(KeyEvent e) {
         String query = searchField.getText().trim().toLowerCase();
-        if (query.isEmpty()) { renderCourseList(currentFilter); return; }
+        if (query.isEmpty()) {
+            renderCourseList(currentFilter);
+            return;
+        }
         courseList.getChildren().clear();
         allCourses.stream()
                 .filter(c -> c.name().toLowerCase().contains(query)
@@ -1505,18 +1519,14 @@ public class FitnessDashboardController implements Initializable {
                 .forEach(c -> courseList.getChildren().add(buildCourseRow(c)));
     }
 
-    // ═════════════════════════════════════════════════════════════════
-    //  MESSAGES
-    // ═════════════════════════════════════════════════════════════════
-
     private void initMessages() {
         messageList.getChildren().clear();
         List<String[]> msgs = List.of(
-                new String[]{"👩‍🏫", "Sophie Martin",       "Votre progression en Python est excellente !", "Il y a 5 min", "true"},
-                new String[]{"🤖", "Système",              "Nouveau badge débloqué : ⚡ Rapide !",           "Il y a 1 h",   "true"},
-                new String[]{"👨‍💼", "Marc Dupont",         "Avez-vous terminé le module 4 en Data Science ?", "Hier",        "false"},
-                new String[]{"🎓", "Alejandro Velazquez",  "¡ Muy bien ! Continuez ainsi en espagnol.",      "Il y a 2 j",  "false"},
-                new String[]{"🔔", "Système",              "Rappel : cours de Machine Learning demain à 10h.", "Il y a 3 j", "false"}
+                new String[]{"👩‍🏫", "Sophie Martin", "Votre progression en Python est excellente !", "Il y a 5 min", String.valueOf(true)},
+                new String[]{"🤖", "Système", "Nouveau badge débloqué : ⚡ Rapide !", "Il y a 1 h", String.valueOf(true)},
+                new String[]{"👨‍💼", "Marc Dupont", "Avez-vous terminé le module 4 en Data Science ?", "Hier", String.valueOf(false)},
+                new String[]{"🎓", "Alejandro Velazquez", "¡ Muy bien ! Continuez ainsi en espagnol.", "Il y a 2 j", String.valueOf(false)},
+                new String[]{"🔔", "Système", "Rappel : cours de Machine Learning demain à 10h.", "Il y a 3 j", String.valueOf(false)}
         );
         msgs.forEach(m -> messageList.getChildren().add(buildMessageRow(m)));
     }
@@ -1531,42 +1541,45 @@ public class FitnessDashboardController implements Initializable {
 
         Label avatar = new Label(m[0]);
         avatar.setStyle("-fx-font-size: 26px; -fx-background-color: #eeeeee;"
-                + "-fx-background-radius: 50%; -fx-min-width: 46; -fx-min-height: 46; -fx-alignment: center;");
+                + "-fx-background-radius: 50%; -fx-min-width: 46; -fx-min-height: 46;"
+                + "-fx-alignment: center;");
 
         VBox body = new VBox(3);
         HBox.setHgrow(body, Priority.ALWAYS);
-        Label sender  = new Label(m[1]); sender.setStyle("-fx-font-weight: bold; -fx-font-size: 13px;");
-        Label content = new Label(m[2]); content.setStyle("-fx-font-size: 12px; -fx-text-fill: #555;");
+        Label sender = new Label(m[1]);
+        sender.setStyle("-fx-font-weight: bold; -fx-font-size: 13px;");
+        Label content = new Label(m[2]);
+        content.setStyle("-fx-font-size: 12px; -fx-text-fill: #555;");
         body.getChildren().addAll(sender, content);
 
-        VBox right = new VBox(4); right.setAlignment(Pos.TOP_RIGHT);
-        Label time = new Label(m[3]); time.setStyle("-fx-font-size: 10px; -fx-text-fill: #aaa;");
+        VBox right = new VBox(4);
+        right.setAlignment(Pos.TOP_RIGHT);
+        Label time = new Label(m[3]);
+        time.setStyle("-fx-font-size: 10px; -fx-text-fill: #aaa;");
         right.getChildren().add(time);
         if ("true".equals(m[4])) {
-            Label dot = new Label("●"); dot.setStyle("-fx-text-fill: #4f46e5; -fx-font-size: 10px;");
+            Label dot = new Label("●");
+            dot.setStyle("-fx-text-fill: #4f46e5; -fx-font-size: 10px;");
             right.getChildren().add(dot);
         }
+
         row.getChildren().addAll(avatar, body, right);
         return row;
     }
 
-    // ═════════════════════════════════════════════════════════════════
-    //  PARAMÈTRES
-    // ═════════════════════════════════════════════════════════════════
-
     private void initSettings() {
         List<String[]> notifSettings = List.of(
-                new String[]{"Notifications push",          "true"},
-                new String[]{"Rappels de cours",            "true"},
-                new String[]{"Nouveaux badges",             "true"},
-                new String[]{"Messages des instructeurs",   "false"}
+                new String[]{"Notifications push", "true"},
+                new String[]{"Rappels de cours", "true"},
+                new String[]{"Nouveaux badges", "true"},
+                new String[]{"Messages des instructeurs", "false"}
         );
         List<String[]> privacySettings = List.of(
-                new String[]{"Profil public",               "false"},
-                new String[]{"Partager ma progression",     "true"},
-                new String[]{"Afficher mes badges",         "true"}
+                new String[]{"Profil public", "false"},
+                new String[]{"Partager ma progression", "true"},
+                new String[]{"Afficher mes badges", "true"}
         );
-        notifSettings.forEach(s  -> settingsNotifList.getChildren().add(buildSettingRow(s[0], "true".equals(s[1]))));
+        notifSettings.forEach(s -> settingsNotifList.getChildren().add(buildSettingRow(s[0], "true".equals(s[1]))));
         privacySettings.forEach(s -> settingsPrivacyList.getChildren().add(buildSettingRow(s[0], "true".equals(s[1]))));
     }
 
@@ -1574,12 +1587,17 @@ public class FitnessDashboardController implements Initializable {
         HBox row = new HBox();
         row.setAlignment(Pos.CENTER_LEFT);
         row.setPrefHeight(44);
-        row.setStyle("-fx-border-color: transparent transparent #f0f0f0 transparent; -fx-border-width: 0 0 1 0;");
+        row.setStyle("-fx-border-color: transparent transparent #f0f0f0 transparent;"
+                + "-fx-border-width: 0 0 1 0;");
 
-        Label lbl = new Label(label); lbl.setStyle("-fx-font-size: 13px;");
+        Label lbl = new Label(label);
+        lbl.setStyle("-fx-font-size: 13px;");
         HBox.setHgrow(lbl, Priority.ALWAYS);
 
-        CheckBox cb = new CheckBox(); cb.setSelected(defaultVal); cb.setStyle("-fx-cursor: hand;");
+        CheckBox cb = new CheckBox();
+        cb.setSelected(defaultVal);
+        cb.setStyle("-fx-cursor: hand;");
+
         row.getChildren().addAll(lbl, cb);
         return row;
     }
@@ -1592,25 +1610,40 @@ public class FitnessDashboardController implements Initializable {
         ButtonType confirmerBtn = new ButtonType("Confirmer", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(confirmerBtn, ButtonType.CANCEL);
 
-        PasswordField newMdp     = new PasswordField(); newMdp.setPromptText("Nouveau mot de passe");
-        PasswordField confirmMdp = new PasswordField(); confirmMdp.setPromptText("Confirmer le mot de passe");
+        PasswordField newMdp     = new PasswordField();
+        newMdp.setPromptText("Nouveau mot de passe");
+        PasswordField confirmMdp = new PasswordField();
+        confirmMdp.setPromptText("Confirmer le mot de passe");
 
         VBox content = new VBox(10,
                 new Label("Nouveau mot de passe :"), newMdp,
-                new Label("Confirmer :"), confirmMdp);
+                new Label("Confirmer :"), confirmMdp
+        );
         content.setPadding(new Insets(10));
         dialog.getDialogPane().setContent(content);
         dialog.setResultConverter(btn -> btn == confirmerBtn ? newMdp.getText() : null);
 
         dialog.showAndWait().ifPresent(mdp -> {
-            if (mdp.isEmpty()) { showAlert("Erreur", "Le mot de passe ne peut pas être vide."); return; }
-            if (!mdp.equals(confirmMdp.getText())) { showAlert("Erreur", "Les mots de passe ne correspondent pas."); return; }
-            if (!Validation.validerMotDePasse(mdp)) { showAlert("Erreur", Validation.messageMotDePasse(mdp)); return; }
+            if (mdp.isEmpty()) {
+                showAlert("Erreur", "Le mot de passe ne peut pas être vide.");
+                return;
+            }
+            if (!mdp.equals(confirmMdp.getText())) {
+                showAlert("Erreur", "Les mots de passe ne correspondent pas.");
+                return;
+            }
+            if (!Validation.validerMotDePasse(mdp)) {
+                showAlert("Erreur", Validation.messageMotDePasse(mdp));
+                return;
+            }
             try {
                 utilisateurConnecte.setMotDePasse(mdp);
-                new UtilisateurService().updateEntity(utilisateurConnecte.getId().intValue(), utilisateurConnecte);
+                UtilisateurService service = new UtilisateurService();
+                service.updateEntity(utilisateurConnecte.getId().intValue(), utilisateurConnecte);
                 showAlert("✅ Succès", "Mot de passe changé avec succès !");
-            } catch (SQLException ex) { showAlert("❌ Erreur", "Erreur : " + ex.getMessage()); }
+            } catch (SQLException ex) {
+                showAlert("❌ Erreur", "Erreur : " + ex.getMessage());
+            }
         });
     }
 
@@ -1622,7 +1655,8 @@ public class FitnessDashboardController implements Initializable {
         confirm.showAndWait().ifPresent(r -> {
             if (r == ButtonType.OK) {
                 try {
-                    new UtilisateurService().deleteEntity(utilisateurConnecte);
+                    UtilisateurService service = new UtilisateurService();
+                    service.deleteEntity(utilisateurConnecte);
                     showAlert("Compte supprimé", "Votre compte a été supprimé. Au revoir !");
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/login.fxml"));
                     Parent root = loader.load();
@@ -1636,10 +1670,6 @@ public class FitnessDashboardController implements Initializable {
             }
         });
     }
-
-    // ═════════════════════════════════════════════════════════════════
-    //  GRILLE DES COURS
-    // ═════════════════════════════════════════════════════════════════
 
     private void initAllCoursesGrid() {
         allCoursesGrid.getChildren().clear();
@@ -1660,9 +1690,14 @@ public class FitnessDashboardController implements Initializable {
                 "-fx-background-color: white; -fx-background-radius: 16;"
                         + "-fx-border-color: #f0f0f0; -fx-border-radius: 16; -fx-cursor: hand;"));
 
-        Label emoji  = new Label(c.emoji());  emoji.setStyle("-fx-font-size: 30px;");
-        Label name   = new Label(c.name());   name.setStyle("-fx-font-weight: bold; -fx-font-size: 13px; -fx-wrap-text: true;");
-        Label author = new Label("par " + c.author()); author.setStyle("-fx-font-size: 11px; -fx-text-fill: #888;");
+        Label emoji = new Label(c.emoji());
+        emoji.setStyle("-fx-font-size: 30px;");
+
+        Label name = new Label(c.name());
+        name.setStyle("-fx-font-weight: bold; -fx-font-size: 13px; -fx-wrap-text: true;");
+
+        Label author = new Label("par " + c.author());
+        author.setStyle("-fx-font-size: 11px; -fx-text-fill: #888;");
 
         ProgressBar pb = new ProgressBar(c.progress() / 100.0);
         pb.setPrefWidth(Double.MAX_VALUE);
@@ -1679,25 +1714,24 @@ public class FitnessDashboardController implements Initializable {
             tags.getChildren().add(n);
         }
         if (c.isPopular()) {
-            Label pop = new Label("🔥 Populaire");
-            pop.setStyle("-fx-background-color: #fff3e0; -fx-text-fill: #e65100; -fx-padding: 2 7;"
+            Label p = new Label("🔥 Populaire");
+            p.setStyle("-fx-background-color: #fff3e0; -fx-text-fill: #e65100; -fx-padding: 2 7;"
                     + "-fx-background-radius: 20; -fx-font-size: 10px;");
-            tags.getChildren().add(pop);
+            tags.getChildren().add(p);
         }
 
         card.getChildren().addAll(emoji, name, author, pb, pct, tags);
         return card;
     }
 
-    // ═════════════════════════════════════════════════════════════════
-    //  PROFIL
-    // ═════════════════════════════════════════════════════════════════
-
     @FXML public void handleSaveProfile(ActionEvent e) {
         String prenom = fieldFirstName.getText().trim();
         String nom    = fieldLastName.getText().trim();
         String email  = fieldEmail.getText().trim();
 
+        // ═══════════════════════════════
+        // CONTRÔLE DE SAISIE
+        // ═══════════════════════════════
         String msgPrenom = Validation.messageNom(prenom);
         String msgNom    = Validation.messageNom(nom);
         String msgEmail  = Validation.messageEmail(email);
@@ -1723,7 +1757,8 @@ public class FitnessDashboardController implements Initializable {
         utilisateurConnecte.setEmail(email);
 
         try {
-            new UtilisateurService().updateEntity(utilisateurConnecte.getId().intValue(), utilisateurConnecte);
+            UtilisateurService service = new UtilisateurService();
+            service.updateEntity(utilisateurConnecte.getId().intValue(), utilisateurConnecte);
             profileFullName.setText(nom + " " + prenom);
             lblGreeting.setText("Bonjour, " + prenom + " !");
             showAlert("✅ Succès", "Votre profil a été mis à jour avec succès !");
@@ -1732,12 +1767,13 @@ public class FitnessDashboardController implements Initializable {
         }
     }
 
-    // ═════════════════════════════════════════════════════════════════
-    //  DIVERS
-    // ═════════════════════════════════════════════════════════════════
+    @FXML public void handleNotif(ActionEvent e) {
+        showAlert("Notifications", "🔔 Vous avez 3 nouvelles notifications.");
+    }
 
-    @FXML public void handleNotif(ActionEvent e)    { showAlert("Notifications", "🔔 Vous avez 3 nouvelles notifications."); }
-    @FXML public void handlePremium(ActionEvent e)  { showAlert("Premium", "🌟 Passez Premium pour 9,99 € / mois et accédez à plus de 500 cours !"); }
+    @FXML public void handlePremium(ActionEvent e) {
+        showAlert("Premium", "🌟 Passez Premium pour 9,99 € / mois et accédez à plus de 500 cours !");
+    }
 
     @FXML public void handleLogout(ActionEvent e) {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
@@ -1752,9 +1788,49 @@ public class FitnessDashboardController implements Initializable {
                     stage.setScene(new Scene(root));
                     stage.setTitle("StudyFlow — Login");
                     stage.show();
-                } catch (IOException ex) { ex.printStackTrace(); }
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
             }
         });
+    }
+
+    @FXML
+    public void handleConsulterMedecin(ActionEvent e) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ajouteetudiant.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Ajouter Étudiant - Consultation Médecin");
+            stage.setScene(new Scene(root));
+            stage.setResizable(false);
+            stage.show();
+        } catch (java.io.IOException ex) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Erreur");
+            alert.setHeaderText("Impossible d'ouvrir le formulaire");
+            alert.setContentText(ex.getMessage());
+            alert.showAndWait();
+        }
+    }
+
+    @FXML
+    public void handleCalculerScore(ActionEvent e) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/AjouterStressSurveyEtudiant.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Calculer mon score - Stress Survey");
+            stage.setScene(new Scene(root));
+            stage.setResizable(false);
+            stage.show();
+        } catch (java.io.IOException ex) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Erreur");
+            alert.setHeaderText("Impossible d'ouvrir le formulaire");
+            alert.setContentText(ex.getMessage());
+            alert.showAndWait();
+        }
     }
 
     private void showAlert(String title, String message) {

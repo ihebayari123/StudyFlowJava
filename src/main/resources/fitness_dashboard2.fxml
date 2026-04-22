@@ -436,6 +436,7 @@
                     <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
                     <Label text="Modifier le profil"
                            style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+                    <!-- ✅ Après -->
                     <Label text="Prénom" style="-fx-font-size: 11px; -fx-text-fill: #888;"/>
                     <TextField fx:id="fieldFirstName" text="Josh"
                                style="-fx-border-radius: 8; -fx-background-radius: 8;
