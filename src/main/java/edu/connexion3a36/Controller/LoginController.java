@@ -31,7 +31,6 @@ public class LoginController {
     @FXML private Label motDePasseError;
     @FXML private Label loginError;
 
-    // Face Recognition
     @FXML private VBox webcamSection;
     @FXML private ImageView webcamView;
     @FXML private Label faceStatusLabel;
@@ -39,12 +38,7 @@ public class LoginController {
     private WebcamCaptureUtil webcam = new WebcamCaptureUtil();
     private ScheduledExecutorService faceScanner;
     UtilisateurService service = new UtilisateurService();
-    private int tentativesEchouees = 0;
-    private static final int MAX_TENTATIVES = 3;
 
-    // ═══════════════════════════════
-    // INITIALISATION
-    // ═══════════════════════════════
     @FXML
     public void initialize() {
         loginError.setVisible(false);
@@ -63,9 +57,6 @@ public class LoginController {
         });
     }
 
-    // ═══════════════════════════════
-    // SE CONNECTER (normal)
-    // ═══════════════════════════════
     @FXML
     void seConnecter(ActionEvent event) {
         String email = emailField.getText().trim();
@@ -99,29 +90,20 @@ public class LoginController {
         }
     }
 
-    // ═══════════════════════════════
-    // SE CONNECTER AVEC VISAGE
-    // ═══════════════════════════════
     @FXML
     void seConnecterAvecVisage(ActionEvent event) {
-        // Afficher la section webcam
         webcamSection.setVisible(true);
         webcamSection.setManaged(true);
 
         faceStatusLabel.setText("📷 Regardez la caméra...");
         faceStatusLabel.setStyle("-fx-text-fill: #2196F3; -fx-font-size: 12;");
 
-        // Démarrer la webcam
         webcam.startCamera(webcamView);
 
-        // Scanner automatiquement toutes les 2 secondes
         faceScanner = Executors.newSingleThreadScheduledExecutor();
         faceScanner.scheduleAtFixedRate(() -> {
             try {
-                // Capturer photo
                 String imagePath = webcam.capturePhoto();
-
-                // Récupérer tous les utilisateurs avec face encoding
                 List<Utilisateur> users = service.getAllUsersWithFace();
 
                 if (users.isEmpty()) {
@@ -132,15 +114,12 @@ public class LoginController {
                     return;
                 }
 
-                // Comparer avec chaque utilisateur
-                // Comparer avec chaque utilisateur
                 for (Utilisateur u : users) {
                     FaceRecognitionUtil.FaceResult result = FaceRecognitionUtil.recognizeFace(
                             imagePath, u.getFaceEncoding()
                     );
 
                     if (result.match) {
-                        // Vérifier statut compte
                         if (u.getStatutCompte().equals("BLOQUE")) {
                             Platform.runLater(() ->
                                     afficherErreurGlobale("🔒 Compte bloqué. Contactez un administrateur.")
@@ -149,7 +128,6 @@ public class LoginController {
                             return;
                         }
 
-                        // Reset tentatives après succès
                         service.resetFaceAttempts(u.getId());
 
                         String confidence = String.format("%.1f", result.confidence);
@@ -162,29 +140,10 @@ public class LoginController {
                         Thread.sleep(1000);
                         Platform.runLater(() -> redirigerVersTableauDeBord(u));
                         return;
-                    } else {
-                        tentativesEchouees++;
-
-                        if (tentativesEchouees >= MAX_TENTATIVES) {
-                            Platform.runLater(() -> {
-                                faceStatusLabel.setText("🔒 Trop de tentatives !");
-                                faceStatusLabel.setStyle("-fx-text-fill: #F44336; -fx-font-weight: bold;");
-                                afficherErreurGlobale("🔒 3 tentatives de reconnaissance échouées. Utilisez votre email et mot de passe.");
-                                webcamSection.setVisible(false);
-                                webcamSection.setManaged(false);
-                            });
-                            arreterScanner();
-                            return;
-                        }
-
-                        int restantes = MAX_TENTATIVES - tentativesEchouees;
-                        Platform.runLater(() -> {
-                            faceStatusLabel.setText("⚠ Visage non reconnu — " + restantes + " tentative(s) restante(s)");
-                            faceStatusLabel.setStyle("-fx-text-fill: #FF9800;");
-                        });
                     }
                 }
 
+                // Aucun visage reconnu — continuer à scanner
                 Platform.runLater(() -> {
                     faceStatusLabel.setText("🔍 Recherche en cours...");
                     faceStatusLabel.setStyle("-fx-text-fill: #757575;");
@@ -199,9 +158,6 @@ public class LoginController {
         }, 1, 2, TimeUnit.SECONDS);
     }
 
-    // ═══════════════════════════════
-    // ANNULER RECONNAISSANCE
-    // ═══════════════════════════════
     @FXML
     void annulerReconnaissance(ActionEvent event) {
         arreterScanner();
@@ -211,20 +167,15 @@ public class LoginController {
     }
 
     private void arreterScanner() {
-        tentativesEchouees = 0;
         if (faceScanner != null && !faceScanner.isShutdown()) {
             faceScanner.shutdown();
         }
         webcam.stopCamera();
     }
 
-    // ═══════════════════════════════
-    // REDIRECTION SELON ROLE
-    // ═══════════════════════════════
     private void redirigerVersTableauDeBord(Utilisateur u) {
         try {
             String fxml = u.getRole().equals("ETUDIANT") ? "/fitness_dashboard2.fxml" : "/studyflow.fxml";
-
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxml));
             Parent root = loader.load();
 
@@ -246,9 +197,6 @@ public class LoginController {
         }
     }
 
-    // ═══════════════════════════════
-    // FEEDBACK VISUEL
-    // ═══════════════════════════════
     private void afficherErreur(Label label, TextField field, String message) {
         if (message == null || message.isEmpty()) {
             label.setText("");
