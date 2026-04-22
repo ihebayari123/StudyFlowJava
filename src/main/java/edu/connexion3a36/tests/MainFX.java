@@ -15,10 +15,10 @@ public class MainFX extends Application {
         launch(args);
     }
 
-
     @Override
     public void start(Stage primaryStage) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/login.fxml"));
+
         //FXMLLoader loader = new FXMLLoader(getClass().getResource("/fitness_dashboard2.fxml"));
         Parent root = loader.load();
         Scene sc = new Scene(root);
@@ -34,6 +34,7 @@ public class MainFX extends Application {
 
         primaryStage.show();
     }
+
     @Override
     public void stop() throws Exception {
         AppContext.stopAllCameras();

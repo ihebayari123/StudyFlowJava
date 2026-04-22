@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.geometry.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="edu.connexion3a36.controllers.EventListController"
+      spacing="0"
+      style="-fx-background-color: #f0f4f8;">
+
+    <!-- ── HEADER ── -->
+    <HBox alignment="CENTER_LEFT" spacing="20"
+          style="-fx-background-color: linear-gradient(to right, #2979FF, #1565C0);
+                 -fx-padding: 24 30 24 30;">
+        <VBox spacing="4">
+            <Label text="🎉 Événements"
+                   style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+            <Label text="Découvrez tous les événements disponibles"
+                   style="-fx-font-size: 13px; -fx-text-fill: rgba(255,255,255,0.8);"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="➕ Gérer les événements" onAction="#handleGerer"
+                style="-fx-background-color: white; -fx-text-fill: #2979FF;
+                       -fx-font-weight: bold; -fx-font-size: 13px;
+                       -fx-padding: 10 20; -fx-background-radius: 20;
+                       -fx-cursor: hand;"/>
+    </HBox>
+
+    <!-- ── BARRE RECHERCHE ── -->
+    <HBox alignment="CENTER" style="-fx-padding: 20 30 10 30; -fx-background-color: #f0f4f8;">
+        <TextField fx:id="searchField"
+                   promptText="🔍  Rechercher un événement..."
+                   style="-fx-pref-width: 400; -fx-pref-height: 40;
+                          -fx-background-radius: 20; -fx-padding: 0 16;
+                          -fx-font-size: 13px; -fx-border-color: #ddd;
+                          -fx-border-radius: 20; -fx-background-color: white;"
+                   onKeyReleased="#handleRecherche"/>
+    </HBox>
+
+    <!-- ── GRILLE DES CARTES ── -->
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                style="-fx-background-color: transparent; -fx-background: transparent;
+                       -fx-border-color: transparent;">
+        <FlowPane fx:id="cardsContainer"
+                  hgap="20" vgap="20"
+                  style="-fx-padding: 20 30 30 30; -fx-background-color: #f0f4f8;"
+                  prefWrapLength="800"/>
+    </ScrollPane>
+
+</VBox>
