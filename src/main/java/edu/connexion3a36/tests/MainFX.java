@@ -17,9 +17,9 @@ public class MainFX extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/login.fxml"));
+        //FXMLLoader loader = new FXMLLoader(getClass().getResource("/login.fxml"));
 
-        //FXMLLoader loader = new FXMLLoader(getClass().getResource("/fitness_dashboard2.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/studyflow.fxml"));
         Parent root = loader.load();
         Scene sc = new Scene(root);
         primaryStage.setTitle("Fitness Dashboard");

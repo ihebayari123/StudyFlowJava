@@ -155,6 +155,25 @@ public class QuizController {
         }
     }
 
+    @FXML
+    public void ouvrirQuizAI() {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("/QuizAIView.fxml")
+            );
+            Node vue = loader.load();
+            QuizAIController aiCtrl = loader.getController();
+
+            StackPane parent = (StackPane) tableQuiz.getScene().lookup("#contentArea");
+            if (parent != null) {
+                aiCtrl.setContentArea(parent);
+                parent.getChildren().setAll(vue);
+            }
+        } catch (Exception e) {
+            erreur("Erreur navigation IA : " + e.getMessage());
+        }
+    }
+
     // ── Validation en temps réel ───────────────────────────────
 
     private boolean validerTitre(String val) {
