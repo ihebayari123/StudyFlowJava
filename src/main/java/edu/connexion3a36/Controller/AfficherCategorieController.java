@@ -69,7 +69,7 @@ public class AfficherCategorieController {
 
     private void setupSearchAndSort() {
 
-        // 🔍 RECHERCHE
+        //  RECHERCHE
         searchField.textProperty().addListener((obs, oldVal, newVal) -> {
             if (filteredData == null) return;
 

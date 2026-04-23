@@ -28,10 +28,8 @@ public class AjouterCategorieController {
         String nom = nomField.getText().trim();
         String desc = descField.getText().trim();
 
-        // ✅ Reset styles
         resetAllStyles();
 
-        // ✅ Contrôle nom
         if (nom.isEmpty()) {
             showError("❌ Le nom est obligatoire !");
             setFieldError(nomField);
@@ -49,21 +47,18 @@ public class AjouterCategorieController {
         }
 
 
-        // ✅ Contrôle caractères spéciaux nom
         if (!nom.matches("[a-zA-ZÀ-ÿ0-9 ]+")) {
             showError("❌ Le nom ne doit pas contenir de caractères spéciaux !");
             setFieldError(nomField);
             return;
         }
 
-// ✅ Contrôle caractères spéciaux description
         if (!desc.matches("[a-zA-ZÀ-ÿ0-9 .,!?'-]+")) {
             showError("❌ La description ne doit pas contenir de caractères spéciaux !");
             setAreaError(descField);
             return;
         }
 
-        // ✅ Contrôle description
         if (desc.isEmpty()) {
             showError("❌ La description est obligatoire !");
             setAreaError(descField);
@@ -75,7 +70,6 @@ public class AjouterCategorieController {
             return;
         }
 
-        // ✅ Tout valide → on ajoute
         try {
             TypeCategorie tc = new TypeCategorie(nom, desc);
             service.addCat(tc);

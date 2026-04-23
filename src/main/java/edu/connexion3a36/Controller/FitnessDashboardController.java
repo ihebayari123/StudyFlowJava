@@ -1,6 +1,10 @@
 package edu.connexion3a36.Controller;
 
+import edu.connexion3a36.entities.CartItem;
 import edu.connexion3a36.entities.Utilisateur;
+import edu.connexion3a36.services.CartService;
+import edu.connexion3a36.services.EmailService;
+import edu.connexion3a36.services.StripeService;
 import edu.connexion3a36.services.UtilisateurService;
 import edu.connexion3a36.utils.Validation;
 import edu.connexion3a36.models.Event;
@@ -59,16 +63,14 @@ public class FitnessDashboardController implements Initializable {
     // =========================================================================
     @FXML private Button btnHome, btnCourses, btnProfile, btnMessages,
             btnSettings, btnBoutique, btnRelax, btnQuiz,
-            btnEvents,   // branch
-            btnLogout;
+            btnEvents, btnLogout;
 
     // =========================================================================
     // FXML INJECTIONS — VIEWS
     // =========================================================================
     @FXML private VBox viewHome, viewProfile, viewMessages, viewSettings,
-            viewCourses, viewRelax, viewBoutique;
-    @FXML private VBox viewEvents;          // branch
-    @FXML private StackPane contentArea;    // quiz
+            viewCourses, viewRelax, viewBoutique, viewEvents;
+    @FXML private StackPane contentArea;
     @FXML private StackPane mainStackPane;
 
     // =========================================================================
@@ -109,13 +111,20 @@ public class FitnessDashboardController implements Initializable {
     @FXML private FlowPane allCoursesGrid;
 
     // =========================================================================
-    // FXML — BOUTIQUE
+    // FXML — BOUTIQUE & CART
     // =========================================================================
     @FXML private FlowPane  boutiqueProduitGrid;
     @FXML private TextField boutiqueSearchField;
+    @FXML private Label cartBadge;
+    @FXML private VBox viewCart;
+    @FXML private VBox cartItemList;
+    @FXML private Label cartTotalLabel;
+    @FXML private VBox viewCheckout;
+    @FXML private TextField checkoutNom, checkoutEmail, checkoutAdresse;
+    @FXML private Label checkoutTotalLabel;
 
     // =========================================================================
-    // FXML — RELAX (main version)
+    // FXML — RELAX
     // =========================================================================
     @FXML private Button btnConsulterMedecin;
     @FXML private Button btnCalculerScore;
@@ -125,7 +134,6 @@ public class FitnessDashboardController implements Initializable {
     @FXML private Button btnEnvoyerReclamation;
     @FXML private Button btnVip;
 
-    // ─── Nouvelles vues embarquées (main) ───────────────────────────────────
     @FXML private VBox viewMedecin;
     @FXML private VBox viewStress;
     @FXML private VBox viewCatchStress;
@@ -156,7 +164,7 @@ public class FitnessDashboardController implements Initializable {
     @FXML private Button btnEnvoyer;
 
     // =========================================================================
-    // FXML — EVENTS (branch)
+    // FXML — EVENTS
     // =========================================================================
     @FXML private TextField        eventSearchField;
     @FXML private FlowPane         eventCardsContainer;
@@ -164,57 +172,49 @@ public class FitnessDashboardController implements Initializable {
     @FXML private Label            eventCounterLabel, filterStatusLabel;
 
     // =========================================================================
-    // DATA — COURSES (main version record model)
+    // DATA MODELS
     // =========================================================================
     private record Course(String emoji, String name, String author,
                           int progress, double rating, boolean isNew, boolean isPopular) {}
 
-    private final List<Course> allCourses   = new ArrayList<>();
-    private       String       currentFilter      = "all";
-    private       int          currentCourseIndex = 0;
+    private final List<Course> allCourses = new ArrayList<>();
+    private String currentFilter = "all";
+    private int currentCourseIndex = 0;
 
-    // =========================================================================
-    // DATA — EVENTS (branch)
-    // =========================================================================
-    private final EventService   eventService   = new EventService();
+    private final EventService eventService = new EventService();
     private final SponsorService sponsorService = new SponsorService();
 
     private List<Event> tousLesEvents;
     private List<Event> eventsFiltres;
-    private String  currentTypeFilter  = "all";
-    private String  currentSortOrder   = "newest";
-    private boolean showFavoritesOnly  = false;
-    private boolean isGridView         = true;
+    private String currentTypeFilter = "all";
+    private boolean showFavoritesOnly = false;
+
+    private List<edu.connexion3a36.entities.Produit> allProduits = new ArrayList<>();
 
     private static final Map<String, String> TYPE_COLORS = new LinkedHashMap<>() {{
-        put("FORMATION",   "#4f8ef7");
-        put("ÉDUCATION",   "#4f8ef7");
-        put("EDUCATION",   "#4f8ef7");
-        put("CONFÉRENCE",  "#a855f7");
-        put("CONFERENCE",  "#a855f7");
-        put("WORKSHOP",    "#f59e0b");
-        put("SPORT",       "#22c55e");
-        put("SPORTIF",     "#22c55e");
-        put("CULTURE",     "#ec4899");
+        put("FORMATION", "#4f8ef7");
+        put("ÉDUCATION", "#4f8ef7");
+        put("EDUCATION", "#4f8ef7");
+        put("CONFÉRENCE", "#a855f7");
+        put("CONFERENCE", "#a855f7");
+        put("WORKSHOP", "#f59e0b");
+        put("SPORT", "#22c55e");
+        put("SPORTIF", "#22c55e");
+        put("CULTURE", "#ec4899");
         put("TECHNOLOGIE", "#06b6d4");
-        put("AUTRE",       "#f43f5e");
+        put("AUTRE", "#f43f5e");
     }};
-
-    // =========================================================================
-    // DATA — BOUTIQUE (main)
-    // =========================================================================
-    private List<edu.connexion3a36.entities.Produit> allProduits = new ArrayList<>();
 
     // =========================================================================
     // STATE
     // =========================================================================
     private Utilisateur utilisateurConnecte;
-    private Button      activeNavButton;
+    private Button activeNavButton;
     private Map<Button, VBox> navMap;
-    private List<Region> allViews;  // For showView with fade transitions
+    private List<Region> allViews;
 
     // =========================================================================
-    // setUtilisateurConnecte  (main version — full DB wiring)
+    // SETTER
     // =========================================================================
     public void setUtilisateurConnecte(Utilisateur u) {
         this.utilisateurConnecte = u;
@@ -224,9 +224,9 @@ public class FitnessDashboardController implements Initializable {
         String prenom = (u.getPrenom() != null && !u.getPrenom().isEmpty()) ? u.getPrenom() : u.getNom();
         lblGreeting.setText(greet + ", " + prenom + " !");
 
-        if (fieldFirstName  != null) fieldFirstName.setText(u.getPrenom());
-        if (fieldLastName   != null) fieldLastName.setText(u.getNom());
-        if (fieldEmail      != null) fieldEmail.setText(u.getEmail());
+        if (fieldFirstName != null) fieldFirstName.setText(u.getPrenom());
+        if (fieldLastName != null) fieldLastName.setText(u.getNom());
+        if (fieldEmail != null) fieldEmail.setText(u.getEmail());
         if (profileFullName != null) profileFullName.setText(u.getNom() + " " + u.getPrenom());
 
         fieldFirstName.textProperty().addListener((obs, old, val) -> {
@@ -276,19 +276,18 @@ public class FitnessDashboardController implements Initializable {
     }
 
     // =========================================================================
-    // NAVIGATION MAP
+    // NAVIGATION
     // =========================================================================
     private void buildNavMap() {
         navMap = new LinkedHashMap<>();
-        navMap.put(btnHome,     viewHome);
-        navMap.put(btnCourses,  viewCourses);
-        navMap.put(btnProfile,  viewProfile);
+        navMap.put(btnHome, viewHome);
+        navMap.put(btnCourses, viewCourses);
+        navMap.put(btnProfile, viewProfile);
         navMap.put(btnMessages, viewMessages);
         navMap.put(btnSettings, viewSettings);
-        navMap.put(btnRelax,    viewRelax);
+        navMap.put(btnRelax, viewRelax);
         navMap.put(btnBoutique, viewBoutique);
 
-        // Toutes les vues, y compris celles sans bouton sidebar (main)
         allViews = new ArrayList<>(navMap.values());
         if (viewMedecin != null) allViews.add(viewMedecin);
         if (viewStress != null) allViews.add(viewStress);
@@ -304,6 +303,8 @@ public class FitnessDashboardController implements Initializable {
         if (viewReclamation != null) allViews.add(viewReclamation);
         if (contentArea != null) allViews.add(contentArea);
         if (viewEvents != null) allViews.add(viewEvents);
+        if (viewCart != null) allViews.add(viewCart);
+        if (viewCheckout != null) allViews.add(viewCheckout);
     }
 
     @FXML
@@ -325,10 +326,6 @@ public class FitnessDashboardController implements Initializable {
         setActiveNav(src);
     }
 
-    /**
-     * Masque toutes les vues puis affiche la cible avec une transition fade.
-     * Accepte n'importe quel Region (VBox ou StackPane).
-     */
     private void showView(Region target) {
         for (Region v : allViews) {
             if (v != null) {
@@ -346,7 +343,6 @@ public class FitnessDashboardController implements Initializable {
     }
 
     private void showEventsView() {
-        // Hide all VBox views
         for (Region v : allViews) {
             if (v != null) {
                 v.setVisible(false);
@@ -361,20 +357,22 @@ public class FitnessDashboardController implements Initializable {
         setActiveNav(btnEvents);
 
         FadeTransition ft = new FadeTransition(Duration.millis(220), viewEvents);
-        ft.setFromValue(0); ft.setToValue(1); ft.play();
+        ft.setFromValue(0);
+        ft.setToValue(1);
+        ft.play();
 
         chargerEvents();
     }
 
     private void setActiveNav(Button active) {
         activeNavButton = active;
-        String activeStyle   = "-fx-font-size: 20px; -fx-background-color: #333333;"
+        String activeStyle = "-fx-font-size: 20px; -fx-background-color: #333333;"
                 + " -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 10;";
         String inactiveStyle = "-fx-font-size: 20px; -fx-background-color: transparent;"
                 + " -fx-text-fill: #888888; -fx-cursor: hand;";
 
         for (Button b : navMap.keySet()) b.setStyle(b == active ? activeStyle : inactiveStyle);
-        if (btnQuiz   != null) btnQuiz.setStyle(btnQuiz   == active ? activeStyle : inactiveStyle);
+        if (btnQuiz != null) btnQuiz.setStyle(btnQuiz == active ? activeStyle : inactiveStyle);
         if (btnEvents != null) btnEvents.setStyle(btnEvents == active ? activeStyle : inactiveStyle);
     }
 
@@ -406,45 +404,41 @@ public class FitnessDashboardController implements Initializable {
 
         if (contentArea != null) {
             FadeTransition ft = new FadeTransition(Duration.millis(220), contentArea);
-            ft.setFromValue(0); ft.setToValue(1); ft.play();
+            ft.setFromValue(0);
+            ft.setToValue(1);
+            ft.play();
         }
     }
 
-    @FXML public void goHome(ActionEvent e)  { showView(viewHome); setActiveNav(btnHome); }
-    @FXML public void goToProfile(javafx.scene.input.MouseEvent e) {
-        showView(viewProfile); setActiveNav(btnProfile);
+    @FXML
+    public void goHome(ActionEvent e) {
+        showView(viewHome);
+        setActiveNav(btnHome);
     }
 
-    /**
-     * Retour vers la vue Relaxation depuis viewMedecin ou viewStress.
-     */
+    @FXML
+    public void goToProfile(javafx.scene.input.MouseEvent e) {
+        showView(viewProfile);
+        setActiveNav(btnProfile);
+    }
+
     @FXML
     public void goToRelax(ActionEvent e) {
         showView(viewRelax);
         setActiveNav(btnRelax);
     }
 
-    /**
-     * Affiche viewMedecin (accessible depuis StressOptionsController).
-     */
     public void showViewMedecin() {
         showView(viewMedecin);
         setActiveNav(btnRelax);
     }
 
-    /**
-     * Retour vers viewMedecin (stress_options) depuis viewChatbot.
-     */
     @FXML
     public void goToMedecin(ActionEvent e) {
         showView(viewMedecin);
         setActiveNav(btnRelax);
     }
 
-    /**
-     * Ouvre le chatbot EduWell (happiness_chatbot.fxml) dans viewChatbot.
-     * Appelé par StressOptionsController via callback.
-     */
     public void handleOpenChatbot() {
         if (chatbotArea.getChildren().isEmpty()) {
             try {
@@ -463,10 +457,6 @@ public class FitnessDashboardController implements Initializable {
         setActiveNav(btnRelax);
     }
 
-    /**
-     * Ouvre cabinet_psychiatre.fxml dans viewCabinet.
-     * Appelé par StressOptionsController via callback.
-     */
     public void handleOpenCabinet() {
         if (cabinetArea.getChildren().isEmpty()) {
             try {
@@ -485,12 +475,7 @@ public class FitnessDashboardController implements Initializable {
         setActiveNav(btnRelax);
     }
 
-    /**
-     * Ouvre respiration.fxml dans viewRespiration.
-     * Appelé par StressOptionsController via callback.
-     */
     public void handleOpenRespiration() {
-        // Rechargé à chaque fois pour réinitialiser l'exercice
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/respiration.fxml"));
             Node vue = loader.load();
@@ -506,10 +491,6 @@ public class FitnessDashboardController implements Initializable {
         setActiveNav(btnRelax);
     }
 
-    /**
-     * Ouvre a_propos.fxml dans viewAPropos.
-     * Appelé par StressOptionsController via callback.
-     */
     public void handleOpenAPropos() {
         if (aProposArea.getChildren().isEmpty()) {
             try {
@@ -528,9 +509,6 @@ public class FitnessDashboardController implements Initializable {
         setActiveNav(btnRelax);
     }
 
-    /**
-     * Retour vers stress_options (viewMedecin) depuis cabinet/respiration/apropos/chatbot.
-     */
     @FXML
     public void goToStressOptions(ActionEvent e) {
         showView(viewMedecin);
@@ -538,12 +516,8 @@ public class FitnessDashboardController implements Initializable {
     }
 
     // =========================================================================
-    // VIP — PAIEMENT & ANALYSE SOMMEIL
+    // VIP
     // =========================================================================
-
-    /**
-     * Ouvre la page VIP (paiement) dans viewVip.
-     */
     @FXML
     public void handleVip(ActionEvent e) {
         if (vipArea.getChildren().isEmpty()) {
@@ -555,18 +529,12 @@ public class FitnessDashboardController implements Initializable {
         setActiveNav(btnRelax);
     }
 
-    /**
-     * Ouvre la page d'analyse de sommeil dans viewSleep.
-     * Appelé après paiement VIP réussi.
-     */
     public void handleOpenSleep() {
-        // Vérifier accès VIP
         if (!VipPaymentController.isVipActive()) {
             showView(viewVip);
             setActiveNav(btnRelax);
             return;
         }
-        // Recharger à chaque fois pour une nouvelle session
         SleepChatbotController ctrl = new SleepChatbotController();
         ctrl.setDashboardController(this);
         sleepArea.getChildren().setAll(ctrl.buildUI());
@@ -574,9 +542,6 @@ public class FitnessDashboardController implements Initializable {
         setActiveNav(btnRelax);
     }
 
-    /**
-     * Retour vers viewVip depuis viewSleep.
-     */
     @FXML
     public void goToVip(ActionEvent e) {
         showView(viewVip);
@@ -586,19 +551,12 @@ public class FitnessDashboardController implements Initializable {
     // =========================================================================
     // RÉCLAMATION
     // =========================================================================
-
-    /**
-     * Ouvre la vue de réclamation.
-     */
     @FXML
     public void handleEnvoyerReclamation(ActionEvent e) {
         showView(viewReclamation);
         setActiveNav(btnRelax);
     }
 
-    /**
-     * Envoie la réclamation via Twilio SMS.
-     */
     @FXML
     public void handleSendReclamation(ActionEvent e) {
         String message = reclamationTextArea.getText();
@@ -612,14 +570,12 @@ public class FitnessDashboardController implements Initializable {
         }
 
         try {
-            // Twilio credentials
-            String accountSid  = "aaa";
-            String authToken   = "bb";
-            String toNumber    = "+21652176756";
+            String accountSid = "aaa";
+            String authToken = "bb";
+            String toNumber = "+21652176756";
             String messagingSid = "MG132a322f96e964c43e508bba78e7bb84";
             String url = "https://api.twilio.com/2010-04-01/Accounts/" + accountSid + "/Messages.json";
 
-            // Construire la commande curl avec des arguments séparés
             ProcessBuilder pb = new ProcessBuilder(
                     "curl", "-s", "-w", "\n%{http_code}",
                     url,
@@ -632,11 +588,9 @@ public class FitnessDashboardController implements Initializable {
             pb.redirectErrorStream(true);
             Process process = pb.start();
 
-            // Lire la réponse complète
             String response = new String(process.getInputStream().readAllBytes());
             process.waitFor();
 
-            // Vérifier le code HTTP (dernière ligne)
             String[] lines = response.trim().split("\n");
             String httpCode = lines[lines.length - 1].trim();
 
@@ -653,12 +607,8 @@ public class FitnessDashboardController implements Initializable {
     }
 
     // =========================================================================
-    // RELAXATION — Consulter Médecin & Calculer Score
+    // RELAXATION
     // =========================================================================
-
-    /**
-     * Ouvre ajouteetudiant.fxml DANS le dashboard (viewMedecin).
-     */
     @FXML
     public void handleConsulterMedecin(ActionEvent e) {
         loadConsultationForm();
@@ -666,9 +616,6 @@ public class FitnessDashboardController implements Initializable {
         setActiveNav(btnRelax);
     }
 
-    /**
-     * Charge (ou recharge) ajouteetudiant.fxml dans medecinArea.
-     */
     public void loadConsultationForm() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ajouteetudiant.fxml"));
@@ -684,12 +631,8 @@ public class FitnessDashboardController implements Initializable {
         }
     }
 
-    /**
-     * Appelé par AjouterConsultationEtudiantController après enregistrement réussi.
-     */
     public void handleFormSubmitSuccess() {
-        // Afficher un message de succès
-        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Succès");
         alert.setHeaderText(null);
         alert.setContentText("✅ Consultation enregistrée avec succès !");
@@ -712,9 +655,6 @@ public class FitnessDashboardController implements Initializable {
         setActiveNav(btnRelax);
     }
 
-    /**
-     * Ouvre AjouterStressSurveyEtudiant.fxml DANS le dashboard (viewStress).
-     */
     @FXML
     public void handleCalculerScore(ActionEvent e) {
         if (stressArea.getChildren().isEmpty()) {
@@ -980,9 +920,6 @@ public class FitnessDashboardController implements Initializable {
         setActiveNav(btnRelax);
     }
 
-    /**
-     * Crée une carte d'exercice avec titre, durée et instructions
-     */
     private VBox createExerciseCard(String title, String duration, String[] steps,
                                     String bgColor, String accentColor) {
         VBox card = new VBox(12);
@@ -1198,7 +1135,7 @@ public class FitnessDashboardController implements Initializable {
     }
 
     // =========================================================================
-    // BOUTIQUE (main)
+    // BOUTIQUE
     // =========================================================================
     private void initBoutique() {
         try {
@@ -1263,15 +1200,27 @@ public class FitnessDashboardController implements Initializable {
 
         String imageUrl = p.getImage();
         boolean isValidUrl = false;
-        try { new java.net.URL(imageUrl); isValidUrl = true; } catch (Exception ignored) {}
+        try {
+            new java.net.URL(imageUrl);
+            isValidUrl = true;
+        } catch (Exception ignored) {
+        }
 
         if (isValidUrl && imageUrl != null && !imageUrl.trim().isEmpty()) {
             try {
                 Image image = new Image(imageUrl, 200, 130, false, true);
-                if (!image.isError()) { imageView.setImage(image); imgContainer.getChildren().add(imageView); }
-                else { imgContainer.getChildren().add(placeholderLabel("🖼️")); }
-            } catch (Exception ex) { imgContainer.getChildren().add(placeholderLabel("🖼️")); }
-        } else { imgContainer.getChildren().add(placeholderLabel("🖼️")); }
+                if (!image.isError()) {
+                    imageView.setImage(image);
+                    imgContainer.getChildren().add(imageView);
+                } else {
+                    imgContainer.getChildren().add(placeholderLabel("🖼️"));
+                }
+            } catch (Exception ex) {
+                imgContainer.getChildren().add(placeholderLabel("🖼️"));
+            }
+        } else {
+            imgContainer.getChildren().add(placeholderLabel("🖼️"));
+        }
 
         VBox info = new VBox(6);
         info.setPadding(new Insets(0, 14, 0, 14));
@@ -1283,13 +1232,169 @@ public class FitnessDashboardController implements Initializable {
         catLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #5c6bc0; -fx-background-color: #e8eaf6; -fx-background-radius: 20; -fx-padding: 3 8;");
         Label prixLabel = new Label(p.getPrix() + " DT");
         prixLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2979FF;");
-        info.getChildren().addAll(nomLabel, catLabel, prixLabel);
+
+        Button btnAjouter = new Button("＋ Ajouter");
+        String styleNormal = "-fx-background-color: #2979FF; -fx-text-fill: white;"
+                + "-fx-background-radius: 10; -fx-font-size: 12px;"
+                + "-fx-font-weight: bold; -fx-padding: 8 0; -fx-cursor: hand;";
+        String styleAdded = "-fx-background-color: #4CAF50; -fx-text-fill: white;"
+                + "-fx-background-radius: 10; -fx-font-size: 12px;"
+                + "-fx-font-weight: bold; -fx-padding: 8 0; -fx-cursor: hand;";
+
+        btnAjouter.setStyle(styleNormal);
+        btnAjouter.setMaxWidth(Double.MAX_VALUE);
+
+        btnAjouter.setOnAction(ev -> {
+            CartService.getInstance().ajouterProduit(p);
+            updateCartBadge();
+
+            btnAjouter.setText("✔ Ajouté !");
+            btnAjouter.setStyle(styleAdded);
+
+            PauseTransition pause = new PauseTransition(Duration.seconds(1.5));
+            pause.setOnFinished(e -> {
+                btnAjouter.setText("＋ Ajouter");
+                btnAjouter.setStyle(styleNormal);
+            });
+            pause.play();
+        });
+
+        info.getChildren().addAll(nomLabel, catLabel, prixLabel, btnAjouter);
         card.getChildren().addAll(imgContainer, info);
         return card;
     }
 
+    private void updateCartBadge() {
+        int n = CartService.getInstance().getNombreArticles();
+        if (cartBadge != null) {
+            cartBadge.setText(String.valueOf(n));
+            cartBadge.setVisible(n > 0);
+        }
+    }
+
+    @FXML
+    public void handleOpenCart(javafx.scene.input.MouseEvent e) {
+        showView(viewCart);
+        renderCart();
+        setActiveNav(btnBoutique);
+    }
+
+    @FXML
+    public void handleOpenBoutique(ActionEvent e) {
+        showView(viewBoutique);
+        setActiveNav(btnBoutique);
+    }
+
+    @FXML
+    public void handleViderCart(ActionEvent e) {
+        CartService.getInstance().vider();
+        updateCartBadge();
+        renderCart();
+    }
+
+    private void renderCart() {
+        cartItemList.getChildren().clear();
+        List<CartItem> items = CartService.getInstance().getItems();
+
+        if (items.isEmpty()) {
+            Label empty = new Label("🛒 Votre panier est vide.");
+            empty.setStyle("-fx-font-size: 15px; -fx-text-fill: #888; -fx-padding: 20;");
+            cartItemList.getChildren().add(empty);
+        } else {
+            items.forEach(item -> cartItemList.getChildren().add(buildCartRow(item)));
+        }
+        cartTotalLabel.setText(String.format("Total : %.2f DT", CartService.getInstance().getTotal()));
+    }
+
+    private HBox buildCartRow(CartItem item) {
+        HBox row = new HBox(14);
+        row.setAlignment(Pos.CENTER_LEFT);
+        row.setPadding(new Insets(14));
+        row.setStyle("-fx-background-color: white; -fx-background-radius: 14;" +
+                "-fx-border-color: #f0f0f0; -fx-border-radius: 14;");
+
+        Label nom = new Label(item.getProduit().getNom());
+        nom.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
+        HBox.setHgrow(nom, Priority.ALWAYS);
+
+        Label qte = new Label("x" + item.getQuantite());
+        qte.setStyle("-fx-font-size: 13px; -fx-text-fill: #666;");
+
+        Label prix = new Label(String.format("%.2f DT", item.getSousTotal()));
+        prix.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #2979FF;");
+
+        Button suppr = new Button("✕");
+        suppr.setStyle("-fx-background-color: #fff0f0; -fx-text-fill: #e24b4a;" +
+                "-fx-background-radius: 8; -fx-cursor: hand; -fx-padding: 4 8;");
+        suppr.setOnAction(e -> {
+            CartService.getInstance().supprimerItem(item);
+            updateCartBadge();
+            renderCart();
+        });
+
+        row.getChildren().addAll(nom, qte, prix, suppr);
+        return row;
+    }
+
+    @FXML
+    public void handlePayer(ActionEvent e) {
+        if (CartService.getInstance().getItems().isEmpty()) {
+            showAlert("Panier vide", "Ajoutez des produits avant de payer.");
+            return;
+        }
+        checkoutTotalLabel.setText(String.format("Total : %.2f DT", CartService.getInstance().getTotal()));
+        showView(viewCheckout);
+    }
+
+    @FXML
+    public void handleBackToCart(ActionEvent e) {
+        showView(viewCart);
+        renderCart();
+    }
+
+    @FXML
+    public void handleConfirmerPaiement(ActionEvent e) {
+        String nom = checkoutNom.getText().trim();
+        String email = checkoutEmail.getText().trim();
+        String adresse = checkoutAdresse.getText().trim();
+
+        if (nom.isEmpty() || email.isEmpty() || adresse.isEmpty()) {
+            showAlert("Champs manquants", "Veuillez remplir tous les champs.");
+            return;
+        }
+        if (!email.contains("@")) {
+            showAlert("Email invalide", "Veuillez entrer un email valide.");
+            return;
+        }
+
+        List<CartItem> items = CartService.getInstance().getItems();
+        double total = CartService.getInstance().getTotal();
+
+        try {
+            String stripeUrl = StripeService.creerSession(email, items);
+            java.awt.Desktop.getDesktop().browse(new java.net.URI(stripeUrl));
+
+            new Thread(() -> {
+                EmailService.envoyerConfirmation(email, nom, items, total);
+            }).start();
+
+            CartService.getInstance().vider();
+            updateCartBadge();
+
+            showAlert("✅ Commande confirmée !",
+                    "Redirection vers Stripe...\nUn email de confirmation sera envoyé à : " + email);
+
+            showView(viewBoutique);
+
+        } catch (Exception ex) {
+            showAlert("❌ Erreur", "Erreur : " + ex.getMessage());
+        }
+    }
+
     private Label placeholderLabel(String text) {
-        Label l = new Label(text); l.setStyle("-fx-font-size: 40px;"); return l;
+        Label l = new Label(text);
+        l.setStyle("-fx-font-size: 40px;");
+        return l;
     }
 
     // =========================================================================
@@ -1297,28 +1402,28 @@ public class FitnessDashboardController implements Initializable {
     // =========================================================================
     private void populateCourses() {
         allCourses.addAll(List.of(
-                new Course("🇪🇸","Spanish B2","Alejandro Velazquez",83,4.8,false,true),
-                new Course("🐍","Python Avancé","Sophie Martin",60,4.9,true,true),
-                new Course("🎨","UI/UX Design","Léa Bernard",45,4.7,true,false),
-                new Course("📊","Data Science","Marc Dupont",30,4.6,false,true),
-                new Course("🇬🇧","English C1","Emily Watson",92,4.5,false,false),
-                new Course("🧠","Machine Learning","Karim Bensalem",15,5.0,true,true),
-                new Course("🎸","Guitare Classique","Pierre Moreau",70,4.4,false,false),
-                new Course("📱","Flutter Mobile","Amira Khalil",50,4.8,true,false),
-                new Course("🔐","Cybersécurité","Julien Roux",25,4.7,true,true),
-                new Course("📸","Photographie","Céline Petit",80,4.3,false,false),
-                new Course("🇩🇪","Allemand A2","Hans Müller",10,4.2,true,false),
-                new Course("🧮","Algorithmique","Nadia Benali",65,4.9,false,true),
-                new Course("🌐","Développement Web","Tom Leroy",55,4.6,false,true),
-                new Course("🎬","Montage Vidéo","Clara Simon",35,4.5,true,false),
-                new Course("📝","Rédaction Web","Isabelle Gautier",40,4.4,false,false)
+                new Course("🇪🇸", "Spanish B2", "Alejandro Velazquez", 83, 4.8, false, true),
+                new Course("🐍", "Python Avancé", "Sophie Martin", 60, 4.9, true, true),
+                new Course("🎨", "UI/UX Design", "Léa Bernard", 45, 4.7, true, false),
+                new Course("📊", "Data Science", "Marc Dupont", 30, 4.6, false, true),
+                new Course("🇬🇧", "English C1", "Emily Watson", 92, 4.5, false, false),
+                new Course("🧠", "Machine Learning", "Karim Bensalem", 15, 5.0, true, true),
+                new Course("🎸", "Guitare Classique", "Pierre Moreau", 70, 4.4, false, false),
+                new Course("📱", "Flutter Mobile", "Amira Khalil", 50, 4.8, true, false),
+                new Course("🔐", "Cybersécurité", "Julien Roux", 25, 4.7, true, true),
+                new Course("📸", "Photographie", "Céline Petit", 80, 4.3, false, false),
+                new Course("🇩🇪", "Allemand A2", "Hans Müller", 10, 4.2, true, false),
+                new Course("🧮", "Algorithmique", "Nadia Benali", 65, 4.9, false, true),
+                new Course("🌐", "Développement Web", "Tom Leroy", 55, 4.6, false, true),
+                new Course("🎬", "Montage Vidéo", "Clara Simon", 35, 4.5, true, false),
+                new Course("📝", "Rédaction Web", "Isabelle Gautier", 40, 4.4, false, false)
         ));
     }
 
     private void initStats() {
-        long completed  = allCourses.stream().filter(c -> c.progress() == 100).count();
+        long completed = allCourses.stream().filter(c -> c.progress() == 100).count();
         long inProgress = allCourses.stream().filter(c -> c.progress() > 0 && c.progress() < 100).count();
-        int  totalH     = allCourses.stream().mapToInt(c -> c.progress() / 2).sum();
+        int totalH = allCourses.stream().mapToInt(c -> c.progress() / 2).sum();
 
         lblCompleted.setText(String.valueOf(completed == 0 ? 11 : completed));
         lblInProgress.setText(String.valueOf(inProgress == 0 ? 4 : inProgress));
@@ -1338,10 +1443,10 @@ public class FitnessDashboardController implements Initializable {
         courseList.getChildren().clear();
         allCourses.stream()
                 .filter(c -> switch (filter) {
-                    case "new"     -> c.isNew();
-                    case "top"     -> c.rating() >= 4.7;
+                    case "new" -> c.isNew();
+                    case "top" -> c.rating() >= 4.7;
                     case "popular" -> c.isPopular();
-                    default        -> true;
+                    default -> true;
                 })
                 .forEach(c -> courseList.getChildren().add(buildCourseRow(c)));
     }
@@ -1363,19 +1468,24 @@ public class FitnessDashboardController implements Initializable {
         emoji.setStyle("-fx-font-size: 22px;");
 
         VBox info = new VBox(2);
-        Label name   = new Label(c.name()); name.setStyle("-fx-font-weight: bold; -fx-font-size: 13px;");
-        Label author = new Label("par " + c.author()); author.setStyle("-fx-font-size: 11px; -fx-text-fill: #888;");
+        Label name = new Label(c.name());
+        name.setStyle("-fx-font-weight: bold; -fx-font-size: 13px;");
+        Label author = new Label("par " + c.author());
+        author.setStyle("-fx-font-size: 11px; -fx-text-fill: #888;");
         info.getChildren().addAll(name, author);
         HBox.setHgrow(info, Priority.ALWAYS);
 
         VBox progressBox = new VBox(3);
         progressBox.setAlignment(Pos.CENTER_RIGHT);
-        Label    pct = new Label(c.progress() + "%"); pct.setStyle("-fx-font-size: 12px; -fx-font-weight: bold;");
+        Label pct = new Label(c.progress() + "%");
+        pct.setStyle("-fx-font-size: 12px; -fx-font-weight: bold;");
         ProgressBar pb = new ProgressBar(c.progress() / 100.0);
-        pb.setPrefWidth(80); pb.setStyle("-fx-accent: #111111;");
+        pb.setPrefWidth(80);
+        pb.setStyle("-fx-accent: #111111;");
         progressBox.getChildren().addAll(pct, pb);
 
-        Label rating = new Label("⭐ " + c.rating()); rating.setStyle("-fx-font-size: 11px; -fx-text-fill: #888;");
+        Label rating = new Label("⭐ " + c.rating());
+        rating.setStyle("-fx-font-size: 11px; -fx-text-fill: #888;");
         row.getChildren().addAll(emoji, info, rating, progressBox);
         return row;
     }
@@ -1395,30 +1505,34 @@ public class FitnessDashboardController implements Initializable {
         lblProgress.setText(c.progress() + "%");
     }
 
-    @FXML public void handlePrevCourse(ActionEvent e) {
+    @FXML
+    public void handlePrevCourse(ActionEvent e) {
         List<Course> list = getInProgressCourses();
         currentCourseIndex = (currentCourseIndex - 1 + list.size()) % list.size();
         updateCurrentCourse();
     }
 
-    @FXML public void handleNextCourse(ActionEvent e) {
+    @FXML
+    public void handleNextCourse(ActionEvent e) {
         List<Course> list = getInProgressCourses();
         currentCourseIndex = (currentCourseIndex + 1) % list.size();
         updateCurrentCourse();
     }
 
-    @FXML public void handleContinue(ActionEvent e) {
+    @FXML
+    public void handleContinue(ActionEvent e) {
         List<Course> list = getInProgressCourses();
         if (list.isEmpty()) return;
         showAlert("Continuer", "Reprise du cours : " + list.get(currentCourseIndex).name() + " 🚀");
     }
 
-    @FXML public void handleFilter(ActionEvent e) {
+    @FXML
+    public void handleFilter(ActionEvent e) {
         Button src = (Button) e.getSource();
         currentFilter = (String) src.getUserData();
         renderCourseList(currentFilter);
 
-        String activeStyle   = "-fx-background-color: transparent; -fx-text-fill: #111;"
+        String activeStyle = "-fx-background-color: transparent; -fx-text-fill: #111;"
                 + " -fx-font-weight: bold; -fx-cursor: hand; -fx-padding: 4 0;"
                 + " -fx-border-color: transparent transparent #111 transparent; -fx-border-width: 0 0 2 0;";
         String inactiveStyle = "-fx-background-color: transparent; -fx-text-fill: #888;"
@@ -1431,7 +1545,7 @@ public class FitnessDashboardController implements Initializable {
     // CHART
     // =========================================================================
     private void initChart() {
-        weeklyFilter.setItems(FXCollections.observableArrayList("Cette semaine","Ce mois","3 mois","6 mois"));
+        weeklyFilter.setItems(FXCollections.observableArrayList("Cette semaine", "Ce mois", "3 mois", "6 mois"));
         weeklyFilter.getSelectionModel().selectFirst();
         loadChartData("hours");
     }
@@ -1441,40 +1555,50 @@ public class FitnessDashboardController implements Initializable {
         XYChart.Series<String, Number> series = new XYChart.Series<>();
         if ("hours".equals(type)) {
             series.setName("Heures d'apprentissage");
-            String[] days = {"Lun","Mar","Mer","Jeu","Ven","Sam","Dim"};
+            String[] days = {"Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"};
             double[] vals = {1.5, 2.0, 0.5, 3.0, 2.5, 4.0, 1.0};
             for (int i = 0; i < days.length; i++)
                 series.getData().add(new XYChart.Data<>(days[i], vals[i]));
-            yAxis.setUpperBound(5); yAxis.setTickUnit(1);
+            yAxis.setUpperBound(5);
+            yAxis.setTickUnit(1);
         } else {
             series.setName("Cours suivis");
-            String[] weeks = {"S1","S2","S3","S4"};
-            double[] vals  = {2, 4, 3, 5};
+            String[] weeks = {"S1", "S2", "S3", "S4"};
+            double[] vals = {2, 4, 3, 5};
             for (int i = 0; i < weeks.length; i++)
                 series.getData().add(new XYChart.Data<>(weeks[i], vals[i]));
-            yAxis.setUpperBound(7); yAxis.setTickUnit(1);
+            yAxis.setUpperBound(7);
+            yAxis.setTickUnit(1);
         }
         learningChart.getData().add(series);
     }
 
-    @FXML public void handleChartTab(ActionEvent e) {
-        Button src  = (Button) e.getSource();
+    @FXML
+    public void handleChartTab(ActionEvent e) {
+        Button src = (Button) e.getSource();
         String type = (String) src.getUserData();
         loadChartData(type);
-        String activeStyle   = "-fx-background-color: transparent; -fx-font-weight: bold;"
+        String activeStyle = "-fx-background-color: transparent; -fx-font-weight: bold;"
                 + " -fx-font-size: 12px; -fx-text-fill: #111; -fx-cursor: hand;"
                 + " -fx-border-color: transparent transparent #111 transparent; -fx-border-width: 0 0 2 0;";
         String inactiveStyle = "-fx-background-color: transparent; -fx-font-size: 12px;"
                 + " -fx-text-fill: #aaa; -fx-cursor: hand;";
-        chartTabHours.setStyle("hours".equals(type)   ? activeStyle : inactiveStyle);
+        chartTabHours.setStyle("hours".equals(type) ? activeStyle : inactiveStyle);
         chartTabCourses.setStyle("courses".equals(type) ? activeStyle : inactiveStyle);
     }
 
-    @FXML public void handlePeriodChange(ActionEvent e) { loadChartData("hours"); }
+    @FXML
+    public void handlePeriodChange(ActionEvent e) {
+        loadChartData("hours");
+    }
 
-    @FXML public void handleSearch(KeyEvent e) {
+    @FXML
+    public void handleSearch(KeyEvent e) {
         String query = searchField.getText().trim().toLowerCase();
-        if (query.isEmpty()) { renderCourseList(currentFilter); return; }
+        if (query.isEmpty()) {
+            renderCourseList(currentFilter);
+            return;
+        }
         courseList.getChildren().clear();
         allCourses.stream()
                 .filter(c -> c.name().toLowerCase().contains(query) || c.author().toLowerCase().contains(query))
@@ -1487,11 +1611,11 @@ public class FitnessDashboardController implements Initializable {
     private void initMessages() {
         messageList.getChildren().clear();
         List<String[]> msgs = List.of(
-                new String[]{"👩‍🏫","Sophie Martin","Votre progression en Python est excellente !","Il y a 5 min",String.valueOf(true)},
-                new String[]{"🤖","Système","Nouveau badge débloqué : ⚡ Rapide !","Il y a 1 h",String.valueOf(true)},
-                new String[]{"👨‍💼","Marc Dupont","Avez-vous terminé le module 4 en Data Science ?","Hier",String.valueOf(false)},
-                new String[]{"🎓","Alejandro Velazquez","¡ Muy bien ! Continuez ainsi en espagnol.","Il y a 2 j",String.valueOf(false)},
-                new String[]{"🔔","Système","Rappel : cours de Machine Learning demain à 10h.","Il y a 3 j",String.valueOf(false)}
+                new String[]{"👩‍🏫", "Sophie Martin", "Votre progression en Python est excellente !", "Il y a 5 min", String.valueOf(true)},
+                new String[]{"🤖", "Système", "Nouveau badge débloqué : ⚡ Rapide !", "Il y a 1 h", String.valueOf(true)},
+                new String[]{"👨‍💼", "Marc Dupont", "Avez-vous terminé le module 4 en Data Science ?", "Hier", String.valueOf(false)},
+                new String[]{"🎓", "Alejandro Velazquez", "¡ Muy bien ! Continuez ainsi en espagnol.", "Il y a 2 j", String.valueOf(false)},
+                new String[]{"🔔", "Système", "Rappel : cours de Machine Learning demain à 10h.", "Il y a 3 j", String.valueOf(false)}
         );
         msgs.forEach(m -> messageList.getChildren().add(buildMessageRow(m)));
     }
@@ -1510,16 +1634,20 @@ public class FitnessDashboardController implements Initializable {
 
         VBox body = new VBox(3);
         HBox.setHgrow(body, Priority.ALWAYS);
-        Label sender  = new Label(m[1]); sender.setStyle("-fx-font-weight: bold; -fx-font-size: 13px;");
-        Label content = new Label(m[2]); content.setStyle("-fx-font-size: 12px; -fx-text-fill: #555;");
+        Label sender = new Label(m[1]);
+        sender.setStyle("-fx-font-weight: bold; -fx-font-size: 13px;");
+        Label content = new Label(m[2]);
+        content.setStyle("-fx-font-size: 12px; -fx-text-fill: #555;");
         body.getChildren().addAll(sender, content);
 
         VBox right = new VBox(4);
         right.setAlignment(Pos.TOP_RIGHT);
-        Label time = new Label(m[3]); time.setStyle("-fx-font-size: 10px; -fx-text-fill: #aaa;");
+        Label time = new Label(m[3]);
+        time.setStyle("-fx-font-size: 10px; -fx-text-fill: #aaa;");
         right.getChildren().add(time);
         if ("true".equals(m[4])) {
-            Label dot = new Label("●"); dot.setStyle("-fx-text-fill: #4f46e5; -fx-font-size: 10px;");
+            Label dot = new Label("●");
+            dot.setStyle("-fx-text-fill: #4f46e5; -fx-font-size: 10px;");
             right.getChildren().add(dot);
         }
         row.getChildren().addAll(avatar, body, right);
@@ -1531,17 +1659,17 @@ public class FitnessDashboardController implements Initializable {
     // =========================================================================
     private void initSettings() {
         List<String[]> notifSettings = List.of(
-                new String[]{"Notifications push","true"},
-                new String[]{"Rappels de cours","true"},
-                new String[]{"Nouveaux badges","true"},
-                new String[]{"Messages des instructeurs","false"}
+                new String[]{"Notifications push", "true"},
+                new String[]{"Rappels de cours", "true"},
+                new String[]{"Nouveaux badges", "true"},
+                new String[]{"Messages des instructeurs", "false"}
         );
         List<String[]> privacySettings = List.of(
-                new String[]{"Profil public","false"},
-                new String[]{"Partager ma progression","true"},
-                new String[]{"Afficher mes badges","true"}
+                new String[]{"Profil public", "false"},
+                new String[]{"Partager ma progression", "true"},
+                new String[]{"Afficher mes badges", "true"}
         );
-        notifSettings.forEach(s  -> settingsNotifList.getChildren().add(buildSettingRow(s[0], "true".equals(s[1]))));
+        notifSettings.forEach(s -> settingsNotifList.getChildren().add(buildSettingRow(s[0], "true".equals(s[1]))));
         privacySettings.forEach(s -> settingsPrivacyList.getChildren().add(buildSettingRow(s[0], "true".equals(s[1]))));
     }
 
@@ -1550,13 +1678,18 @@ public class FitnessDashboardController implements Initializable {
         row.setAlignment(Pos.CENTER_LEFT);
         row.setPrefHeight(44);
         row.setStyle("-fx-border-color: transparent transparent #f0f0f0 transparent; -fx-border-width: 0 0 1 0;");
-        Label lbl = new Label(label); lbl.setStyle("-fx-font-size: 13px;"); HBox.setHgrow(lbl, Priority.ALWAYS);
-        CheckBox cb = new CheckBox(); cb.setSelected(defaultVal); cb.setStyle("-fx-cursor: hand;");
+        Label lbl = new Label(label);
+        lbl.setStyle("-fx-font-size: 13px;");
+        HBox.setHgrow(lbl, Priority.ALWAYS);
+        CheckBox cb = new CheckBox();
+        cb.setSelected(defaultVal);
+        cb.setStyle("-fx-cursor: hand;");
         row.getChildren().addAll(lbl, cb);
         return row;
     }
 
-    @FXML public void handleChangePassword(ActionEvent e) {
+    @FXML
+    public void handleChangePassword(ActionEvent e) {
         Dialog<String> dialog = new Dialog<>();
         dialog.setTitle("Changer le mot de passe");
         dialog.setHeaderText("Entrez votre nouveau mot de passe");
@@ -1564,8 +1697,10 @@ public class FitnessDashboardController implements Initializable {
         ButtonType confirmerBtn = new ButtonType("Confirmer", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(confirmerBtn, ButtonType.CANCEL);
 
-        PasswordField newMdp     = new PasswordField(); newMdp.setPromptText("Nouveau mot de passe");
-        PasswordField confirmMdp = new PasswordField(); confirmMdp.setPromptText("Confirmer le mot de passe");
+        PasswordField newMdp = new PasswordField();
+        newMdp.setPromptText("Nouveau mot de passe");
+        PasswordField confirmMdp = new PasswordField();
+        confirmMdp.setPromptText("Confirmer le mot de passe");
         VBox content = new VBox(10,
                 new Label("Nouveau mot de passe :"), newMdp, new Label("Confirmer :"), confirmMdp);
         content.setPadding(new Insets(10));
@@ -1573,18 +1708,30 @@ public class FitnessDashboardController implements Initializable {
         dialog.setResultConverter(btn -> btn == confirmerBtn ? newMdp.getText() : null);
 
         dialog.showAndWait().ifPresent(mdp -> {
-            if (mdp.isEmpty())                    { showAlert("Erreur","Le mot de passe ne peut pas être vide."); return; }
-            if (!mdp.equals(confirmMdp.getText())) { showAlert("Erreur","Les mots de passe ne correspondent pas."); return; }
-            if (!Validation.validerMotDePasse(mdp)){ showAlert("Erreur", Validation.messageMotDePasse(mdp)); return; }
+            if (mdp.isEmpty()) {
+                showAlert("Erreur", "Le mot de passe ne peut pas être vide.");
+                return;
+            }
+            if (!mdp.equals(confirmMdp.getText())) {
+                showAlert("Erreur", "Les mots de passe ne correspondent pas.");
+                return;
+            }
+            if (!Validation.validerMotDePasse(mdp)) {
+                showAlert("Erreur", Validation.messageMotDePasse(mdp));
+                return;
+            }
             try {
                 utilisateurConnecte.setMotDePasse(mdp);
                 new UtilisateurService().updateEntity(utilisateurConnecte.getId().intValue(), utilisateurConnecte);
-                showAlert("✅ Succès","Mot de passe changé avec succès !");
-            } catch (SQLException ex) { showAlert("❌ Erreur","Erreur : " + ex.getMessage()); }
+                showAlert("✅ Succès", "Mot de passe changé avec succès !");
+            } catch (SQLException ex) {
+                showAlert("❌ Erreur", "Erreur : " + ex.getMessage());
+            }
         });
     }
 
-    @FXML public void handleDeleteAccount(ActionEvent e) {
+    @FXML
+    public void handleDeleteAccount(ActionEvent e) {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Supprimer le compte");
         confirm.setHeaderText("Êtes-vous sûr de vouloir supprimer votre compte ?");
@@ -1593,7 +1740,7 @@ public class FitnessDashboardController implements Initializable {
             if (r == ButtonType.OK) {
                 try {
                     new UtilisateurService().deleteEntity(utilisateurConnecte);
-                    showAlert("Compte supprimé","Votre compte a été supprimé. Au revoir !");
+                    showAlert("Compte supprimé", "Votre compte a été supprimé. Au revoir !");
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/login.fxml"));
                     Parent root = loader.load();
                     Stage stage = (Stage) btnHome.getScene().getWindow();
@@ -1601,7 +1748,7 @@ public class FitnessDashboardController implements Initializable {
                     stage.setTitle("StudyFlow — Login");
                     stage.show();
                 } catch (SQLException | IOException ex) {
-                    showAlert("❌ Erreur","Erreur suppression : " + ex.getMessage());
+                    showAlert("❌ Erreur", "Erreur suppression : " + ex.getMessage());
                 }
             }
         });
@@ -1628,12 +1775,17 @@ public class FitnessDashboardController implements Initializable {
                 "-fx-background-color: white; -fx-background-radius: 16;"
                         + "-fx-border-color: #f0f0f0; -fx-border-radius: 16; -fx-cursor: hand;"));
 
-        Label emoji  = new Label(c.emoji()); emoji.setStyle("-fx-font-size: 30px;");
-        Label name   = new Label(c.name()); name.setStyle("-fx-font-weight: bold; -fx-font-size: 13px; -fx-wrap-text: true;");
-        Label author = new Label("par " + c.author()); author.setStyle("-fx-font-size: 11px; -fx-text-fill: #888;");
+        Label emoji = new Label(c.emoji());
+        emoji.setStyle("-fx-font-size: 30px;");
+        Label name = new Label(c.name());
+        name.setStyle("-fx-font-weight: bold; -fx-font-size: 13px; -fx-wrap-text: true;");
+        Label author = new Label("par " + c.author());
+        author.setStyle("-fx-font-size: 11px; -fx-text-fill: #888;");
         ProgressBar pb = new ProgressBar(c.progress() / 100.0);
-        pb.setPrefWidth(Double.MAX_VALUE); pb.setStyle("-fx-accent: #111111;");
-        Label pct = new Label(c.progress() + "% terminé"); pct.setStyle("-fx-font-size: 11px; -fx-text-fill: #555;");
+        pb.setPrefWidth(Double.MAX_VALUE);
+        pb.setStyle("-fx-accent: #111111;");
+        Label pct = new Label(c.progress() + "% terminé");
+        pct.setStyle("-fx-font-size: 11px; -fx-text-fill: #555;");
 
         HBox tags = new HBox(6);
         if (c.isNew()) {
@@ -1651,16 +1803,17 @@ public class FitnessDashboardController implements Initializable {
     }
 
     // =========================================================================
-    // PROFILE SAVE (main — with DB)
+    // PROFILE SAVE
     // =========================================================================
-    @FXML public void handleSaveProfile(ActionEvent e) {
+    @FXML
+    public void handleSaveProfile(ActionEvent e) {
         String prenom = fieldFirstName.getText().trim();
-        String nom    = fieldLastName.getText().trim();
-        String email  = fieldEmail.getText().trim();
+        String nom = fieldLastName.getText().trim();
+        String email = fieldEmail.getText().trim();
 
         String msgPrenom = Validation.messageNom(prenom);
-        String msgNom    = Validation.messageNom(nom);
-        String msgEmail  = Validation.messageEmail(email);
+        String msgNom = Validation.messageNom(nom);
+        String msgEmail = Validation.messageEmail(email);
 
         erreurPrenom.setText(msgPrenom);
         erreurNom.setText(msgNom);
@@ -1686,40 +1839,54 @@ public class FitnessDashboardController implements Initializable {
             new UtilisateurService().updateEntity(utilisateurConnecte.getId().intValue(), utilisateurConnecte);
             profileFullName.setText(nom + " " + prenom);
             lblGreeting.setText("Bonjour, " + prenom + " !");
-            showAlert("✅ Succès","Votre profil a été mis à jour avec succès !");
+            showAlert("✅ Succès", "Votre profil a été mis à jour avec succès !");
         } catch (SQLException ex) {
-            showAlert("❌ Erreur","Erreur mise à jour : " + ex.getMessage());
+            showAlert("❌ Erreur", "Erreur mise à jour : " + ex.getMessage());
         }
     }
 
     // =========================================================================
     // MISC
     // =========================================================================
-    @FXML public void handleNotif(ActionEvent e) { showAlert("Notifications","🔔 Vous avez 3 nouvelles notifications."); }
-    @FXML public void handlePremium(ActionEvent e) { showAlert("Premium","🌟 Passez Premium pour 9,99 € / mois et accédez à plus de 500 cours !"); }
+    @FXML
+    public void handleNotif(ActionEvent e) {
+        showAlert("Notifications", "🔔 Vous avez 3 nouvelles notifications.");
+    }
 
-    @FXML public void handleLogout(ActionEvent e) {
+    @FXML
+    public void handlePremium(ActionEvent e) {
+        showAlert("Premium", "🌟 Passez Premium pour 9,99 € / mois et accédez à plus de 500 cours !");
+    }
+
+    @FXML
+    public void handleLogout(ActionEvent e) {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Déconnexion"); confirm.setHeaderText("Voulez-vous vous déconnecter ?");
+        confirm.setTitle("Déconnexion");
+        confirm.setHeaderText("Voulez-vous vous déconnecter ?");
         confirm.showAndWait().ifPresent(r -> {
             if (r == ButtonType.OK) {
                 try {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/login.fxml"));
                     Parent root = loader.load();
                     Stage stage = (Stage) btnHome.getScene().getWindow();
-                    stage.setScene(new Scene(root)); stage.setTitle("StudyFlow — Login"); stage.show();
-                } catch (IOException ex) { ex.printStackTrace(); }
+                    stage.setScene(new Scene(root));
+                    stage.setTitle("StudyFlow — Login");
+                    stage.show();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
             }
         });
     }
 
     // =========================================================================
-    // ══════════════════════  EVENTS FEATURE (FROM BRANCH)  ══════════════════
+    // EVENTS FEATURE
     // =========================================================================
-
-    // ── PERSISTENCE ──────────────────────────────────────────────────────────
     private void loadPersistentData() {
-        try { Files.createDirectories(Paths.get(DATA_DIR)); } catch (Exception ignored) {}
+        try {
+            Files.createDirectories(Paths.get(DATA_DIR));
+        } catch (Exception ignored) {
+        }
         // Favoris
         try {
             File f = new File(FAV_FILE);
@@ -1730,7 +1897,9 @@ public class FitnessDashboardController implements Initializable {
                         if (!line.trim().isEmpty()) favorites.add(Integer.parseInt(line.trim()));
                 }
             }
-        } catch (Exception e) { System.err.println("Favoris non chargés : " + e.getMessage()); }
+        } catch (Exception e) {
+            System.err.println("Favoris non chargés : " + e.getMessage());
+        }
         // Commentaires
         try {
             File f = new File(COMMENT_FILE);
@@ -1744,13 +1913,17 @@ public class FitnessDashboardController implements Initializable {
                     }
                 }
             }
-        } catch (Exception e) { System.err.println("Commentaires non chargés : " + e.getMessage()); }
+        } catch (Exception e) {
+            System.err.println("Commentaires non chargés : " + e.getMessage());
+        }
     }
 
     private void saveFavorites() {
         try (PrintWriter pw = new PrintWriter(new FileWriter(FAV_FILE))) {
             for (int id : favorites) pw.println(id);
-        } catch (Exception e) { System.err.println("Favoris non sauvegardés : " + e.getMessage()); }
+        } catch (Exception e) {
+            System.err.println("Favoris non sauvegardés : " + e.getMessage());
+        }
     }
 
     private void saveComments() {
@@ -1758,7 +1931,9 @@ public class FitnessDashboardController implements Initializable {
             for (Map.Entry<Integer, List<String>> entry : comments.entrySet())
                 for (String c : entry.getValue())
                     pw.println(entry.getKey() + "|" + c);
-        } catch (Exception e) { System.err.println("Commentaires non sauvegardés : " + e.getMessage()); }
+        } catch (Exception e) {
+            System.err.println("Commentaires non sauvegardés : " + e.getMessage());
+        }
     }
 
     private void toggleFavorite(int eventId) {
@@ -1768,18 +1943,17 @@ public class FitnessDashboardController implements Initializable {
         refreshEventDisplay();
     }
 
-    // ── FILTERS ──────────────────────────────────────────────────────────────
     private void initializeEventFilters() {
         if (eventTypeFilter == null || eventDateSort == null) return;
         eventTypeFilter.setItems(FXCollections.observableArrayList(
-                "Tous les types","Formation","Conférence","Workshop","Sport","Culture","Technologie","Autre"));
+                "Tous les types", "Formation", "Conférence", "Workshop", "Sport", "Culture", "Technologie", "Autre"));
         eventTypeFilter.setValue("Tous les types");
         eventTypeFilter.setOnAction(e -> {
             String sel = eventTypeFilter.getValue();
             currentTypeFilter = "Tous les types".equals(sel) ? "all" : sel;
             appliquerFiltresEtTri();
         });
-        eventDateSort.setItems(FXCollections.observableArrayList("Plus récents","Plus anciens","A-Z","Z-A"));
+        eventDateSort.setItems(FXCollections.observableArrayList("Plus récents", "Plus anciens", "A-Z", "Z-A"));
         eventDateSort.setValue("Plus récents");
         eventDateSort.setOnAction(e -> appliquerFiltresEtTri());
     }
@@ -1787,32 +1961,34 @@ public class FitnessDashboardController implements Initializable {
     private void appliquerFiltresEtTri() {
         if (tousLesEvents == null || tousLesEvents.isEmpty()) {
             if (eventCardsContainer != null) eventCardsContainer.getChildren().clear();
-            if (eventCounterLabel   != null) eventCounterLabel.setText("0 événement");
+            if (eventCounterLabel != null) eventCounterLabel.setText("0 événement");
             return;
         }
         String sortVal = eventDateSort != null ? eventDateSort.getValue() : "Plus récents";
         Comparator<Event> cmp;
-        if      ("A-Z".equals(sortVal))        cmp = Comparator.comparing(ev -> (ev.getTitre() != null ? ev.getTitre() : ""));
-        else if ("Z-A".equals(sortVal))        cmp = Comparator.comparing((Event ev) -> (ev.getTitre() != null ? ev.getTitre() : "")).reversed();
-        else if ("Plus anciens".equals(sortVal)) cmp = Comparator.comparing(Event::getDateCreation, Comparator.nullsLast(Comparator.naturalOrder()));
-        else                                   cmp = Comparator.comparing(Event::getDateCreation, Comparator.nullsLast(Comparator.reverseOrder()));
+        if ("A-Z".equals(sortVal)) cmp = Comparator.comparing(ev -> (ev.getTitre() != null ? ev.getTitre() : ""));
+        else if ("Z-A".equals(sortVal))
+            cmp = Comparator.comparing((Event ev) -> (ev.getTitre() != null ? ev.getTitre() : "")).reversed();
+        else if ("Plus anciens".equals(sortVal))
+            cmp = Comparator.comparing(Event::getDateCreation, Comparator.nullsLast(Comparator.naturalOrder()));
+        else cmp = Comparator.comparing(Event::getDateCreation, Comparator.nullsLast(Comparator.reverseOrder()));
 
         eventsFiltres = tousLesEvents.stream()
                 .filter(ev -> {
-                    if (!"all".equals(currentTypeFilter) && (ev.getType() == null || !ev.getType().equalsIgnoreCase(currentTypeFilter))) return false;
+                    if (!"all".equals(currentTypeFilter) && (ev.getType() == null || !ev.getType().equalsIgnoreCase(currentTypeFilter)))
+                        return false;
                     if (showFavoritesOnly && !favorites.contains(ev.getId())) return false;
                     return true;
                 })
                 .sorted(cmp)
                 .collect(Collectors.toList());
 
-        // Text search
         String query = (eventSearchField != null) ? eventSearchField.getText().trim().toLowerCase() : "";
         if (!query.isEmpty()) {
             eventsFiltres = eventsFiltres.stream()
                     .filter(ev -> {
-                        String t = ev.getTitre()       != null ? ev.getTitre().toLowerCase()       : "";
-                        String p = ev.getType()        != null ? ev.getType().toLowerCase()        : "";
+                        String t = ev.getTitre() != null ? ev.getTitre().toLowerCase() : "";
+                        String p = ev.getType() != null ? ev.getType().toLowerCase() : "";
                         String d = ev.getDescription() != null ? ev.getDescription().toLowerCase() : "";
                         return t.contains(query) || p.contains(query) || d.contains(query);
                     })
@@ -1821,58 +1997,64 @@ public class FitnessDashboardController implements Initializable {
 
         afficherCartes(eventsFiltres);
         int c = eventsFiltres.size();
-        if (eventCounterLabel  != null) eventCounterLabel.setText(c + " événement" + (c > 1 ? "s" : ""));
-        if (filterStatusLabel  != null) {
+        if (eventCounterLabel != null) eventCounterLabel.setText(c + " événement" + (c > 1 ? "s" : ""));
+        if (filterStatusLabel != null) {
             String ft = "all".equals(currentTypeFilter) ? "Tous" : currentTypeFilter;
             filterStatusLabel.setText(ft + "  ·  " + (sortVal != null ? sortVal : "récents"));
         }
     }
 
-    @FXML private void handleEventSearch(KeyEvent e) { appliquerFiltresEtTri(); }
+    @FXML
+    private void handleEventSearch(KeyEvent e) {
+        appliquerFiltresEtTri();
+    }
 
     private void refreshEventDisplay() {
         if (eventsFiltres != null) afficherCartes(eventsFiltres);
     }
 
-    // ── LOAD FROM DB ─────────────────────────────────────────────────────────
     private void chargerEvents() {
         try {
             tousLesEvents = eventService.recupererTous();
-            currentTypeFilter = "all"; showFavoritesOnly = false;
+            currentTypeFilter = "all";
+            showFavoritesOnly = false;
             appliquerFiltresEtTri();
         } catch (SQLException e) {
             System.err.println("Erreur events : " + e.getMessage());
-            showAlert("Erreur","Impossible de charger les événements.");
+            showAlert("Erreur", "Impossible de charger les événements.");
         }
     }
 
-    // ── RENDER CARDS ─────────────────────────────────────────────────────────
     private void afficherCartes(List<Event> events) {
         if (eventCardsContainer == null) return;
         eventCardsContainer.getChildren().clear();
         if (events == null) return;
         for (int i = 0; i < events.size(); i++) {
             VBox carte = creerCarteGrid(events.get(i));
-            carte.setOpacity(0); carte.setTranslateY(20);
+            carte.setOpacity(0);
+            carte.setTranslateY(20);
             eventCardsContainer.getChildren().add(carte);
-            FadeTransition ft = new FadeTransition(Duration.millis(350), carte); ft.setToValue(1); ft.setDelay(Duration.millis(i * 60L));
-            TranslateTransition tt = new TranslateTransition(Duration.millis(350), carte); tt.setToY(0); tt.setDelay(Duration.millis(i * 60L));
+            FadeTransition ft = new FadeTransition(Duration.millis(350), carte);
+            ft.setToValue(1);
+            ft.setDelay(Duration.millis(i * 60L));
+            TranslateTransition tt = new TranslateTransition(Duration.millis(350), carte);
+            tt.setToY(0);
+            tt.setDelay(Duration.millis(i * 60L));
             new ParallelTransition(ft, tt).play();
         }
     }
 
-    // ── GRID CARD ─────────────────────────────────────────────────────────────
     private VBox creerCarteGrid(Event event) {
         boolean isFav = favorites.contains(event.getId());
-        String  color = getTypeColor(event.getType());
+        String color = getTypeColor(event.getType());
 
         VBox carte = new VBox();
-        carte.setPrefWidth(270); carte.setMaxWidth(270);
+        carte.setPrefWidth(270);
+        carte.setMaxWidth(270);
         carte.setStyle("-fx-background-color: #0d0d18; -fx-background-radius: 18;"
                 + "-fx-border-color: " + color + "33; -fx-border-radius: 18; -fx-border-width: 1;"
                 + "-fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 16, 0, 0, 4);");
 
-        // Image header
         StackPane imageBox = new StackPane();
         imageBox.setPrefHeight(160);
         imageBox.setStyle("-fx-background-color: linear-gradient(to bottom right, " + color + "55, " + color + "11); -fx-background-radius: 18 18 0 0;");
@@ -1883,19 +2065,30 @@ public class FitnessDashboardController implements Initializable {
             if (imgFile.exists()) {
                 try {
                     ImageView iv = new ImageView(new Image(imgFile.toURI().toString()));
-                    iv.setFitWidth(270); iv.setFitHeight(160); iv.setPreserveRatio(false);
-                    Rectangle clip = new Rectangle(270, 160); clip.setArcWidth(36); clip.setArcHeight(36);
-                    iv.setClip(clip); imageBox.getChildren().add(iv);
-                } catch (Exception ex) { imageBox.getChildren().add(defaultEmoji()); }
-            } else { imageBox.getChildren().add(defaultEmoji()); }
-        } else { imageBox.getChildren().add(defaultEmoji()); }
+                    iv.setFitWidth(270);
+                    iv.setFitHeight(160);
+                    iv.setPreserveRatio(false);
+                    Rectangle clip = new Rectangle(270, 160);
+                    clip.setArcWidth(36);
+                    clip.setArcHeight(36);
+                    iv.setClip(clip);
+                    imageBox.getChildren().add(iv);
+                } catch (Exception ex) {
+                    imageBox.getChildren().add(defaultEmoji());
+                }
+            } else {
+                imageBox.getChildren().add(defaultEmoji());
+            }
+        } else {
+            imageBox.getChildren().add(defaultEmoji());
+        }
 
-        // Badge + fav overlay
         HBox overlay = new HBox();
         overlay.setAlignment(Pos.TOP_CENTER);
         Label badge = new Label(event.getType() != null ? event.getType().toUpperCase() : "ÉVÉNEMENT");
         badge.setStyle("-fx-background-color: " + color + "cc; -fx-text-fill: white; -fx-font-size: 9px; -fx-font-weight: bold; -fx-padding: 4 10; -fx-background-radius: 8;");
-        Region spacer = new Region(); HBox.setHgrow(spacer, Priority.ALWAYS);
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
         Button btnFav = new Button(isFav ? "♥" : "♡");
         btnFav.setStyle("-fx-background-color: " + (isFav ? "#ff6b8a" : "rgba(0,0,0,0.4)")
                 + "; -fx-text-fill: " + (isFav ? "white" : "#888888")
@@ -1906,39 +2099,55 @@ public class FitnessDashboardController implements Initializable {
         StackPane.setMargin(overlay, new Insets(10, 10, 0, 10));
         imageBox.getChildren().add(overlay);
 
-        // Content
         VBox content = new VBox(8);
         content.setStyle("-fx-padding: 14 16 12 16;");
         Label titre = new Label(event.getTitre() != null ? event.getTitre() : "Sans titre");
-        titre.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: white;"); titre.setWrapText(true);
+        titre.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: white;");
+        titre.setWrapText(true);
 
-        HBox meta = new HBox(12); meta.setAlignment(Pos.CENTER_LEFT);
+        HBox meta = new HBox(12);
+        meta.setAlignment(Pos.CENTER_LEFT);
         String dateStr = "";
-        if (event.getDateCreation() != null) { try { dateStr = event.getDateCreation().toLocalDate().format(DateTimeFormatter.ofPattern("dd MMM yyyy")); } catch (Exception ignored) {} }
-        Label date   = new Label("📅 " + dateStr); date.setStyle("-fx-font-size: 10px; -fx-text-fill: " + color + ";");
-        Label userId = new Label("👤 User #" + event.getUserId()); userId.setStyle("-fx-font-size: 10px; -fx-text-fill: #3a3a5a;");
+        if (event.getDateCreation() != null) {
+            try {
+                dateStr = event.getDateCreation().toLocalDate().format(DateTimeFormatter.ofPattern("dd MMM yyyy"));
+            } catch (Exception ignored) {
+            }
+        }
+        Label date = new Label("📅 " + dateStr);
+        date.setStyle("-fx-font-size: 10px; -fx-text-fill: " + color + ";");
+        Label userId = new Label("👤 User #" + event.getUserId());
+        userId.setStyle("-fx-font-size: 10px; -fx-text-fill: #3a3a5a;");
         meta.getChildren().addAll(date, userId);
 
         if (event.getDescription() != null && !event.getDescription().isEmpty()) {
             String desc = event.getDescription().length() > 75 ? event.getDescription().substring(0, 75) + "…" : event.getDescription();
-            Label descL = new Label(desc); descL.setStyle("-fx-font-size: 11px; -fx-text-fill: #5a5a7a;"); descL.setWrapText(true);
+            Label descL = new Label(desc);
+            descL.setStyle("-fx-font-size: 11px; -fx-text-fill: #5a5a7a;");
+            descL.setWrapText(true);
             content.getChildren().addAll(titre, meta, descL);
-        } else { content.getChildren().addAll(titre, meta); }
+        } else {
+            content.getChildren().addAll(titre, meta);
+        }
 
-        Region sep = new Region(); sep.setPrefHeight(1); sep.setStyle("-fx-background-color: #1a1a2e;");
+        Region sep = new Region();
+        sep.setPrefHeight(1);
+        sep.setStyle("-fx-background-color: #1a1a2e;");
         content.getChildren().add(sep);
 
         VBox sponsors = creerSectionSponsors(event.getId());
         if (sponsors != null) content.getChildren().add(sponsors);
 
-        // Footer
-        HBox footer = new HBox(8); footer.setAlignment(Pos.CENTER_LEFT);
+        HBox footer = new HBox(8);
+        footer.setAlignment(Pos.CENTER_LEFT);
         List<String> evComments = comments.getOrDefault(event.getId(), new ArrayList<>());
-        Label commLabel = new Label("💬 " + evComments.size()); commLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #4a4a6a;");
+        Label commLabel = new Label("💬 " + evComments.size());
+        commLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #4a4a6a;");
         Button btnComment = new Button("Commenter");
         btnComment.setStyle("-fx-background-color: #1a1a2e; -fx-text-fill: #7c6fff; -fx-background-radius: 8; -fx-font-size: 11px; -fx-padding: 5 12; -fx-cursor: hand;");
         btnComment.setOnAction(e -> ouvrirDetailEvenement(event));
-        Region fSpacer = new Region(); HBox.setHgrow(fSpacer, Priority.ALWAYS);
+        Region fSpacer = new Region();
+        HBox.setHgrow(fSpacer, Priority.ALWAYS);
         Button btnVoir = new Button("Voir →");
         btnVoir.setStyle("-fx-background-color: " + color + "; -fx-text-fill: white; -fx-background-radius: 8; -fx-font-size: 11px; -fx-padding: 5 14; -fx-cursor: hand;");
         btnVoir.setOnAction(e -> ouvrirDetailEvenement(event));
@@ -1947,21 +2156,23 @@ public class FitnessDashboardController implements Initializable {
 
         carte.getChildren().addAll(imageBox, content);
 
-        // Hover
         carte.setOnMouseEntered(e -> {
             ScaleTransition st = new ScaleTransition(Duration.millis(180), carte);
-            st.setToX(1.025); st.setToY(1.025); st.play();
+            st.setToX(1.025);
+            st.setToY(1.025);
+            st.play();
         });
         carte.setOnMouseExited(e -> {
             ScaleTransition st = new ScaleTransition(Duration.millis(180), carte);
-            st.setToX(1.0); st.setToY(1.0); st.play();
+            st.setToX(1.0);
+            st.setToY(1.0);
+            st.play();
         });
         return carte;
     }
 
-    // ── EVENT DETAIL DIALOG ──────────────────────────────────────────────────
     private void ouvrirDetailEvenement(Event event) {
-        String  color = getTypeColor(event.getType());
+        String color = getTypeColor(event.getType());
         boolean isFav = favorites.contains(event.getId());
         List<String> evComments = comments.getOrDefault(event.getId(), new ArrayList<>());
 
@@ -1972,40 +2183,48 @@ public class FitnessDashboardController implements Initializable {
         root.setStyle("-fx-background-color: #0a0a0f; -fx-background-radius: 16;");
         root.setPrefWidth(540);
 
-        // Header
         VBox header = new VBox(8);
         header.setPadding(new Insets(24, 24, 20, 24));
         header.setStyle("-fx-background-color: linear-gradient(to bottom right, " + color + "44, " + color + "11); -fx-background-radius: 16 16 0 0;");
         Label typeLbl = new Label(event.getType() != null ? event.getType().toUpperCase() : "ÉVÉNEMENT");
         typeLbl.setStyle("-fx-background-color: " + color + "55; -fx-text-fill: " + color + "; -fx-font-size: 10px; -fx-font-weight: bold; -fx-padding: 4 10; -fx-background-radius: 8;");
         Label title = new Label(event.getTitre() != null ? event.getTitre() : "Sans titre");
-        title.setStyle("-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: white; -fx-font-family: 'Georgia';"); title.setWrapText(true);
+        title.setStyle("-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: white; -fx-font-family: 'Georgia';");
+        title.setWrapText(true);
         String dateStr = "";
-        if (event.getDateCreation() != null) { try { dateStr = event.getDateCreation().toLocalDate().format(DateTimeFormatter.ofPattern("EEEE d MMMM yyyy", Locale.FRENCH)); } catch (Exception ignored) {} }
+        if (event.getDateCreation() != null) {
+            try {
+                dateStr = event.getDateCreation().toLocalDate().format(DateTimeFormatter.ofPattern("EEEE d MMMM yyyy", Locale.FRENCH));
+            } catch (Exception ignored) {
+            }
+        }
         Label dateLbl = new Label("📅 " + dateStr + "   👤 User #" + event.getUserId());
         dateLbl.setStyle("-fx-font-size: 12px; -fx-text-fill: " + color + ";");
         header.getChildren().addAll(typeLbl, title, dateLbl);
 
-        // Body
         VBox body = new VBox(14);
         body.setPadding(new Insets(20, 24, 20, 24));
         body.setStyle("-fx-background-color: #0d0d14;");
 
         if (event.getDescription() != null && !event.getDescription().isEmpty()) {
-            Label descTitle = new Label("Description"); descTitle.setStyle("-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #4a4a6a;");
-            Label descTxt   = new Label(event.getDescription()); descTxt.setStyle("-fx-font-size: 13px; -fx-text-fill: #aaaacc;"); descTxt.setWrapText(true);
+            Label descTitle = new Label("Description");
+            descTitle.setStyle("-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #4a4a6a;");
+            Label descTxt = new Label(event.getDescription());
+            descTxt.setStyle("-fx-font-size: 13px; -fx-text-fill: #aaaacc;");
+            descTxt.setWrapText(true);
             body.getChildren().addAll(descTitle, descTxt);
         }
 
-        // Fav button
         Button favBtn = new Button(isFav ? "♥  Retirer des favoris" : "♡  Ajouter aux favoris");
         favBtn.setStyle("-fx-background-color: " + (isFav ? "#2a1a20" : "#1a1a2e")
                 + "; -fx-text-fill: " + (isFav ? "#ff6b8a" : "#8888aa")
                 + "; -fx-background-radius: 10; -fx-padding: 8 16; -fx-cursor: hand; -fx-font-size: 12px;");
-        favBtn.setOnAction(e -> { toggleFavorite(event.getId()); dialog.close(); });
+        favBtn.setOnAction(e -> {
+            toggleFavorite(event.getId());
+            dialog.close();
+        });
         body.getChildren().add(favBtn);
 
-        // Comments list
         Label commTitle = new Label("💬  Commentaires (" + evComments.size() + ")");
         commTitle.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: white;");
         body.getChildren().add(commTitle);
@@ -2015,11 +2234,14 @@ public class FitnessDashboardController implements Initializable {
             String[] parts = c.split("::", 3);
             String user = parts.length > 0 ? parts[0] : "Anonyme";
             String text = parts.length > 1 ? parts[1] : "";
-            String ts   = parts.length > 2 ? parts[2] : "";
+            String ts = parts.length > 2 ? parts[2] : "";
             VBox cb = new VBox(4);
             cb.setStyle("-fx-background-color: #0a0a0f; -fx-background-radius: 10; -fx-padding: 10 14;");
-            Label userL = new Label("👤 " + user + "  ·  " + ts); userL.setStyle("-fx-font-size: 10px; -fx-text-fill: #4a4a6a;");
-            Label textL = new Label(text); textL.setStyle("-fx-font-size: 12px; -fx-text-fill: #aaaacc;"); textL.setWrapText(true);
+            Label userL = new Label("👤 " + user + "  ·  " + ts);
+            userL.setStyle("-fx-font-size: 10px; -fx-text-fill: #4a4a6a;");
+            Label textL = new Label(text);
+            textL.setStyle("-fx-font-size: 12px; -fx-text-fill: #aaaacc;");
+            textL.setWrapText(true);
             cb.getChildren().addAll(userL, textL);
             commentsList.getChildren().add(cb);
         }
@@ -2029,13 +2251,15 @@ public class FitnessDashboardController implements Initializable {
             commentsList.getChildren().add(none);
         }
         ScrollPane commScroll = new ScrollPane(commentsList);
-        commScroll.setFitToWidth(true); commScroll.setPrefHeight(140);
+        commScroll.setFitToWidth(true);
+        commScroll.setPrefHeight(140);
         commScroll.setStyle("-fx-background: transparent; -fx-background-color: transparent; -fx-border-color: transparent;");
         body.getChildren().add(commScroll);
 
-        // New comment
-        HBox newComm = new HBox(10); newComm.setAlignment(Pos.CENTER_LEFT);
-        TextField commField = new TextField(); commField.setPromptText("Écrire un commentaire...");
+        HBox newComm = new HBox(10);
+        newComm.setAlignment(Pos.CENTER_LEFT);
+        TextField commField = new TextField();
+        commField.setPromptText("Écrire un commentaire...");
         commField.setStyle("-fx-background-color: #0a0a0f; -fx-text-fill: white; -fx-border-color: #2a2a3e; -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 8 12; -fx-font-size: 12px;");
         HBox.setHgrow(commField, Priority.ALWAYS);
         Button sendBtn = new Button("Envoyer");
@@ -2043,15 +2267,18 @@ public class FitnessDashboardController implements Initializable {
         sendBtn.setOnAction(e -> {
             String txt = commField.getText().trim();
             if (!txt.isEmpty()) {
-                String ts    = DateTimeFormatter.ofPattern("dd/MM HH:mm").format(java.time.LocalDateTime.now());
+                String ts = DateTimeFormatter.ofPattern("dd/MM HH:mm").format(java.time.LocalDateTime.now());
                 String entry = "Vous::" + txt + "::" + ts;
                 comments.computeIfAbsent(event.getId(), k -> new ArrayList<>()).add(entry);
                 saveComments();
                 commField.clear();
                 VBox newCb = new VBox(4);
                 newCb.setStyle("-fx-background-color: #0a0a0f; -fx-background-radius: 10; -fx-padding: 10 14;");
-                Label uL = new Label("👤 Vous  ·  " + ts); uL.setStyle("-fx-font-size: 10px; -fx-text-fill: #4a4a6a;");
-                Label tL = new Label(txt); tL.setStyle("-fx-font-size: 12px; -fx-text-fill: #aaaacc;"); tL.setWrapText(true);
+                Label uL = new Label("👤 Vous  ·  " + ts);
+                uL.setStyle("-fx-font-size: 10px; -fx-text-fill: #4a4a6a;");
+                Label tL = new Label(txt);
+                tL.setStyle("-fx-font-size: 12px; -fx-text-fill: #aaaacc;");
+                tL.setWrapText(true);
                 newCb.getChildren().addAll(uL, tL);
                 commentsList.getChildren().add(newCb);
                 commentsList.getChildren().removeIf(n -> n instanceof Label && ((Label) n).getText().contains("premier"));
@@ -2070,14 +2297,19 @@ public class FitnessDashboardController implements Initializable {
         dialog.showAndWait();
     }
 
-    // ── SPONSORS ─────────────────────────────────────────────────────────────
     private VBox creerSectionSponsors(int eventId) {
         List<Sponsor> sponsors;
-        try { sponsors = sponsorService.recupererParEvent(eventId); } catch (SQLException e) { return null; }
+        try {
+            sponsors = sponsorService.recupererParEvent(eventId);
+        } catch (SQLException e) {
+            return null;
+        }
         if (sponsors.isEmpty()) return null;
 
-        VBox section = new VBox(6); section.setStyle("-fx-padding: 4 0 0 0;");
-        HBox hdr = new HBox(6); hdr.setAlignment(Pos.CENTER_LEFT);
+        VBox section = new VBox(6);
+        section.setStyle("-fx-padding: 4 0 0 0;");
+        HBox hdr = new HBox(6);
+        hdr.setAlignment(Pos.CENTER_LEFT);
         hdr.getChildren().addAll(new Label("💼"), new Label("Sponsors (" + sponsors.size() + ")"));
 
         FlowPane flow = new FlowPane(6, 4);
@@ -2091,7 +2323,6 @@ public class FitnessDashboardController implements Initializable {
         return section;
     }
 
-    // ── UTILS ─────────────────────────────────────────────────────────────────
     private String getTypeColor(String type) {
         if (type == null) return "#7c6fff";
         return TYPE_COLORS.getOrDefault(type.toUpperCase(), "#7c6fff");
@@ -2100,23 +2331,25 @@ public class FitnessDashboardController implements Initializable {
     private String getCouleurSponsor(String type) {
         if (type == null) return "#888888";
         return switch (type.toLowerCase()) {
-            case "or"      -> "#e6a817";
-            case "argent"  -> "#7f8c8d";
-            case "bronze"  -> "#c0652b";
+            case "or" -> "#e6a817";
+            case "argent" -> "#7f8c8d";
+            case "bronze" -> "#c0652b";
             case "platine" -> "#7c6fff";
-            default        -> "#27ae60";
+            default -> "#27ae60";
         };
     }
 
     private Label defaultEmoji() {
-        Label l = new Label("✦"); l.setStyle("-fx-font-size: 42px; -fx-text-fill: #7c6fff;"); return l;
+        Label l = new Label("✦");
+        l.setStyle("-fx-font-size: 42px; -fx-text-fill: #7c6fff;");
+        return l;
     }
-
-    private String truncate(String s, int max) { return s.length() <= max ? s : s.substring(0, max) + "…"; }
 
     private void showAlert(String title, String message) {
         Alert a = new Alert(Alert.AlertType.INFORMATION);
-        a.setTitle(title); a.setHeaderText(null); a.setContentText(message);
+        a.setTitle(title);
+        a.setHeaderText(null);
+        a.setContentText(message);
         a.getDialogPane().setStyle("-fx-font-size: 13px;");
         a.showAndWait();
     }
