@@ -17,7 +17,7 @@ public class Event {
 
     // ── Constructeur sans id (pour Ajouter)
     public Event(String titre, String description, LocalDateTime dateCreation,
-                 String type, String image, int userId) {
+                 String type, String image, int userI  ) {
         this.titre = titre;
         this.description = description;
         this.dateCreation = dateCreation;
