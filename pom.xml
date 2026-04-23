@@ -23,11 +23,28 @@
             <version>8.0.30</version>
         </dependency>
 
+        <!-- JavaFX Base (core classes) -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-base</artifactId>
+            <version>21.0.2</version>
+            <classifier>win</classifier>
+        </dependency>
+
+        <!-- JavaFX Graphics (shapes, images, animations, scenes) -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-graphics</artifactId>
+            <version>21.0.2</version>
+            <classifier>win</classifier>
+        </dependency>
+
         <!-- JavaFX Controls -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>21.0.2</version>
+            <classifier>win</classifier>
         </dependency>
 
         <!-- JavaFX FXML -->
@@ -35,6 +52,7 @@
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
             <version>21.0.2</version>
+            <classifier>win</classifier>
         </dependency>
 
         <!-- JUnit -->
@@ -52,11 +70,13 @@
             <version>3.1.0</version>
         </dependency>
 
+        <!-- Jackson Databind -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>2.17.0</version>
         </dependency>
+
         <!-- Jakarta Validation -->
         <dependency>
             <groupId>jakarta.validation</groupId>
@@ -92,13 +112,8 @@
             <version>2.2.224</version>
             <scope>runtime</scope>
         </dependency>
-        <!-- Jackson (for facial recognition, oussema) -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>2.15.2</version>
-        </dependency>
-        <!-- opencv (for facial recognition, oussema) -->
+
+        <!-- OpenCV (system path for facial recognition, oussema) -->
         <dependency>
             <groupId>org.opencv</groupId>
             <artifactId>opencv</artifactId>
@@ -106,10 +121,32 @@
             <scope>system</scope>
             <systemPath>C:/opencv/build/java/opencv-490.jar</systemPath>
         </dependency>
+
+        <!-- ZXing for QR Code generation -->
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>core</artifactId>
+            <version>3.5.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>javase</artifactId>
+            <version>3.5.2</version>
+        </dependency>
+
+        <!-- OpenCV via OpenPNP (for facial recognition and webcam) -->
+        <dependency>
+            <groupId>org.openpnp</groupId>
+            <artifactId>opencv</artifactId>
+            <version>4.9.0-0</version>
+        </dependency>
+
+        <!-- JavaFX Swing (for javafx.embed.swing, with platform classifier for Windows) -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-swing</artifactId>
             <version>21.0.2</version>
+            <classifier>win</classifier>
         </dependency>
     </dependencies>
 
@@ -124,7 +161,7 @@
                     <mainClass>edu.connexion3a36.tests.MainFX</mainClass>
                     <options>
                         <option>--add-modules</option>
-                        <option>javafx.controls,javafx.fxml</option>
+                        <option>javafx.controls,javafx.fxml,javafx.graphics,javafx.swing</option>
                     </options>
                 </configuration>
             </plugin>

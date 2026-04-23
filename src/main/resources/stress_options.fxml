@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="edu.connexion3a36.Controller.StressOptionsController"
+      prefWidth="900" prefHeight="600"
+      style="-fx-background-color: #f5f5f5;">
+
+    <!-- Header -->
+    <HBox prefHeight="80" alignment="CENTER_LEFT" spacing="16"
+          style="-fx-background-color: linear-gradient(to right, #e8f5e9, #f3e5f5);
+                 -fx-border-color: transparent transparent #e0e0e0 transparent;
+                 -fx-border-width: 0 0 1 0;">
+        <padding><Insets top="0" right="28" bottom="0" left="28"/></padding>
+
+        <Button text="← Retour" onAction="#goBack"
+                style="-fx-background-color: white; -fx-border-color: #ddd;
+                       -fx-border-radius: 10; -fx-background-radius: 10;
+                       -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px;"/>
+
+        <VBox spacing="2">
+            <Label text="Options Anti-Stress"
+                   style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-font-family: 'Georgia';
+                          -fx-text-fill: #2e4a3e;"/>
+            <Label text="Choisissez une option pour continuer"
+                   style="-fx-font-size: 12px; -fx-text-fill: #6a8a76;"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label text="🧘" style="-fx-font-size: 40px;"/>
+    </HBox>
+
+    <!-- Content -->
+    <VBox VBox.vgrow="ALWAYS" alignment="CENTER" spacing="30">
+        <padding><Insets top="50" right="50" bottom="50" left="50"/></padding>
+
+        <!-- Title -->
+        <Label text="Que souhaitez-vous faire ?"
+               style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-font-family: 'Georgia';
+                      -fx-text-fill: #2e4a3e;"/>
+
+        <!-- Buttons Container -->
+        <VBox spacing="20" alignment="CENTER">
+            
+            <!-- Consulter Cabinet Psychiatre -->
+            <Button fx:id="btnConsulterPsychiatre"
+                    text="🏥  Consulter cabinet psychiatre"
+                    onAction="#handleConsulterPsychiatre"
+                    prefWidth="400" prefHeight="60"
+                    style="-fx-background-color: #1565c0; -fx-text-fill: white;
+                           -fx-background-radius: 15; -fx-font-size: 16px;
+                           -fx-font-weight: bold; -fx-cursor: hand;
+                           -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 8, 0, 0, 4);">
+                <graphic>
+                    <Label text="🏥" style="-fx-font-size: 20px;"/>
+                </graphic>
+            </Button>
+
+            <!-- Consulter Medecin -->
+            <Button fx:id="btnConsulterMedecin"
+                    text="💬  Consulter Medecin (Chatbot)"
+                    onAction="#handleConsulterMedecin"
+                    prefWidth="400" prefHeight="60"
+                    style="-fx-background-color: #00897b; -fx-text-fill: white;
+                           -fx-background-radius: 15; -fx-font-size: 16px;
+                           -fx-font-weight: bold; -fx-cursor: hand;
+                           -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 8, 0, 0, 4);">
+                <graphic>
+                    <Label text="💬" style="-fx-font-size: 20px;"/>
+                </graphic>
+            </Button>
+
+            <!-- Exercice de Respiration -->
+            <Button fx:id="btnRespiration"
+                    text="🌬️  Exercice de respiration"
+                    onAction="#handleRespiration"
+                    prefWidth="400" prefHeight="60"
+                    style="-fx-background-color: #26a69a; -fx-text-fill: white;
+                           -fx-background-radius: 15; -fx-font-size: 16px;
+                           -fx-font-weight: bold; -fx-cursor: hand;
+                           -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 8, 0, 0, 4);">
+                <graphic>
+                    <Label text="🌬️" style="-fx-font-size: 20px;"/>
+                </graphic>
+            </Button>
+
+            <!-- À propos -->
+            <Button fx:id="btnAPropos"
+                    text="ℹ️  À propos"
+                    onAction="#handleAPropos"
+                    prefWidth="400" prefHeight="60"
+                    style="-fx-background-color: #7b1fa2; -fx-text-fill: white;
+                           -fx-background-radius: 15; -fx-font-size: 16px;
+                           -fx-font-weight: bold; -fx-cursor: hand;
+                           -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 8, 0, 0, 4);">
+                <graphic>
+                    <Label text="ℹ️" style="-fx-font-size: 20px;"/>
+                </graphic>
+            </Button>
+
+        </VBox>
+
+        <!-- Back to Dashboard Button -->
+        <Button text="← Retour au tableau de bord"
+                onAction="#goToDashboard"
+                style="-fx-background-color: transparent; -fx-border-color: #888;
+                       -fx-border-radius: 10; -fx-background-radius: 10;
+                       -fx-padding: 10 20; -fx-cursor: hand; -fx-font-size: 13px;
+                       -fx-text-fill: #666;"/>
+    </VBox>
+
+</VBox>
