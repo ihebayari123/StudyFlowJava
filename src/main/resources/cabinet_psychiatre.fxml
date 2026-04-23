@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="edu.connexion3a36.Controller.CabinetPsychiatreController"
+      spacing="0"
+      style="-fx-background-color: #f5f5f5;">
+
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!--  HEADER                                                    -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <HBox prefHeight="80" alignment="CENTER_LEFT" spacing="16"
+          style="-fx-background-color: linear-gradient(to right, #e3f2fd, #f3e5f5);
+                 -fx-border-color: transparent transparent #e0e0e0 transparent;
+                 -fx-border-width: 0 0 1 0;">
+        <padding><Insets top="0" right="28" bottom="0" left="28"/></padding>
+
+        <Button text="← Retour" onAction="#goBack"
+                style="-fx-background-color: white; -fx-border-color: #ddd;
+                       -fx-border-radius: 10; -fx-background-radius: 10;
+                       -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px;"/>
+
+        <VBox spacing="2">
+            <Label text="🏥 Cabinet Psychiatre — Tunisie"
+                   style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-font-family: 'Georgia';
+                          -fx-text-fill: #1565c0;"/>
+            <Label text="Scannez le QR code pour accéder à la liste complète sur votre téléphone"
+                   style="-fx-font-size: 12px; -fx-text-fill: #5c6bc0;"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label text="🏥" style="-fx-font-size: 40px;"/>
+    </HBox>
+
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!--  CONTENU PRINCIPAL                                         -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                style="-fx-background-color: #f5f5f5; -fx-border-color: transparent;">
+        <VBox spacing="20">
+            <padding><Insets top="24" right="32" bottom="24" left="32"/></padding>
+
+            <!-- ── LIGNE PRINCIPALE : QR + Liste ─────────────────── -->
+            <HBox spacing="24" alignment="TOP_LEFT">
+
+                <!-- ── QR CODE CARD ──────────────────────────────── -->
+                <VBox spacing="14" alignment="CENTER"
+                      prefWidth="300" minWidth="280"
+                      style="-fx-background-color: white; -fx-background-radius: 18;
+                             -fx-border-color: #bbdefb; -fx-border-radius: 18; -fx-border-width: 2;
+                             -fx-effect: dropshadow(gaussian, rgba(21,101,192,0.15), 16, 0, 0, 6);">
+                    <padding><Insets top="24" right="20" bottom="24" left="20"/></padding>
+
+                    <!-- Titre QR -->
+                    <VBox spacing="4" alignment="CENTER">
+                        <Label text="📱 Scannez avec votre téléphone"
+                               style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1565c0;
+                                      -fx-text-alignment: center;" wrapText="true"/>
+                        <Label text="Ouvre Google Maps → Psychiatres Tunisie"
+                               style="-fx-font-size: 11px; -fx-text-fill: #888;
+                                      -fx-text-alignment: center;" wrapText="true"/>
+                    </VBox>
+
+                    <!-- QR Code Image -->
+                    <VBox alignment="CENTER"
+                          style="-fx-background-color: white; -fx-background-radius: 12;
+                                 -fx-border-color: #e3f2fd; -fx-border-radius: 12; -fx-border-width: 1;
+                                 -fx-padding: 12;">
+                        <ImageView fx:id="qrCodeImage"
+                                   fitWidth="240" fitHeight="240"
+                                   preserveRatio="true"/>
+                    </VBox>
+
+                    <!-- Statut QR -->
+                    <Label fx:id="qrStatusLabel"
+                           text="⏳ Génération du QR code..."
+                           style="-fx-font-size: 11px; -fx-text-fill: #888;
+                                  -fx-text-alignment: center;" wrapText="true"
+                           prefWidth="240"/>
+
+                    <!-- Boutons -->
+                    <VBox spacing="8" maxWidth="240">
+                        <Button text="📋 Voir la liste complète"
+                                onAction="#showDoctorList"
+                                maxWidth="Infinity"
+                                style="-fx-background-color: #1565c0; -fx-text-fill: white;
+                                       -fx-background-radius: 10; -fx-font-size: 12px;
+                                       -fx-font-weight: bold; -fx-padding: 10 16; -fx-cursor: hand;"/>
+                        <Button text="🌐 Ouvrir dans le navigateur"
+                                onAction="#openInBrowser"
+                                maxWidth="Infinity"
+                                style="-fx-background-color: #e3f2fd; -fx-text-fill: #1565c0;
+                                       -fx-background-radius: 10; -fx-font-size: 12px;
+                                       -fx-font-weight: bold; -fx-padding: 10 16; -fx-cursor: hand;
+                                       -fx-border-color: #90caf9; -fx-border-radius: 10; -fx-border-width: 1;"/>
+                    </VBox>
+
+                    <!-- Info URL -->
+                    <Label text="🔗 google.com/maps/search/psychiatre+Tunisie"
+                           style="-fx-font-size: 10px; -fx-text-fill: #aaa;
+                                  -fx-text-alignment: center;" wrapText="true"
+                           prefWidth="240"/>
+                </VBox>
+
+                <!-- ── LISTE DES PSYCHIATRES ──────────────────────── -->
+                <VBox spacing="12" HBox.hgrow="ALWAYS">
+
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label text="🩺 Psychiatres en Tunisie"
+                               style="-fx-font-size: 17px; -fx-font-weight: bold; -fx-text-fill: #1a1a2e;
+                                      -fx-font-family: 'Georgia';"/>
+                        <Label text="8 spécialistes"
+                               style="-fx-font-size: 11px; -fx-text-fill: #1565c0;
+                                      -fx-background-color: #e3f2fd; -fx-padding: 3 10;
+                                      -fx-background-radius: 20;"/>
+                    </HBox>
+
+                    <Label text="Liste vérifiée — Hôpitaux et cliniques de Tunisie"
+                           style="-fx-font-size: 12px; -fx-text-fill: #888;"/>
+
+                    <!-- Conteneur dynamique des cartes médecins -->
+                    <VBox fx:id="doctorListContainer" spacing="10"/>
+
+                </VBox>
+            </HBox>
+
+            <!-- ── BANNIÈRE INFO ──────────────────────────────────── -->
+            <HBox spacing="16" alignment="CENTER_LEFT"
+                  style="-fx-background-color: #e8f4fd; -fx-background-radius: 14;
+                         -fx-border-color: #90caf9; -fx-border-radius: 14; -fx-border-width: 1;
+                         -fx-padding: 16 20;">
+                <Label text="ℹ️" style="-fx-font-size: 24px;"/>
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="Comment utiliser le QR code ?"
+                           style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1565c0;"/>
+                    <Label text="1. Ouvrez l'appareil photo de votre téléphone  2. Pointez vers le QR code  3. Appuyez sur la notification  4. Google Maps s'ouvre avec la liste des psychiatres en Tunisie"
+                           style="-fx-font-size: 12px; -fx-text-fill: #555; -fx-wrap-text: true;"
+                           prefWidth="600"/>
+                </VBox>
+            </HBox>
+
+        </VBox>
+    </ScrollPane>
+
+</VBox>

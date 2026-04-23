@@ -6,6 +6,7 @@ import edu.connexion3a36.entities.StressSurvey;
 import edu.connexion3a36.services.ConsultationService;
 import edu.connexion3a36.services.MedecinService;
 import edu.connexion3a36.services.StressSurveyService;
+import edu.connexion3a36.Controller.FitnessDashboardController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -30,6 +31,12 @@ public class AjouterConsultationEtudiantController {
     private final ConsultationService service = new ConsultationService();
     private final MedecinService medecinService = new MedecinService();
     private final StressSurveyService surveyService = new StressSurveyService();
+
+    private FitnessDashboardController dashboardController;
+
+    public void setDashboardController(FitnessDashboardController ctrl) {
+        this.dashboardController = ctrl;
+    }
 
     @FXML
     public void initialize() {
@@ -154,8 +161,13 @@ public class AjouterConsultationEtudiantController {
                     surveyCB.getValue().getId()
             );
             service.addEntity(c);
-            showAlert(Alert.AlertType.INFORMATION, "Succès", "Consultation ajoutée avec succès !");
             clearFields();
+            // Naviguer vers stress_options après enregistrement réussi
+            if (dashboardController != null) {
+                dashboardController.handleFormSubmitSuccess();
+            } else {
+                showAlert(Alert.AlertType.INFORMATION, "Succès", "Consultation ajoutée avec succès !");
+            }
         } catch (SQLException e) {
             showAlert(Alert.AlertType.ERROR, "Erreur BDD", "Erreur : " + e.getMessage());
         }

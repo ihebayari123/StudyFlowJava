@@ -19,7 +19,6 @@ public class Cours {
     @Column(length = 500)
     private String image;
 
-    // Required for the @OneToMany(mappedBy = "user") in Utilisateur
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private Utilisateur user;
