@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- MERGED: main version + branch Events view -->
+<!-- FUSION COMPLÈTE : doc3 (grille 3×2 + vues avancées) + doc4 (branch Events) — rien supprimé -->
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
@@ -26,50 +26,75 @@
                style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: white; -fx-font-family: 'Georgia';"/>
 
         <VBox spacing="24" VBox.vgrow="ALWAYS" alignment="TOP_CENTER">
+
             <Button fx:id="btnHome"
-                    text="🏠" userData="home" onAction="#handleNav"
+                    text="🏠"
+                    userData="home"
+                    onAction="#handleNav"
                     style="-fx-font-size: 20px; -fx-background-color: #333333; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 10;"/>
             <Button fx:id="btnCourses"
-                    text="🎓" userData="courses" onAction="#handleNav"
+                    text="🎓"
+                    userData="courses"
+                    onAction="#handleNav"
                     style="-fx-font-size: 20px; -fx-background-color: transparent; -fx-text-fill: #888888; -fx-cursor: hand;"/>
             <Button fx:id="btnProfile"
-                    text="👤" userData="profile" onAction="#handleNav"
+                    text="👤"
+                    userData="profile"
+                    onAction="#handleNav"
                     style="-fx-font-size: 20px; -fx-background-color: transparent; -fx-text-fill: #888888; -fx-cursor: hand;"/>
             <Button fx:id="btnMessages"
-                    text="✉" userData="messages" onAction="#handleNav"
+                    text="✉"
+                    userData="messages"
+                    onAction="#handleNav"
                     style="-fx-font-size: 20px; -fx-background-color: transparent; -fx-text-fill: #888888; -fx-cursor: hand;"/>
             <Button fx:id="btnSettings"
-                    text="⚙" userData="settings" onAction="#handleNav"
+                    text="⚙"
+                    userData="settings"
+                    onAction="#handleNav"
                     style="-fx-font-size: 20px; -fx-background-color: transparent; -fx-text-fill: #888888; -fx-cursor: hand;"/>
+
             <Button fx:id="btnBoutique"
-                    text="🛒" userData="boutique" onAction="#handleNav"
+                    text="🛒"
+                    userData="boutique"
+                    onAction="#handleNav"
                     style="-fx-font-size: 20px; -fx-background-color: transparent; -fx-text-fill: #888888; -fx-cursor: hand;"/>
+
             <Button fx:id="btnRelax"
-                    text="🧘" userData="relax" onAction="#handleNav"
+                    text="🧘"
+                    userData="relax"
+                    onAction="#handleNav"
                     style="-fx-font-size: 20px; -fx-background-color: transparent; -fx-text-fill: #888888; -fx-cursor: hand;"/>
+
             <Button fx:id="btnQuiz"
-                    text="📝" userData="quiz" onAction="#handleNav"
+                    text="📝"
+                    userData="quiz"
+                    onAction="#handleNav"
                     style="-fx-font-size: 20px; -fx-background-color: transparent; -fx-text-fill: #888888; -fx-cursor: hand;"/>
-            <!-- BRANCH: Events button -->
+
+            <!-- BRANCH: Events button (doc4) -->
             <Button fx:id="btnEvents"
-                    text="🎉" userData="events" onAction="#handleNav"
+                    text="🎉"
+                    userData="events"
+                    onAction="#handleNav"
                     style="-fx-font-size: 20px; -fx-background-color: transparent; -fx-text-fill: #888888; -fx-cursor: hand;"/>
         </VBox>
 
         <Button fx:id="btnLogout"
-                text="🚪" onAction="#handleLogout"
+                text="🚪"
+                onAction="#handleLogout"
                 style="-fx-font-size: 20px; -fx-background-color: transparent; -fx-text-fill: #888888; -fx-cursor: hand;"/>
     </VBox>
 
     <!-- ═══════════════════════════════════════════════════════════════ -->
-    <!--  MAIN CONTENT  — StackPane                                      -->
+    <!--  MAIN CONTENT  — StackPane pour superposer les vues            -->
     <!-- ═══════════════════════════════════════════════════════════════ -->
     <StackPane HBox.hgrow="ALWAYS" fx:id="mainStackPane">
 
-        <!-- ═══════════════════════════════════════════════════════════ -->
-        <!--  VUE BOUTIQUE                                               -->
-        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <!--  VUE BOUTIQUE                                                   -->
+        <!-- ═══════════════════════════════════════════════════════════════ -->
         <VBox fx:id="viewBoutique" spacing="0" visible="false" managed="false">
+
             <HBox prefHeight="90" alignment="CENTER_LEFT" spacing="16"
                   style="-fx-background-color: linear-gradient(to right, #e3f2fd, #fce4ec);
                          -fx-border-color: transparent transparent #e0e0e0 transparent;
@@ -81,17 +106,20 @@
                                -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px;"/>
                 <VBox spacing="2">
                     <Label text="🛒 Boutique"
-                           style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-font-family: 'Georgia'; -fx-text-fill: #1a237e;"/>
+                           style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-font-family: 'Georgia';
+                          -fx-text-fill: #1a237e;"/>
                     <Label text="Découvrez tous nos produits disponibles."
                            style="-fx-font-size: 12px; -fx-text-fill: #5c6bc0;"/>
                 </VBox>
                 <Region HBox.hgrow="ALWAYS"/>
                 <Label text="🏷️" style="-fx-font-size: 40px;"/>
             </HBox>
+
             <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
                         style="-fx-background-color: #f5f5f5; -fx-border-color: transparent;">
                 <VBox spacing="20">
                     <padding><Insets top="28" right="28" bottom="28" left="28"/></padding>
+
                     <HBox spacing="10" style="-fx-background-color: #FFFFFF; -fx-background-radius: 12; -fx-padding: 10 16;">
                         <Label text="🔍" style="-fx-font-size: 14;"/>
                         <TextField fx:id="boutiqueSearchField"
@@ -99,13 +127,16 @@
                                    style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-font-size: 13;"
                                    HBox.hgrow="ALWAYS"/>
                     </HBox>
-                    <FlowPane fx:id="boutiqueProduitGrid" hgap="20" vgap="20" prefWrapLength="900"/>
+
+                    <FlowPane fx:id="boutiqueProduitGrid"
+                              hgap="20" vgap="20"
+                              prefWrapLength="900"/>
                 </VBox>
             </ScrollPane>
         </VBox>
 
         <!-- ─────────────────────────────────────────────────────────── -->
-        <!--  VUE PRINCIPALE (home)                                       -->
+        <!--  VUE PRINCIPALE  (home)                                     -->
         <!-- ─────────────────────────────────────────────────────────── -->
         <VBox fx:id="viewHome" spacing="16" visible="true" managed="true">
             <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
@@ -117,7 +148,8 @@
                       alignment="CENTER_LEFT" spacing="12">
                     <padding><Insets top="20" right="20" bottom="20" left="24"/></padding>
                     <VBox spacing="4" alignment="CENTER_LEFT">
-                        <Label fx:id="lblGreeting" text="Bonjour, Josh !"
+                        <Label fx:id="lblGreeting"
+                               text="Bonjour, Josh !"
                                style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-font-family: 'Georgia';"/>
                         <Label text="Ravi de vous revoir."
                                style="-fx-font-size: 12px; -fx-text-fill: #666666;"/>
@@ -125,16 +157,23 @@
                     <Region HBox.hgrow="ALWAYS"/>
                     <Label text="👋🧑" style="-fx-font-size: 48px;"/>
                 </HBox>
+
                 <Region HBox.hgrow="ALWAYS"/>
+
                 <HBox alignment="CENTER_RIGHT" spacing="12">
-                    <TextField fx:id="searchField" promptText="Rechercher..."
-                               prefWidth="200" prefHeight="36" onKeyReleased="#handleSearch"
+                    <TextField fx:id="searchField"
+                               promptText="Rechercher..."
+                               prefWidth="200" prefHeight="36"
+                               onKeyReleased="#handleSearch"
                                style="-fx-background-radius: 20; -fx-background-color: white;
                                       -fx-border-color: #dddddd; -fx-border-radius: 20;
                                       -fx-padding: 6 14; -fx-font-size: 13px;"/>
-                    <Button fx:id="btnNotif" text="🔔" onAction="#handleNotif"
+                    <Button fx:id="btnNotif"
+                            text="🔔"
+                            onAction="#handleNotif"
                             style="-fx-font-size: 18px; -fx-background-color: transparent; -fx-cursor: hand;"/>
-                    <Circle fx:id="avatarCircle" radius="18" onMouseClicked="#goToProfile"
+                    <Circle fx:id="avatarCircle" radius="18"
+                            onMouseClicked="#goToProfile"
                             style="-fx-fill: #111111; -fx-cursor: hand;"/>
                 </HBox>
             </HBox>
@@ -142,40 +181,51 @@
             <!-- STATS ROW -->
             <HBox spacing="12">
                 <HBox prefWidth="170" prefHeight="64"
-                      style="-fx-background-color: white; -fx-background-radius: 14; -fx-border-color: #eeeeee; -fx-border-radius: 14;"
+                      style="-fx-background-color: white; -fx-background-radius: 14;
+                             -fx-border-color: #eeeeee; -fx-border-radius: 14;"
                       spacing="8" alignment="CENTER_LEFT">
                     <padding><Insets top="12" right="16" bottom="12" left="16"/></padding>
-                    <Label fx:id="lblCompleted" text="11" style="-fx-font-size: 28px; -fx-font-weight: bold;"/>
+                    <Label fx:id="lblCompleted" text="11"
+                           style="-fx-font-size: 28px; -fx-font-weight: bold;"/>
                     <VBox>
                         <Label text="Cours" style="-fx-font-size: 11px; -fx-text-fill: #888;"/>
                         <Label text="terminés" style="-fx-font-size: 11px; -fx-text-fill: #888;"/>
                     </VBox>
                 </HBox>
+
                 <HBox prefWidth="170" prefHeight="64"
-                      style="-fx-background-color: white; -fx-background-radius: 14; -fx-border-color: #eeeeee; -fx-border-radius: 14;"
+                      style="-fx-background-color: white; -fx-background-radius: 14;
+                             -fx-border-color: #eeeeee; -fx-border-radius: 14;"
                       spacing="8" alignment="CENTER_LEFT">
                     <padding><Insets top="12" right="16" bottom="12" left="16"/></padding>
-                    <Label fx:id="lblInProgress" text="4" style="-fx-font-size: 28px; -fx-font-weight: bold;"/>
+                    <Label fx:id="lblInProgress" text="4"
+                           style="-fx-font-size: 28px; -fx-font-weight: bold;"/>
                     <VBox>
                         <Label text="Cours" style="-fx-font-size: 11px; -fx-text-fill: #888;"/>
                         <Label text="en cours" style="-fx-font-size: 11px; -fx-text-fill: #888;"/>
                     </VBox>
                 </HBox>
+
                 <HBox prefWidth="170" prefHeight="64"
-                      style="-fx-background-color: white; -fx-background-radius: 14; -fx-border-color: #eeeeee; -fx-border-radius: 14;"
+                      style="-fx-background-color: white; -fx-background-radius: 14;
+                             -fx-border-color: #eeeeee; -fx-border-radius: 14;"
                       spacing="8" alignment="CENTER_LEFT">
                     <padding><Insets top="12" right="16" bottom="12" left="16"/></padding>
-                    <Label fx:id="lblHours" text="47h" style="-fx-font-size: 28px; -fx-font-weight: bold;"/>
+                    <Label fx:id="lblHours" text="47h"
+                           style="-fx-font-size: 28px; -fx-font-weight: bold;"/>
                     <VBox>
                         <Label text="Heures" style="-fx-font-size: 11px; -fx-text-fill: #888;"/>
                         <Label text="apprises" style="-fx-font-size: 11px; -fx-text-fill: #888;"/>
                     </VBox>
                 </HBox>
+
                 <HBox prefWidth="170" prefHeight="64"
-                      style="-fx-background-color: white; -fx-background-radius: 14; -fx-border-color: #eeeeee; -fx-border-radius: 14;"
+                      style="-fx-background-color: white; -fx-background-radius: 14;
+                             -fx-border-color: #eeeeee; -fx-border-radius: 14;"
                       spacing="8" alignment="CENTER_LEFT">
                     <padding><Insets top="12" right="16" bottom="12" left="16"/></padding>
-                    <Label fx:id="lblBadges" text="🏆 12" style="-fx-font-size: 22px; -fx-font-weight: bold;"/>
+                    <Label fx:id="lblBadges" text="🏆 12"
+                           style="-fx-font-size: 22px; -fx-font-weight: bold;"/>
                     <VBox>
                         <Label text="Badges" style="-fx-font-size: 11px; -fx-text-fill: #888;"/>
                         <Label text="obtenus" style="-fx-font-size: 11px; -fx-text-fill: #888;"/>
@@ -185,10 +235,13 @@
 
             <!-- MIDDLE ROW -->
             <HBox spacing="16" VBox.vgrow="ALWAYS">
+
                 <!-- LEFT PANEL -->
                 <VBox spacing="14" prefWidth="420" HBox.hgrow="ALWAYS">
+
                     <HBox fx:id="currentCourseBox" prefHeight="60"
-                          style="-fx-background-color: white; -fx-background-radius: 14; -fx-border-color: #eeeeee; -fx-border-radius: 14;"
+                          style="-fx-background-color: white; -fx-background-radius: 14;
+                                 -fx-border-color: #eeeeee; -fx-border-radius: 14;"
                           alignment="CENTER_LEFT" spacing="12">
                         <padding><Insets top="10" right="14" bottom="10" left="14"/></padding>
                         <Label fx:id="currentCourseEmoji" text="🇪🇸" style="-fx-font-size: 24px;"/>
@@ -200,35 +253,60 @@
                         </VBox>
                         <Label fx:id="lblProgress" text="83%"
                                style="-fx-font-size: 13px; -fx-font-weight: bold;
-                                      -fx-background-color: #f0f0f0; -fx-padding: 3 10; -fx-background-radius: 20;"/>
-                        <Button text="Continuer" onAction="#handleContinue"
+                                      -fx-background-color: #f0f0f0; -fx-padding: 3 10;
+                                      -fx-background-radius: 20;"/>
+                        <Button text="Continuer"
+                                onAction="#handleContinue"
                                 style="-fx-background-color: #111111; -fx-text-fill: white;
                                        -fx-background-radius: 8; -fx-font-size: 12px;
                                        -fx-padding: 7 16; -fx-cursor: hand;"/>
-                        <Button fx:id="btnPrevCourse" text="←" onAction="#handlePrevCourse"
+                        <Button fx:id="btnPrevCourse"
+                                text="←"
+                                onAction="#handlePrevCourse"
                                 style="-fx-background-color: white; -fx-border-color: #ddd;
                                        -fx-border-radius: 50%; -fx-background-radius: 50%;
                                        -fx-min-width: 28; -fx-min-height: 28; -fx-cursor: hand;"/>
-                        <Button fx:id="btnNextCourse" text="→" onAction="#handleNextCourse"
+                        <Button fx:id="btnNextCourse"
+                                text="→"
+                                onAction="#handleNextCourse"
                                 style="-fx-background-color: white; -fx-border-color: #ddd;
                                        -fx-border-radius: 50%; -fx-background-radius: 50%;
                                        -fx-min-width: 28; -fx-min-height: 28; -fx-cursor: hand;"/>
                     </HBox>
 
                     <VBox spacing="10" VBox.vgrow="ALWAYS">
-                        <Label text="Cours" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+                        <Label text="Cours"
+                               style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+
                         <HBox spacing="16">
-                            <Button fx:id="filterAll" text="Tous" userData="all" onAction="#handleFilter"
+                            <Button fx:id="filterAll"
+                                    text="Tous"
+                                    userData="all"
+                                    onAction="#handleFilter"
                                     style="-fx-background-color: transparent; -fx-text-fill: #111;
                                            -fx-font-weight: bold; -fx-cursor: hand; -fx-padding: 4 0;
-                                           -fx-border-color: transparent transparent #111 transparent; -fx-border-width: 0 0 2 0;"/>
-                            <Button fx:id="filterNew" text="Les Nouveaux" userData="new" onAction="#handleFilter"
-                                    style="-fx-background-color: transparent; -fx-text-fill: #888; -fx-cursor: hand; -fx-padding: 4 0;"/>
-                            <Button fx:id="filterTop" text="Top Notés" userData="top" onAction="#handleFilter"
-                                    style="-fx-background-color: transparent; -fx-text-fill: #888; -fx-cursor: hand; -fx-padding: 4 0;"/>
-                            <Button fx:id="filterPopular" text="Populaires" userData="popular" onAction="#handleFilter"
-                                    style="-fx-background-color: transparent; -fx-text-fill: #888; -fx-cursor: hand; -fx-padding: 4 0;"/>
+                                           -fx-border-color: transparent transparent #111 transparent;
+                                           -fx-border-width: 0 0 2 0;"/>
+                            <Button fx:id="filterNew"
+                                    text="Les Nouveaux"
+                                    userData="new"
+                                    onAction="#handleFilter"
+                                    style="-fx-background-color: transparent; -fx-text-fill: #888;
+                                           -fx-cursor: hand; -fx-padding: 4 0;"/>
+                            <Button fx:id="filterTop"
+                                    text="Top Notés"
+                                    userData="top"
+                                    onAction="#handleFilter"
+                                    style="-fx-background-color: transparent; -fx-text-fill: #888;
+                                           -fx-cursor: hand; -fx-padding: 4 0;"/>
+                            <Button fx:id="filterPopular"
+                                    text="Populaires"
+                                    userData="popular"
+                                    onAction="#handleFilter"
+                                    style="-fx-background-color: transparent; -fx-text-fill: #888;
+                                           -fx-cursor: hand; -fx-padding: 4 0;"/>
                         </HBox>
+
                         <ScrollPane fx:id="courseScrollPane" VBox.vgrow="ALWAYS"
                                     fitToWidth="true" hbarPolicy="NEVER"
                                     style="-fx-background-color: transparent; -fx-border-color: transparent;">
@@ -241,42 +319,66 @@
 
                 <!-- RIGHT PANEL -->
                 <VBox spacing="14" prefWidth="300">
+
                     <VBox spacing="10"
-                          style="-fx-background-color: white; -fx-background-radius: 16; -fx-border-color: #eeeeee; -fx-border-radius: 16;"
+                          style="-fx-background-color: white; -fx-background-radius: 16;
+                                 -fx-border-color: #eeeeee; -fx-border-radius: 16;"
                           VBox.vgrow="ALWAYS">
                         <padding><Insets top="16" right="16" bottom="16" left="16"/></padding>
-                        <Label text="Vos statistiques" style="-fx-font-size: 15px; -fx-font-weight: bold;"/>
+
+                        <Label text="Vos statistiques"
+                               style="-fx-font-size: 15px; -fx-font-weight: bold;"/>
+
                         <HBox spacing="16" alignment="CENTER_LEFT">
-                            <Button fx:id="chartTabHours" text="Heures" userData="hours" onAction="#handleChartTab"
+                            <Button fx:id="chartTabHours"
+                                    text="Heures"
+                                    userData="hours"
+                                    onAction="#handleChartTab"
                                     style="-fx-background-color: transparent; -fx-font-weight: bold;
                                            -fx-font-size: 12px; -fx-text-fill: #111; -fx-cursor: hand;
-                                           -fx-border-color: transparent transparent #111 transparent; -fx-border-width: 0 0 2 0;"/>
-                            <Button fx:id="chartTabCourses" text="Mes Cours" userData="courses" onAction="#handleChartTab"
-                                    style="-fx-background-color: transparent; -fx-font-size: 12px; -fx-text-fill: #aaa; -fx-cursor: hand;"/>
+                                           -fx-border-color: transparent transparent #111 transparent;
+                                           -fx-border-width: 0 0 2 0;"/>
+                            <Button fx:id="chartTabCourses"
+                                    text="Mes Cours"
+                                    userData="courses"
+                                    onAction="#handleChartTab"
+                                    style="-fx-background-color: transparent; -fx-font-size: 12px;
+                                           -fx-text-fill: #aaa; -fx-cursor: hand;"/>
                             <Region HBox.hgrow="ALWAYS"/>
-                            <ComboBox fx:id="weeklyFilter" onAction="#handlePeriodChange"
-                                      prefWidth="90" style="-fx-background-radius: 8; -fx-font-size: 11px;"/>
+                            <ComboBox fx:id="weeklyFilter"
+                                      onAction="#handlePeriodChange"
+                                      prefWidth="90"
+                                      style="-fx-background-radius: 8; -fx-font-size: 11px;"/>
                         </HBox>
+
                         <LineChart fx:id="learningChart" VBox.vgrow="ALWAYS" prefHeight="180"
-                                   style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-padding: 0;">
+                                   style="-fx-background-color: transparent; -fx-border-color: transparent;
+                                          -fx-padding: 0;">
                             <xAxis><CategoryAxis fx:id="xAxis"/></xAxis>
                             <yAxis><NumberAxis fx:id="yAxis" lowerBound="0" upperBound="5" tickUnit="1"/></yAxis>
                         </LineChart>
                     </VBox>
+
                     <HBox prefHeight="100"
                           style="-fx-background-color: #f0f0f0; -fx-background-radius: 16;"
                           spacing="12" alignment="CENTER_LEFT">
                         <padding><Insets top="16" right="16" bottom="16" left="16"/></padding>
                         <VBox spacing="6" HBox.hgrow="ALWAYS">
-                            <Label text="Apprenez encore plus !" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+                            <Label text="Apprenez encore plus !"
+                                   style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
                             <Label text="Débloquez les fonctionnalités premium pour 9,99 € / mois."
-                                   style="-fx-font-size: 11px; -fx-text-fill: #555; -fx-wrap-text: true;" prefWidth="160"/>
-                            <Button fx:id="btnGoPremium" text="Passer Premium" onAction="#handlePremium"
+                                   style="-fx-font-size: 11px; -fx-text-fill: #555; -fx-wrap-text: true;"
+                                   prefWidth="160"/>
+                            <Button fx:id="btnGoPremium"
+                                    text="Passer Premium"
+                                    onAction="#handlePremium"
                                     style="-fx-background-color: #111111; -fx-text-fill: white;
-                                           -fx-background-radius: 8; -fx-font-size: 11px; -fx-padding: 7 14; -fx-cursor: hand;"/>
+                                           -fx-background-radius: 8; -fx-font-size: 11px;
+                                           -fx-padding: 7 14; -fx-cursor: hand;"/>
                         </VBox>
                         <Label text="🧠" style="-fx-font-size: 48px;"/>
                     </HBox>
+
                 </VBox>
             </HBox>
         </VBox>
@@ -286,6 +388,7 @@
         <!-- ─────────────────────────────────────────────────────────── -->
         <VBox fx:id="viewProfile" spacing="20" visible="false" managed="false">
             <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
+
             <HBox alignment="CENTER_LEFT" spacing="14">
                 <Button text="← Retour" onAction="#goHome"
                         style="-fx-background-color: white; -fx-border-color: #ddd;
@@ -294,9 +397,11 @@
                 <Label text="Mon Profil"
                        style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-font-family: 'Georgia';"/>
             </HBox>
+
             <HBox spacing="16">
                 <VBox spacing="12" prefWidth="280"
-                      style="-fx-background-color: white; -fx-background-radius: 16; -fx-border-color: #eee; -fx-border-radius: 16;"
+                      style="-fx-background-color: white; -fx-background-radius: 16;
+                             -fx-border-color: #eee; -fx-border-radius: 16;"
                       alignment="TOP_LEFT">
                     <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
                     <Label text="JD"
@@ -305,14 +410,17 @@
                                   -fx-min-width: 64; -fx-min-height: 64; -fx-alignment: CENTER;"/>
                     <Label fx:id="profileFullName" text="Josh Dubois"
                            style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
-                    <Label text="Apprenant enthousiaste" style="-fx-font-size: 12px; -fx-text-fill: #888;"/>
+                    <Label text="Apprenant enthousiaste"
+                           style="-fx-font-size: 12px; -fx-text-fill: #888;"/>
                     <HBox spacing="20" style="-fx-padding: 10 0 0 0;">
                         <VBox alignment="CENTER">
-                            <Label fx:id="profileCompleted" text="11" style="-fx-font-size: 22px; -fx-font-weight: bold;"/>
+                            <Label fx:id="profileCompleted" text="11"
+                                   style="-fx-font-size: 22px; -fx-font-weight: bold;"/>
                             <Label text="Complétés" style="-fx-font-size: 11px; -fx-text-fill: #888;"/>
                         </VBox>
                         <VBox alignment="CENTER">
-                            <Label fx:id="profileInProgress" text="4" style="-fx-font-size: 22px; -fx-font-weight: bold;"/>
+                            <Label fx:id="profileInProgress" text="4"
+                                   style="-fx-font-size: 22px; -fx-font-weight: bold;"/>
                             <Label text="En cours" style="-fx-font-size: 11px; -fx-text-fill: #888;"/>
                         </VBox>
                         <VBox alignment="CENTER">
@@ -327,28 +435,42 @@
                         <Label text="🌟 Assidu" style="-fx-background-color: #111; -fx-text-fill: white; -fx-padding: 4 10; -fx-background-radius: 20; -fx-font-size: 11px;"/>
                     </FlowPane>
                 </VBox>
+
                 <VBox spacing="12" HBox.hgrow="ALWAYS"
-                      style="-fx-background-color: white; -fx-background-radius: 16; -fx-border-color: #eee; -fx-border-radius: 16;">
+                      style="-fx-background-color: white; -fx-background-radius: 16;
+                             -fx-border-color: #eee; -fx-border-radius: 16;">
                     <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
-                    <Label text="Modifier le profil" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+                    <Label text="Modifier le profil"
+                           style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
                     <Label text="Prénom" style="-fx-font-size: 11px; -fx-text-fill: #888;"/>
                     <TextField fx:id="fieldFirstName" text="Josh"
-                               style="-fx-border-radius: 8; -fx-background-radius: 8; -fx-border-color: #ddd; -fx-padding: 8 12;"/>
-                    <Label fx:id="erreurPrenom" text="" style="-fx-text-fill: #F44336; -fx-font-size: 11px;"/>
+                               style="-fx-border-radius: 8; -fx-background-radius: 8;
+                  -fx-border-color: #ddd; -fx-padding: 8 12;"/>
+                    <Label fx:id="erreurPrenom" text=""
+                           style="-fx-text-fill: #F44336; -fx-font-size: 11px;"/>
+
                     <Label text="Nom" style="-fx-font-size: 11px; -fx-text-fill: #888;"/>
                     <TextField fx:id="fieldLastName" text="Dubois"
-                               style="-fx-border-radius: 8; -fx-background-radius: 8; -fx-border-color: #ddd; -fx-padding: 8 12;"/>
-                    <Label fx:id="erreurNom" text="" style="-fx-text-fill: #F44336; -fx-font-size: 11px;"/>
+                               style="-fx-border-radius: 8; -fx-background-radius: 8;
+                  -fx-border-color: #ddd; -fx-padding: 8 12;"/>
+                    <Label fx:id="erreurNom" text=""
+                           style="-fx-text-fill: #F44336; -fx-font-size: 11px;"/>
+
                     <Label text="Email" style="-fx-font-size: 11px; -fx-text-fill: #888;"/>
                     <TextField fx:id="fieldEmail" text="josh.dubois@email.com"
-                               style="-fx-border-radius: 8; -fx-background-radius: 8; -fx-border-color: #ddd; -fx-padding: 8 12;"/>
-                    <Label fx:id="erreurEmail" text="" style="-fx-text-fill: #F44336; -fx-font-size: 11px;"/>
+                               style="-fx-border-radius: 8; -fx-background-radius: 8;
+                  -fx-border-color: #ddd; -fx-padding: 8 12;"/>
+                    <Label fx:id="erreurEmail" text=""
+                           style="-fx-text-fill: #F44336; -fx-font-size: 11px;"/>
                     <Label text="Bio" style="-fx-font-size: 11px; -fx-text-fill: #888;"/>
                     <TextField fx:id="fieldBio" text="Passionné par les langues et le design"
-                               style="-fx-border-radius: 8; -fx-background-radius: 8; -fx-border-color: #ddd; -fx-padding: 8 12;"/>
-                    <Button text="Enregistrer" onAction="#handleSaveProfile"
+                               style="-fx-border-radius: 8; -fx-background-radius: 8;
+                                      -fx-border-color: #ddd; -fx-padding: 8 12;"/>
+                    <Button text="Enregistrer"
+                            onAction="#handleSaveProfile"
                             style="-fx-background-color: #111; -fx-text-fill: white;
-                                   -fx-background-radius: 8; -fx-padding: 9 18; -fx-font-size: 12px; -fx-cursor: hand;"/>
+                                   -fx-background-radius: 8; -fx-padding: 9 18;
+                                   -fx-font-size: 12px; -fx-cursor: hand;"/>
                 </VBox>
             </HBox>
         </VBox>
@@ -358,6 +480,7 @@
         <!-- ─────────────────────────────────────────────────────────── -->
         <VBox fx:id="viewMessages" spacing="16" visible="false" managed="false">
             <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
+
             <HBox alignment="CENTER_LEFT" spacing="14">
                 <Button text="← Retour" onAction="#goHome"
                         style="-fx-background-color: white; -fx-border-color: #ddd;
@@ -366,6 +489,7 @@
                 <Label text="Messages"
                        style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-font-family: 'Georgia';"/>
             </HBox>
+
             <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
                         style="-fx-background-color: transparent; -fx-border-color: transparent;">
                 <VBox fx:id="messageList" spacing="10" maxWidth="620">
@@ -379,6 +503,7 @@
         <!-- ─────────────────────────────────────────────────────────── -->
         <VBox fx:id="viewSettings" spacing="16" visible="false" managed="false">
             <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
+
             <HBox alignment="CENTER_LEFT" spacing="14">
                 <Button text="← Retour" onAction="#goHome"
                         style="-fx-background-color: white; -fx-border-color: #ddd;
@@ -387,38 +512,50 @@
                 <Label text="Paramètres"
                        style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-font-family: 'Georgia';"/>
             </HBox>
+
             <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
                         style="-fx-background-color: transparent; -fx-border-color: transparent;">
                 <VBox spacing="14" maxWidth="500">
+
                     <VBox spacing="0"
-                          style="-fx-background-color: white; -fx-background-radius: 16; -fx-border-color: #eee; -fx-border-radius: 16;">
+                          style="-fx-background-color: white; -fx-background-radius: 16;
+                                 -fx-border-color: #eee; -fx-border-radius: 16;">
                         <padding><Insets top="16" right="20" bottom="16" left="20"/></padding>
                         <Label text="Notifications"
                                style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 0 0 12 0;"/>
                         <VBox fx:id="settingsNotifList" spacing="0"/>
                     </VBox>
+
                     <VBox spacing="0"
-                          style="-fx-background-color: white; -fx-background-radius: 16; -fx-border-color: #eee; -fx-border-radius: 16;">
+                          style="-fx-background-color: white; -fx-background-radius: 16;
+                                 -fx-border-color: #eee; -fx-border-radius: 16;">
                         <padding><Insets top="16" right="20" bottom="16" left="20"/></padding>
                         <Label text="Confidentialité"
                                style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 0 0 12 0;"/>
                         <VBox fx:id="settingsPrivacyList" spacing="0"/>
                     </VBox>
+
                     <VBox spacing="10"
-                          style="-fx-background-color: white; -fx-background-radius: 16; -fx-border-color: #eee; -fx-border-radius: 16;">
+                          style="-fx-background-color: white; -fx-background-radius: 16;
+                                 -fx-border-color: #eee; -fx-border-radius: 16;">
                         <padding><Insets top="16" right="20" bottom="16" left="20"/></padding>
-                        <Label text="Compte" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+                        <Label text="Compte"
+                               style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
                         <HBox alignment="CENTER_LEFT" spacing="12" prefHeight="44"
                               style="-fx-border-color: transparent transparent #f0f0f0 transparent; -fx-border-width: 0 0 1 0;">
-                            <Label text="Changer le mot de passe" style="-fx-font-size: 13px;" HBox.hgrow="ALWAYS"/>
-                            <Button text="Modifier" onAction="#handleChangePassword"
+                            <Label text="Changer le mot de passe"
+                                   style="-fx-font-size: 13px;" HBox.hgrow="ALWAYS"/>
+                            <Button text="Modifier"
+                                    onAction="#handleChangePassword"
                                     style="-fx-background-color: #f0f0f0; -fx-border-radius: 8;
-                                           -fx-background-radius: 8; -fx-font-size: 12px; -fx-padding: 6 14; -fx-cursor: hand;"/>
+                                           -fx-background-radius: 8; -fx-font-size: 12px;
+                                           -fx-padding: 6 14; -fx-cursor: hand;"/>
                         </HBox>
                         <HBox alignment="CENTER_LEFT" spacing="12" prefHeight="44">
                             <Label text="Supprimer le compte"
                                    style="-fx-font-size: 13px; -fx-text-fill: #e24b4a;" HBox.hgrow="ALWAYS"/>
-                            <Button text="Supprimer" onAction="#handleDeleteAccount"
+                            <Button text="Supprimer"
+                                    onAction="#handleDeleteAccount"
                                     style="-fx-background-color: #fff0f0; -fx-text-fill: #e24b4a;
                                            -fx-border-radius: 8; -fx-background-radius: 8;
                                            -fx-font-size: 12px; -fx-padding: 6 14; -fx-cursor: hand;"/>
@@ -433,6 +570,7 @@
         <!-- ─────────────────────────────────────────────────────────── -->
         <VBox fx:id="viewCourses" spacing="16" visible="false" managed="false">
             <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
+
             <HBox alignment="CENTER_LEFT" spacing="14">
                 <Button text="← Retour" onAction="#goHome"
                         style="-fx-background-color: white; -fx-border-color: #ddd;
@@ -441,6 +579,7 @@
                 <Label text="Mes Cours"
                        style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-font-family: 'Georgia';"/>
             </HBox>
+
             <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
                         style="-fx-background-color: transparent; -fx-border-color: transparent;">
                 <FlowPane fx:id="allCoursesGrid" hgap="14" vgap="14" prefWrapLength="800"/>
@@ -448,118 +587,427 @@
         </VBox>
 
         <!-- ═══════════════════════════════════════════════════════════ -->
-        <!--  VUE RELAXATION                                              -->
+        <!--  VUE RELAXATION  — GRILLE 3 × 2 (doc3)                    -->
         <!-- ═══════════════════════════════════════════════════════════ -->
         <VBox fx:id="viewRelax" spacing="0" visible="false" managed="false">
+
             <HBox prefHeight="90" alignment="CENTER_LEFT" spacing="16"
                   style="-fx-background-color: linear-gradient(to right, #e8f5e9, #f3e5f5);
-                         -fx-border-color: transparent transparent #e0e0e0 transparent; -fx-border-width: 0 0 1 0;">
+                         -fx-border-color: transparent transparent #e0e0e0 transparent;
+                         -fx-border-width: 0 0 1 0;">
                 <padding><Insets top="0" right="28" bottom="0" left="28"/></padding>
+
                 <Button text="← Retour" onAction="#goHome"
                         style="-fx-background-color: white; -fx-border-color: #ddd;
                                -fx-border-radius: 10; -fx-background-radius: 10;
                                -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px;"/>
+
                 <VBox spacing="2">
                     <Label text="Espace Bien-Être &amp; Relaxation"
-                           style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-font-family: 'Georgia'; -fx-text-fill: #2e4a3e;"/>
+                           style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-font-family: 'Georgia';
+                                  -fx-text-fill: #2e4a3e;"/>
                     <Label text="Prenez soin de vous — corps et esprit."
                            style="-fx-font-size: 12px; -fx-text-fill: #6a8a76;"/>
                 </VBox>
                 <Region HBox.hgrow="ALWAYS"/>
                 <Label text="🌿" style="-fx-font-size: 40px;"/>
             </HBox>
+
             <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
                         style="-fx-background-color: #f5f5f5; -fx-border-color: transparent;">
-                <VBox spacing="24">
-                    <padding><Insets top="28" right="28" bottom="28" left="28"/></padding>
-                    <HBox prefHeight="100" spacing="20" alignment="CENTER_LEFT"
-                          style="-fx-background-color: white; -fx-background-radius: 18;
-                                 -fx-border-color: #e0f0e8; -fx-border-radius: 18; -fx-border-width: 1.5;">
-                        <padding><Insets top="20" right="24" bottom="20" left="24"/></padding>
-                        <Label text="💡" style="-fx-font-size: 36px;"/>
+                <VBox spacing="20">
+                    <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
+
+                    <!-- BANNIÈRE INFO -->
+                    <HBox prefHeight="80" spacing="16" alignment="CENTER_LEFT"
+                          style="-fx-background-color: white; -fx-background-radius: 16;
+                                 -fx-border-color: #c8e6c9; -fx-border-radius: 16; -fx-border-width: 1.5;">
+                        <padding><Insets top="16" right="20" bottom="16" left="20"/></padding>
+                        <Label text="💡" style="-fx-font-size: 30px;"/>
                         <VBox spacing="4" HBox.hgrow="ALWAYS">
                             <Label text="Le saviez-vous ?"
-                                   style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #2e4a3e;"/>
+                                   style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #2e4a3e;"/>
                             <Label text="La relaxation régulière améliore la concentration, réduit le stress et booste les performances d'apprentissage de 30 %."
-                                   style="-fx-font-size: 12px; -fx-text-fill: #555555; -fx-wrap-text: true;" prefWidth="500"/>
+                                   style="-fx-font-size: 12px; -fx-text-fill: #555555; -fx-wrap-text: true;"
+                                   prefWidth="600"/>
                         </VBox>
                     </HBox>
-                    <HBox spacing="20">
-                        <VBox spacing="16" HBox.hgrow="ALWAYS" prefWidth="340"
+
+                    <!-- ══ GRILLE 3 × 2 ════════════════════════════════ -->
+                    <GridPane hgap="16" vgap="16">
+                        <columnConstraints>
+                            <ColumnConstraints hgrow="ALWAYS" percentWidth="33.33"/>
+                            <ColumnConstraints hgrow="ALWAYS" percentWidth="33.33"/>
+                            <ColumnConstraints hgrow="ALWAYS" percentWidth="33.33"/>
+                        </columnConstraints>
+
+                        <!-- ── LIGNE 0 ─────────────────────────────── -->
+
+                        <!-- col=0  CARTE MÉDECIN -->
+                        <VBox spacing="12" GridPane.columnIndex="0" GridPane.rowIndex="0"
                               style="-fx-background-color: white; -fx-background-radius: 20;
                                      -fx-border-color: #dceefb; -fx-border-radius: 20; -fx-border-width: 1.5;
                                      -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 12, 0, 0, 4);">
-                            <padding><Insets top="28" right="24" bottom="28" left="24"/></padding>
-                            <HBox alignment="CENTER_LEFT" spacing="12">
+                            <padding><Insets top="24" right="20" bottom="24" left="20"/></padding>
+
+                            <HBox alignment="CENTER_LEFT" spacing="10">
                                 <Label text="🩺"
-                                       style="-fx-font-size: 38px; -fx-background-color: #e8f4fd; -fx-background-radius: 14; -fx-padding: 10 14;"/>
+                                       style="-fx-font-size: 32px; -fx-background-color: #e8f4fd;
+                                              -fx-background-radius: 12; -fx-padding: 8 12;"/>
                                 <Label text="Santé"
                                        style="-fx-background-color: #dceefb; -fx-text-fill: #1565c0;
-                                              -fx-font-size: 11px; -fx-font-weight: bold; -fx-padding: 4 10; -fx-background-radius: 20;"/>
+                                              -fx-font-size: 11px; -fx-font-weight: bold;
+                                              -fx-padding: 4 10; -fx-background-radius: 20;"/>
                             </HBox>
+
                             <Label text="Consulter un Médecin"
-                                   style="-fx-font-size: 17px; -fx-font-weight: bold; -fx-text-fill: #1a1a2e; -fx-font-family: 'Georgia';"/>
+                                   style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #1a1a2e;
+                                          -fx-font-family: 'Georgia'; -fx-wrap-text: true;" prefWidth="220"/>
+
                             <Label text="Obtenez des conseils médicaux personnalisés sur la gestion du stress, la posture, le sommeil et le bien-être physique liés à votre parcours d'apprentissage."
-                                   style="-fx-font-size: 12px; -fx-text-fill: #666; -fx-wrap-text: true;"/>
+                                   style="-fx-font-size: 12px; -fx-text-fill: #666; -fx-wrap-text: true;" prefWidth="220"/>
+
                             <VBox spacing="7">
                                 <HBox spacing="8" alignment="CENTER_LEFT">
                                     <Label text="✔" style="-fx-text-fill: #4caf50; -fx-font-size: 13px;"/>
-                                    <Label text="Gestion du stress et de l'anxiété" style="-fx-font-size: 12px; -fx-text-fill: #444;"/>
+                                    <Label text="Gestion du stress et de l'anxiété"
+                                           style="-fx-font-size: 12px; -fx-text-fill: #444;"/>
                                 </HBox>
                                 <HBox spacing="8" alignment="CENTER_LEFT">
                                     <Label text="✔" style="-fx-text-fill: #4caf50; -fx-font-size: 13px;"/>
-                                    <Label text="Conseils sur la posture et ergonomie" style="-fx-font-size: 12px; -fx-text-fill: #444;"/>
+                                    <Label text="Conseils sur la posture et ergonomie"
+                                           style="-fx-font-size: 12px; -fx-text-fill: #444;"/>
                                 </HBox>
                                 <HBox spacing="8" alignment="CENTER_LEFT">
                                     <Label text="✔" style="-fx-text-fill: #4caf50; -fx-font-size: 13px;"/>
-                                    <Label text="Amélioration de la qualité du sommeil" style="-fx-font-size: 12px; -fx-text-fill: #444;"/>
+                                    <Label text="Amélioration de la qualité du sommeil"
+                                           style="-fx-font-size: 12px; -fx-text-fill: #444;"/>
                                 </HBox>
                             </VBox>
+
                             <Region VBox.vgrow="ALWAYS"/>
-                            <Button fx:id="btnConsulterMedecin" text="🩺  Consulter un médecin"
-                                    onAction="#handleConsulterMedecin" prefWidth="Infinity"
+
+                            <Button fx:id="btnConsulterMedecin"
+                                    text="🩺  Consulter un médecin"
+                                    onAction="#handleConsulterMedecin"
+                                    maxWidth="Infinity"
                                     style="-fx-background-color: #1565c0; -fx-text-fill: white;
                                            -fx-background-radius: 12; -fx-font-size: 13px;
-                                           -fx-font-weight: bold; -fx-padding: 12 20; -fx-cursor: hand;"/>
+                                           -fx-font-weight: bold; -fx-padding: 12 16; -fx-cursor: hand;"/>
                         </VBox>
-                        <VBox spacing="16" HBox.hgrow="ALWAYS" prefWidth="340"
+
+                        <!-- col=1  CARTE SCORE BIEN-ÊTRE -->
+                        <VBox spacing="12" GridPane.columnIndex="1" GridPane.rowIndex="0"
                               style="-fx-background-color: white; -fx-background-radius: 20;
                                      -fx-border-color: #ede7f6; -fx-border-radius: 20; -fx-border-width: 1.5;
                                      -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 12, 0, 0, 4);">
-                            <padding><Insets top="28" right="24" bottom="28" left="24"/></padding>
-                            <HBox alignment="CENTER_LEFT" spacing="12">
+                            <padding><Insets top="24" right="20" bottom="24" left="20"/></padding>
+
+                            <HBox alignment="CENTER_LEFT" spacing="10">
                                 <Label text="📊"
-                                       style="-fx-font-size: 38px; -fx-background-color: #f3e5f5; -fx-background-radius: 14; -fx-padding: 10 14;"/>
+                                       style="-fx-font-size: 32px; -fx-background-color: #f3e5f5;
+                                              -fx-background-radius: 12; -fx-padding: 8 12;"/>
                                 <Label text="Évaluation"
                                        style="-fx-background-color: #ede7f6; -fx-text-fill: #6a1b9a;
-                                              -fx-font-size: 11px; -fx-font-weight: bold; -fx-padding: 4 10; -fx-background-radius: 20;"/>
+                                              -fx-font-size: 11px; -fx-font-weight: bold;
+                                              -fx-padding: 4 10; -fx-background-radius: 20;"/>
                             </HBox>
+
                             <Label text="Calculer mon Score de Bien-Être"
-                                   style="-fx-font-size: 17px; -fx-font-weight: bold; -fx-text-fill: #1a1a2e; -fx-font-family: 'Georgia';"/>
+                                   style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #1a1a2e;
+                                          -fx-font-family: 'Georgia'; -fx-wrap-text: true;" prefWidth="220"/>
+
                             <Label text="Évaluez votre niveau de relaxation et de bien-être mental grâce à notre questionnaire scientifique basé sur l'échelle PSS (Perceived Stress Scale)."
-                                   style="-fx-font-size: 12px; -fx-text-fill: #666; -fx-wrap-text: true;"/>
+                                   style="-fx-font-size: 12px; -fx-text-fill: #666; -fx-wrap-text: true;" prefWidth="220"/>
+
                             <VBox spacing="7">
                                 <HBox spacing="8" alignment="CENTER_LEFT">
                                     <Label text="✔" style="-fx-text-fill: #9c27b0; -fx-font-size: 13px;"/>
-                                    <Label text="Questionnaire validé scientifiquement" style="-fx-font-size: 12px; -fx-text-fill: #444;"/>
+                                    <Label text="Questionnaire validé scientifiquement"
+                                           style="-fx-font-size: 12px; -fx-text-fill: #444;"/>
                                 </HBox>
                                 <HBox spacing="8" alignment="CENTER_LEFT">
                                     <Label text="✔" style="-fx-text-fill: #9c27b0; -fx-font-size: 13px;"/>
-                                    <Label text="Résultat personnalisé et interprété" style="-fx-font-size: 12px; -fx-text-fill: #444;"/>
+                                    <Label text="Résultat personnalisé et interprété"
+                                           style="-fx-font-size: 12px; -fx-text-fill: #444;"/>
                                 </HBox>
                                 <HBox spacing="8" alignment="CENTER_LEFT">
                                     <Label text="✔" style="-fx-text-fill: #9c27b0; -fx-font-size: 13px;"/>
-                                    <Label text="Recommandations adaptées à votre profil" style="-fx-font-size: 12px; -fx-text-fill: #444;"/>
+                                    <Label text="Recommandations adaptées à votre profil"
+                                           style="-fx-font-size: 12px; -fx-text-fill: #444;"/>
                                 </HBox>
                             </VBox>
+
                             <Region VBox.vgrow="ALWAYS"/>
-                            <Button fx:id="btnCalculerScore" text="📊  Calculer mon score"
-                                    onAction="#handleCalculerScore" prefWidth="Infinity"
+
+                            <Button fx:id="btnCalculerScore"
+                                    text="📊  Calculer mon score"
+                                    onAction="#handleCalculerScore"
+                                    maxWidth="Infinity"
                                     style="-fx-background-color: #6a1b9a; -fx-text-fill: white;
                                            -fx-background-radius: 12; -fx-font-size: 13px;
-                                           -fx-font-weight: bold; -fx-padding: 12 20; -fx-cursor: hand;"/>
+                                           -fx-font-weight: bold; -fx-padding: 12 16; -fx-cursor: hand;"/>
                         </VBox>
+
+                        <!-- col=2  CARTE CATCH STRESS -->
+                        <VBox spacing="12" GridPane.columnIndex="2" GridPane.rowIndex="0"
+                              style="-fx-background-color: white; -fx-background-radius: 20;
+                                     -fx-border-color: #ffcdd2; -fx-border-radius: 20; -fx-border-width: 1.5;
+                                     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 12, 0, 0, 4);">
+                            <padding><Insets top="24" right="20" bottom="24" left="20"/></padding>
+
+                            <HBox alignment="CENTER_LEFT" spacing="10">
+                                <Label text="🎯"
+                                       style="-fx-font-size: 32px; -fx-background-color: #ffebee;
+                                              -fx-background-radius: 12; -fx-padding: 8 12;"/>
+                                <Label text="Anti-Stress"
+                                       style="-fx-background-color: #ffcdd2; -fx-text-fill: #c62828;
+                                              -fx-font-size: 11px; -fx-font-weight: bold;
+                                              -fx-padding: 4 10; -fx-background-radius: 20;"/>
+                            </HBox>
+
+                            <Label text="Catch the Stress"
+                                   style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #1a1a2e;
+                                          -fx-font-family: 'Georgia'; -fx-wrap-text: true;" prefWidth="220"/>
+
+                            <Label text="Identifiez et maîtrisez vos sources de stress grâce à nos exercices interactifs et techniques de coping personnalisées."
+                                   style="-fx-font-size: 12px; -fx-text-fill: #666; -fx-wrap-text: true;" prefWidth="220"/>
+
+                            <VBox spacing="7">
+                                <HBox spacing="8" alignment="CENTER_LEFT">
+                                    <Label text="✔" style="-fx-text-fill: #e53935; -fx-font-size: 13px;"/>
+                                    <Label text="Exercices de pleine conscience"
+                                           style="-fx-font-size: 12px; -fx-text-fill: #444;"/>
+                                </HBox>
+                                <HBox spacing="8" alignment="CENTER_LEFT">
+                                    <Label text="✔" style="-fx-text-fill: #e53935; -fx-font-size: 13px;"/>
+                                    <Label text="Techniques de respiration"
+                                           style="-fx-font-size: 12px; -fx-text-fill: #444;"/>
+                                </HBox>
+                                <HBox spacing="8" alignment="CENTER_LEFT">
+                                    <Label text="✔" style="-fx-text-fill: #e53935; -fx-font-size: 13px;"/>
+                                    <Label text="Suivi personnalisé du stress"
+                                           style="-fx-font-size: 12px; -fx-text-fill: #444;"/>
+                                </HBox>
+                            </VBox>
+
+                            <Region VBox.vgrow="ALWAYS"/>
+
+                            <Button fx:id="btnCatchStress"
+                                    text="🎯  Catch Stress"
+                                    onAction="#handleCatchStress"
+                                    maxWidth="Infinity"
+                                    style="-fx-background-color: #c62828; -fx-text-fill: white;
+                                           -fx-background-radius: 12; -fx-font-size: 13px;
+                                           -fx-font-weight: bold; -fx-padding: 12 16; -fx-cursor: hand;"/>
+                        </VBox>
+
+                        <!-- ── LIGNE 1 ─────────────────────────────── -->
+
+                        <!-- col=0  CARTE FITNESS -->
+                        <VBox spacing="12" GridPane.columnIndex="0" GridPane.rowIndex="1"
+                              style="-fx-background-color: white; -fx-background-radius: 20;
+                                     -fx-border-color: #b3e5fc; -fx-border-radius: 20; -fx-border-width: 1.5;
+                                     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 12, 0, 0, 4);">
+                            <padding><Insets top="24" right="20" bottom="24" left="20"/></padding>
+
+                            <HBox alignment="CENTER_LEFT" spacing="10">
+                                <Label text="💪"
+                                       style="-fx-font-size: 32px; -fx-background-color: #e1f5fe;
+                                              -fx-background-radius: 12; -fx-padding: 8 12;"/>
+                                <Label text="Forme"
+                                       style="-fx-background-color: #b3e5fc; -fx-text-fill: #0277bd;
+                                              -fx-font-size: 11px; -fx-font-weight: bold;
+                                              -fx-padding: 4 10; -fx-background-radius: 20;"/>
+                            </HBox>
+
+                            <Label text="Fitness"
+                                   style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #1a1a2e;
+                                          -fx-font-family: 'Georgia'; -fx-wrap-text: true;" prefWidth="220"/>
+
+                            <Label text="Des exercices physiques adaptés pour rester en forme pendant vos sessions d'apprentissage et libérer les tensions."
+                                   style="-fx-font-size: 12px; -fx-text-fill: #666; -fx-wrap-text: true;" prefWidth="220"/>
+
+                            <VBox spacing="7">
+                                <HBox spacing="8" alignment="CENTER_LEFT">
+                                    <Label text="✔" style="-fx-text-fill: #0288d1; -fx-font-size: 13px;"/>
+                                    <Label text="Exercices de stretching"
+                                           style="-fx-font-size: 12px; -fx-text-fill: #444;"/>
+                                </HBox>
+                                <HBox spacing="8" alignment="CENTER_LEFT">
+                                    <Label text="✔" style="-fx-text-fill: #0288d1; -fx-font-size: 13px;"/>
+                                    <Label text="Séances anti-sédentarité"
+                                           style="-fx-font-size: 12px; -fx-text-fill: #444;"/>
+                                </HBox>
+                                <HBox spacing="8" alignment="CENTER_LEFT">
+                                    <Label text="✔" style="-fx-text-fill: #0288d1; -fx-font-size: 13px;"/>
+                                    <Label text="Routines énergétiques"
+                                           style="-fx-font-size: 12px; -fx-text-fill: #444;"/>
+                                </HBox>
+                            </VBox>
+
+                            <Region VBox.vgrow="ALWAYS"/>
+
+                            <Button fx:id="btnFitness"
+                                    text="💪  Fitness"
+                                    onAction="#handleFitness"
+                                    maxWidth="Infinity"
+                                    style="-fx-background-color: #0277bd; -fx-text-fill: white;
+                                           -fx-background-radius: 12; -fx-font-size: 13px;
+                                           -fx-font-weight: bold; -fx-padding: 12 16; -fx-cursor: hand;"/>
+                        </VBox>
+
+                        <!-- col=1  CARTE NUTRITION -->
+                        <VBox spacing="12" GridPane.columnIndex="1" GridPane.rowIndex="1"
+                              style="-fx-background-color: white; -fx-background-radius: 20;
+                                     -fx-border-color: #c8e6c9; -fx-border-radius: 20; -fx-border-width: 1.5;
+                                     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 12, 0, 0, 4);">
+                            <padding><Insets top="24" right="20" bottom="24" left="20"/></padding>
+
+                            <HBox alignment="CENTER_LEFT" spacing="10">
+                                <Label text="🥗"
+                                       style="-fx-font-size: 32px; -fx-background-color: #e8f5e9;
+                                              -fx-background-radius: 12; -fx-padding: 8 12;"/>
+                                <Label text="Alimentation"
+                                       style="-fx-background-color: #c8e6c9; -fx-text-fill: #2e7d32;
+                                              -fx-font-size: 11px; -fx-font-weight: bold;
+                                              -fx-padding: 4 10; -fx-background-radius: 20;"/>
+                            </HBox>
+
+                            <Label text="Nutrition"
+                                   style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #1a1a2e;
+                                          -fx-font-family: 'Georgia'; -fx-wrap-text: true;" prefWidth="220"/>
+
+                            <Label text="Conseils nutritionnels pour optimiser votre énergie, concentration et bien-être général pendant vos études."
+                                   style="-fx-font-size: 12px; -fx-text-fill: #666; -fx-wrap-text: true;" prefWidth="220"/>
+
+                            <VBox spacing="7">
+                                <HBox spacing="8" alignment="CENTER_LEFT">
+                                    <Label text="✔" style="-fx-text-fill: #43a047; -fx-font-size: 13px;"/>
+                                    <Label text="Aliments boosts d'énergie"
+                                           style="-fx-font-size: 12px; -fx-text-fill: #444;"/>
+                                </HBox>
+                                <HBox spacing="8" alignment="CENTER_LEFT">
+                                    <Label text="✔" style="-fx-text-fill: #43a047; -fx-font-size: 13px;"/>
+                                    <Label text="Hydratation optimale"
+                                           style="-fx-font-size: 12px; -fx-text-fill: #444;"/>
+                                </HBox>
+                                <HBox spacing="8" alignment="CENTER_LEFT">
+                                    <Label text="✔" style="-fx-text-fill: #43a047; -fx-font-size: 13px;"/>
+                                    <Label text="Recettes intelligentes"
+                                           style="-fx-font-size: 12px; -fx-text-fill: #444;"/>
+                                </HBox>
+                            </VBox>
+
+                            <Region VBox.vgrow="ALWAYS"/>
+
+                            <Button fx:id="btnNutrition"
+                                    text="🥗  Nutrition"
+                                    onAction="#handleNutrition"
+                                    maxWidth="Infinity"
+                                    style="-fx-background-color: #2e7d32; -fx-text-fill: white;
+                                           -fx-background-radius: 12; -fx-font-size: 13px;
+                                           -fx-font-weight: bold; -fx-padding: 12 16; -fx-cursor: hand;"/>
+                        </VBox>
+
+                        <!-- col=2  CARTE RÉCLAMATION -->
+                        <VBox spacing="12" GridPane.columnIndex="2" GridPane.rowIndex="1"
+                              style="-fx-background-color: white; -fx-background-radius: 20;
+                                     -fx-border-color: #ffe0b2; -fx-border-radius: 20; -fx-border-width: 1.5;
+                                     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 12, 0, 0, 4);">
+                            <padding><Insets top="24" right="20" bottom="24" left="20"/></padding>
+
+                            <HBox alignment="CENTER_LEFT" spacing="10">
+                                <Label text="📨"
+                                       style="-fx-font-size: 32px; -fx-background-color: #fff3e0;
+                                              -fx-background-radius: 12; -fx-padding: 8 12;"/>
+                                <Label text="Réclamation"
+                                       style="-fx-background-color: #ffe0b2; -fx-text-fill: #e65100;
+                                              -fx-font-size: 11px; -fx-font-weight: bold;
+                                              -fx-padding: 4 10; -fx-background-radius: 20;"/>
+                            </HBox>
+
+                            <Label text="Envoyer une Réclamation"
+                                   style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #1a1a2e;
+                                          -fx-font-family: 'Georgia'; -fx-wrap-text: true;" prefWidth="220"/>
+
+                            <Label text="Signalez un problème, une suggestion ou une insatisfaction. Notre équipe traitera votre demande dans les meilleurs délais."
+                                   style="-fx-font-size: 12px; -fx-text-fill: #666; -fx-wrap-text: true;" prefWidth="220"/>
+
+                            <VBox spacing="7">
+                                <HBox spacing="8" alignment="CENTER_LEFT">
+                                    <Label text="✔" style="-fx-text-fill: #ff9800; -fx-font-size: 13px;"/>
+                                    <Label text="Formulaire simple et rapide"
+                                           style="-fx-font-size: 12px; -fx-text-fill: #444;"/>
+                                </HBox>
+                                <HBox spacing="8" alignment="CENTER_LEFT">
+                                    <Label text="✔" style="-fx-text-fill: #ff9800; -fx-font-size: 13px;"/>
+                                    <Label text="Réponse garantie sous 48 h"
+                                           style="-fx-font-size: 12px; -fx-text-fill: #444;"/>
+                                </HBox>
+                                <HBox spacing="8" alignment="CENTER_LEFT">
+                                    <Label text="✔" style="-fx-text-fill: #ff9800; -fx-font-size: 13px;"/>
+                                    <Label text="Suivi de votre demande"
+                                           style="-fx-font-size: 12px; -fx-text-fill: #444;"/>
+                                </HBox>
+                            </VBox>
+
+                            <Region VBox.vgrow="ALWAYS"/>
+
+                            <Button fx:id="btnEnvoyerReclamation"
+                                    text="📨  Envoyer une réclamation"
+                                    onAction="#handleEnvoyerReclamation"
+                                    maxWidth="Infinity"
+                                    style="-fx-background-color: #ff9800; -fx-text-fill: white;
+                                           -fx-background-radius: 12; -fx-font-size: 13px;
+                                           -fx-font-weight: bold; -fx-padding: 12 16; -fx-cursor: hand;"/>
+                        </VBox>
+
+                    </GridPane>
+                    <!-- ══ FIN GRILLE ══════════════════════════════════ -->
+
+                    <!-- ══ BANNIÈRE VIP ════════════════════════════════ -->
+                    <HBox spacing="20" alignment="CENTER_LEFT"
+                          style="-fx-background-color: linear-gradient(to right, #1a1a2e, #16213e, #0f3460);
+                                 -fx-background-radius: 20;
+                                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 18, 0, 0, 6);">
+                        <padding><Insets top="22" right="28" bottom="22" left="28"/></padding>
+
+                        <VBox spacing="6" HBox.hgrow="ALWAYS">
+                            <HBox spacing="10" alignment="CENTER_LEFT">
+                                <Label text="👑"  style="-fx-font-size: 28px;"/>
+                                <Label text="ACCÈS VIP"
+                                       style="-fx-font-size: 20px; -fx-font-weight: bold;
+                                              -fx-text-fill: #ffd700; -fx-font-family: 'Georgia';"/>
+                                <Label text="PREMIUM"
+                                       style="-fx-background-color: #ffd700; -fx-text-fill: #1a1a2e;
+                                              -fx-font-size: 10px; -fx-font-weight: bold;
+                                              -fx-padding: 3 8; -fx-background-radius: 20;"/>
+                            </HBox>
+                            <Label text="Débloquez l'analyse de sommeil par IA, le suivi avancé et les fonctionnalités exclusives."
+                                   style="-fx-font-size: 12px; -fx-text-fill: #c0c0c0; -fx-wrap-text: true;"
+                                   prefWidth="500"/>
+                            <HBox spacing="16" style="-fx-padding: 4 0 0 0;">
+                                <Label text="✦ Analyse sommeil par caméra"
+                                       style="-fx-font-size: 11px; -fx-text-fill: #ffd700;"/>
+                                <Label text="✦ Chatbot IA avancé"
+                                       style="-fx-font-size: 11px; -fx-text-fill: #ffd700;"/>
+                                <Label text="✦ Rapports personnalisés"
+                                       style="-fx-font-size: 11px; -fx-text-fill: #ffd700;"/>
+                            </HBox>
+                        </VBox>
+
+                        <Button fx:id="btnVip"
+                                text="👑  Accès VIP"
+                                onAction="#handleVip"
+                                style="-fx-background-color: linear-gradient(to bottom, #ffd700, #ffb300);
+                                       -fx-text-fill: #1a1a2e; -fx-font-size: 14px; -fx-font-weight: bold;
+                                       -fx-background-radius: 14; -fx-padding: 14 28; -fx-cursor: hand;
+                                       -fx-effect: dropshadow(gaussian, rgba(255,215,0,0.5), 12, 0, 0, 4);"/>
                     </HBox>
+                    <!-- ══ FIN BANNIÈRE VIP ════════════════════════════ -->
+
+                    <!-- CONSEILS QUOTIDIENS -->
                     <VBox spacing="12"
                           style="-fx-background-color: #f0fdf4; -fx-background-radius: 16;
                                  -fx-border-color: #c8e6c9; -fx-border-radius: 16; -fx-border-width: 1;">
@@ -568,21 +1016,24 @@
                                style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #1b5e20;"/>
                         <HBox spacing="16">
                             <VBox spacing="4" HBox.hgrow="ALWAYS" prefWidth="180"
-                                  style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 12 14;">
+                                  style="-fx-background-color: white; -fx-background-radius: 12;
+                                         -fx-padding: 12 14;">
                                 <Label text="😮‍💨  Respiration 4-7-8"
                                        style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #2e7d32;"/>
                                 <Label text="Inspirez 4 s, retenez 7 s, expirez 8 s. Répétez 3 fois."
                                        style="-fx-font-size: 11px; -fx-text-fill: #555; -fx-wrap-text: true;"/>
                             </VBox>
                             <VBox spacing="4" HBox.hgrow="ALWAYS" prefWidth="180"
-                                  style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 12 14;">
+                                  style="-fx-background-color: white; -fx-background-radius: 12;
+                                         -fx-padding: 12 14;">
                                 <Label text="🚶  Pause active"
                                        style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #2e7d32;"/>
                                 <Label text="Faites 5 min de marche toutes les 45 min d'apprentissage."
                                        style="-fx-font-size: 11px; -fx-text-fill: #555; -fx-wrap-text: true;"/>
                             </VBox>
                             <VBox spacing="4" HBox.hgrow="ALWAYS" prefWidth="180"
-                                  style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 12 14;">
+                                  style="-fx-background-color: white; -fx-background-radius: 12;
+                                         -fx-padding: 12 14;">
                                 <Label text="💧  Hydratation"
                                        style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #2e7d32;"/>
                                 <Label text="Buvez au moins 1,5 L d'eau par jour pour maintenir votre concentration."
@@ -590,17 +1041,336 @@
                             </VBox>
                         </HBox>
                     </VBox>
+
                 </VBox>
             </ScrollPane>
         </VBox>
 
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!--  VUE VIP — PAIEMENT  (doc3)                                 -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <VBox fx:id="viewVip" spacing="0" visible="false" managed="false">
+
+            <HBox prefHeight="70" alignment="CENTER_LEFT" spacing="16"
+                  style="-fx-background-color: linear-gradient(to right, #1a1a2e, #16213e);
+                         -fx-border-color: transparent transparent #ffd700 transparent;
+                         -fx-border-width: 0 0 2 0;">
+                <padding><Insets top="0" right="28" bottom="0" left="28"/></padding>
+                <Button text="← Retour"
+                        onAction="#goToRelax"
+                        style="-fx-background-color: rgba(255,255,255,0.1); -fx-text-fill: white;
+                               -fx-border-color: rgba(255,255,255,0.3); -fx-border-radius: 10;
+                               -fx-background-radius: 10; -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px;"/>
+                <Label text="👑  Accès VIP — Paiement Sécurisé"
+                       style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-font-family: 'Georgia';
+                              -fx-text-fill: #ffd700;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label text="🔒 SSL"
+                       style="-fx-font-size: 12px; -fx-text-fill: #4caf50; -fx-font-weight: bold;"/>
+            </HBox>
+
+            <StackPane fx:id="vipArea" VBox.vgrow="ALWAYS"/>
+
+        </VBox>
+
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!--  VUE SLEEP — ANALYSE SOMMEIL IA  (doc3)                     -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <VBox fx:id="viewSleep" spacing="0" visible="false" managed="false">
+
+            <HBox prefHeight="70" alignment="CENTER_LEFT" spacing="16"
+                  style="-fx-background-color: linear-gradient(to right, #0d1b2a, #1b2838);
+                         -fx-border-color: transparent transparent #7c4dff transparent;
+                         -fx-border-width: 0 0 2 0;">
+                <padding><Insets top="0" right="28" bottom="0" left="28"/></padding>
+                <Button text="← Retour"
+                        onAction="#goToVip"
+                        style="-fx-background-color: rgba(255,255,255,0.1); -fx-text-fill: white;
+                               -fx-border-color: rgba(255,255,255,0.3); -fx-border-radius: 10;
+                               -fx-background-radius: 10; -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px;"/>
+                <Label text="😴  Analyse de Sommeil par IA"
+                       style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-font-family: 'Georgia';
+                              -fx-text-fill: #7c4dff;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label text="👑 VIP"
+                       style="-fx-font-size: 12px; -fx-text-fill: #ffd700; -fx-font-weight: bold;"/>
+            </HBox>
+
+            <StackPane fx:id="sleepArea" VBox.vgrow="ALWAYS"/>
+
+        </VBox>
+
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!--  VUE CONSULTER MÉDECIN  (doc3)                              -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <VBox fx:id="viewMedecin" spacing="0" visible="false" managed="false">
+
+            <HBox prefHeight="70" alignment="CENTER_LEFT" spacing="16"
+                  style="-fx-background-color: linear-gradient(to right, #e3f2fd, #e8f5e9);
+                         -fx-border-color: transparent transparent #e0e0e0 transparent;
+                         -fx-border-width: 0 0 1 0;">
+                <padding><Insets top="0" right="28" bottom="0" left="28"/></padding>
+                <Button text="← Retour"
+                        onAction="#goToRelax"
+                        style="-fx-background-color: white; -fx-border-color: #ddd;
+                               -fx-border-radius: 10; -fx-background-radius: 10;
+                               -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px;"/>
+                <Label fx:id="lblMedecinTitle" text="🩺  Consulter un Médecin"
+                       style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-font-family: 'Georgia';
+                              -fx-text-fill: #1565c0;"/>
+            </HBox>
+
+            <StackPane fx:id="medecinArea" VBox.vgrow="ALWAYS"/>
+
+        </VBox>
+
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!--  VUE CALCULER SCORE STRESS  (doc3)                          -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <VBox fx:id="viewStress" spacing="0" visible="false" managed="false">
+
+            <HBox prefHeight="70" alignment="CENTER_LEFT" spacing="16"
+                  style="-fx-background-color: linear-gradient(to right, #f3e5f5, #ede7f6);
+                         -fx-border-color: transparent transparent #e0e0e0 transparent;
+                         -fx-border-width: 0 0 1 0;">
+                <padding><Insets top="0" right="28" bottom="0" left="28"/></padding>
+                <Button text="← Retour"
+                        onAction="#goToRelax"
+                        style="-fx-background-color: white; -fx-border-color: #ddd;
+                               -fx-border-radius: 10; -fx-background-radius: 10;
+                               -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px;"/>
+                <Label text="📊  Calculer mon Score de Bien-Être"
+                       style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-font-family: 'Georgia';
+                              -fx-text-fill: #6a1b9a;"/>
+            </HBox>
+
+            <StackPane fx:id="stressArea" VBox.vgrow="ALWAYS"/>
+
+        </VBox>
+
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!--  VUE CATCH STRESS  (doc3)                                   -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <VBox fx:id="viewCatchStress" spacing="0" visible="false" managed="false">
+
+            <HBox prefHeight="70" alignment="CENTER_LEFT" spacing="16"
+                  style="-fx-background-color: linear-gradient(to right, #ffebee, #ffcdd2);
+                         -fx-border-color: transparent transparent #e0e0e0 transparent;
+                         -fx-border-width: 0 0 1 0;">
+                <padding><Insets top="0" right="28" bottom="0" left="28"/></padding>
+                <Button text="← Retour"
+                        onAction="#goToRelax"
+                        style="-fx-background-color: white; -fx-border-color: #ddd;
+                               -fx-border-radius: 10; -fx-background-radius: 10;
+                               -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px;"/>
+                <Label text="🎯  Catch the Stress"
+                       style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-font-family: 'Georgia';
+                              -fx-text-fill: #c62828;"/>
+            </HBox>
+
+            <StackPane fx:id="catchStressArea" VBox.vgrow="ALWAYS"/>
+
+        </VBox>
+
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!--  VUE FITNESS  (doc3)                                        -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <VBox fx:id="viewFitness" spacing="0" visible="false" managed="false">
+
+            <HBox prefHeight="70" alignment="CENTER_LEFT" spacing="16"
+                  style="-fx-background-color: linear-gradient(to right, #e1f5fe, #b3e5fc);
+                         -fx-border-color: transparent transparent #e0e0e0 transparent;
+                         -fx-border-width: 0 0 1 0;">
+                <padding><Insets top="0" right="28" bottom="0" left="28"/></padding>
+                <Button text="← Retour"
+                        onAction="#goToRelax"
+                        style="-fx-background-color: white; -fx-border-color: #ddd;
+                               -fx-border-radius: 10; -fx-background-radius: 10;
+                               -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px;"/>
+                <Label text="💪  Fitness"
+                       style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-font-family: 'Georgia';
+                              -fx-text-fill: #0277bd;"/>
+            </HBox>
+
+            <StackPane fx:id="fitnessArea" VBox.vgrow="ALWAYS"/>
+
+        </VBox>
+
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!--  VUE NUTRITION  (doc3)                                      -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <VBox fx:id="viewNutrition" spacing="0" visible="false" managed="false">
+
+            <HBox prefHeight="70" alignment="CENTER_LEFT" spacing="16"
+                  style="-fx-background-color: linear-gradient(to right, #e8f5e9, #c8e6c9);
+                         -fx-border-color: transparent transparent #e0e0e0 transparent;
+                         -fx-border-width: 0 0 1 0;">
+                <padding><Insets top="0" right="28" bottom="0" left="28"/></padding>
+                <Button text="← Retour"
+                        onAction="#goToRelax"
+                        style="-fx-background-color: white; -fx-border-color: #ddd;
+                               -fx-border-radius: 10; -fx-background-radius: 10;
+                               -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px;"/>
+                <Label text="🥗  Nutrition"
+                       style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-font-family: 'Georgia';
+                              -fx-text-fill: #2e7d32;"/>
+            </HBox>
+
+            <StackPane fx:id="nutritionArea" VBox.vgrow="ALWAYS"/>
+
+        </VBox>
+
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!--  VUE RÉCLAMATION  (doc3)                                    -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <VBox fx:id="viewReclamation" spacing="0" visible="false" managed="false">
+
+            <HBox prefHeight="70" alignment="CENTER_LEFT" spacing="16"
+                  style="-fx-background-color: linear-gradient(to right, #fff3e0, #ffe0b2);
+                         -fx-border-color: transparent transparent #e0e0e0 transparent;
+                         -fx-border-width: 0 0 1 0;">
+                <padding><Insets top="0" right="28" bottom="0" left="28"/></padding>
+                <Button text="← Retour"
+                        onAction="#goToRelax"
+                        style="-fx-background-color: white; -fx-border-color: #ddd;
+                               -fx-border-radius: 10; -fx-background-radius: 10;
+                               -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px;"/>
+                <Button text="🏠 Home"
+                        onAction="#goHome"
+                        style="-fx-background-color: white; -fx-border-color: #ddd;
+                               -fx-border-radius: 10; -fx-background-radius: 10;
+                               -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px;"/>
+                <Label text="📨  Envoyer une Réclamation"
+                       style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-font-family: 'Georgia';
+                              -fx-text-fill: #e65100;"/>
+            </HBox>
+
+            <VBox spacing="20" VBox.vgrow="ALWAYS"
+                  style="-fx-padding: 30;">
+                <Label text="📝 Veuillez écrire votre réclamation"
+                       style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+                <Label text="(La réclamation doit être courte)"
+                       style="-fx-font-size: 12px; -fx-text-fill: #888;"/>
+                <TextArea fx:id="reclamationTextArea"
+                          prefWidth="500" prefHeight="150"
+                          promptText="Écrivez votre réclamation ici..."
+                          wrapText="true"
+                          style="-fx-font-size: 14px; -fx-border-radius: 10; -fx-background-radius: 10;
+                               -fx-border-color: #ddd; -fx-padding: 10;"/>
+                <Button fx:id="btnEnvoyer"
+                        text="📨  Envoyer"
+                        onAction="#handleSendReclamation"
+                        prefWidth="200"
+                        style="-fx-background-color: #ff9800; -fx-text-fill: white;
+                               -fx-background-radius: 12; -fx-font-size: 14px;
+                               -fx-font-weight: bold; -fx-padding: 12 24; -fx-cursor: hand;"/>
+            </VBox>
+
+        </VBox>
+
         <!-- ─────────────────────────────────────────────────────────── -->
-        <!--  VUE QUIZ (StackPane contentArea)                           -->
+        <!--  VUE CHATBOT EDUWEL (Happiness Model)  (doc3)               -->
+        <!-- ─────────────────────────────────────────────────────────── -->
+        <VBox fx:id="viewChatbot" spacing="0" visible="false" managed="false">
+
+            <HBox prefHeight="70" alignment="CENTER_LEFT" spacing="16"
+                  style="-fx-background-color: linear-gradient(to right, #e8eaf6, #c5cae9);
+                         -fx-border-color: transparent transparent #e0e0e0 transparent;
+                         -fx-border-width: 0 0 1 0;">
+                <padding><Insets top="0" right="28" bottom="0" left="28"/></padding>
+                <Button text="← Retour"
+                        onAction="#goToStressOptions"
+                        style="-fx-background-color: white; -fx-border-color: #ddd;
+                               -fx-border-radius: 10; -fx-background-radius: 10;
+                               -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px;"/>
+                <Label text="🤖  Assistant EduWell — Analyse de Bonheur"
+                       style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-font-family: 'Georgia';
+                              -fx-text-fill: #1a237e;"/>
+            </HBox>
+
+            <StackPane fx:id="chatbotArea" VBox.vgrow="ALWAYS"/>
+
+        </VBox>
+
+        <!-- ─────────────────────────────────────────────────────────── -->
+        <!--  VUE CABINET PSYCHIATRE  (doc3)                              -->
+        <!-- ─────────────────────────────────────────────────────────── -->
+        <VBox fx:id="viewCabinet" spacing="0" visible="false" managed="false">
+
+            <HBox prefHeight="70" alignment="CENTER_LEFT" spacing="16"
+                  style="-fx-background-color: linear-gradient(to right, #e3f2fd, #f3e5f5);
+                         -fx-border-color: transparent transparent #e0e0e0 transparent;
+                         -fx-border-width: 0 0 1 0;">
+                <padding><Insets top="0" right="28" bottom="0" left="28"/></padding>
+                <Button text="← Retour"
+                        onAction="#goToStressOptions"
+                        style="-fx-background-color: white; -fx-border-color: #ddd;
+                               -fx-border-radius: 10; -fx-background-radius: 10;
+                               -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px;"/>
+                <Label text="🏥  Cabinet Psychiatre"
+                       style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-font-family: 'Georgia';
+                              -fx-text-fill: #1565c0;"/>
+            </HBox>
+
+            <StackPane fx:id="cabinetArea" VBox.vgrow="ALWAYS"/>
+
+        </VBox>
+
+        <!-- ─────────────────────────────────────────────────────────── -->
+        <!--  VUE EXERCICE DE RESPIRATION  (doc3)                         -->
+        <!-- ─────────────────────────────────────────────────────────── -->
+        <VBox fx:id="viewRespiration" spacing="0" visible="false" managed="false">
+
+            <HBox prefHeight="70" alignment="CENTER_LEFT" spacing="16"
+                  style="-fx-background-color: linear-gradient(to right, #e8f5e9, #c8e6c9);
+                         -fx-border-color: transparent transparent #e0e0e0 transparent;
+                         -fx-border-width: 0 0 1 0;">
+                <padding><Insets top="0" right="28" bottom="0" left="28"/></padding>
+                <Button text="← Retour"
+                        onAction="#goToStressOptions"
+                        style="-fx-background-color: white; -fx-border-color: #ddd;
+                               -fx-border-radius: 10; -fx-background-radius: 10;
+                               -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px;"/>
+                <Label text="🌬️  Exercice de Respiration"
+                       style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-font-family: 'Georgia';
+                              -fx-text-fill: #2e7d32;"/>
+            </HBox>
+
+            <StackPane fx:id="respirationArea" VBox.vgrow="ALWAYS"/>
+
+        </VBox>
+
+        <!-- ─────────────────────────────────────────────────────────── -->
+        <!--  VUE À PROPOS  (doc3)                                        -->
+        <!-- ─────────────────────────────────────────────────────────── -->
+        <VBox fx:id="viewAPropos" spacing="0" visible="false" managed="false">
+
+            <HBox prefHeight="70" alignment="CENTER_LEFT" spacing="16"
+                  style="-fx-background-color: linear-gradient(to right, #e3f2fd, #bbdefb);
+                         -fx-border-color: transparent transparent #e0e0e0 transparent;
+                         -fx-border-width: 0 0 1 0;">
+                <padding><Insets top="0" right="28" bottom="0" left="28"/></padding>
+                <Button text="← Retour"
+                        onAction="#goToStressOptions"
+                        style="-fx-background-color: white; -fx-border-color: #ddd;
+                               -fx-border-radius: 10; -fx-background-radius: 10;
+                               -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px;"/>
+                <Label text="ℹ️  À propos — Anti-Stress"
+                       style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-font-family: 'Georgia';
+                              -fx-text-fill: #1565c0;"/>
+            </HBox>
+
+            <StackPane fx:id="aProposArea" VBox.vgrow="ALWAYS"/>
+
+        </VBox>
+
+        <!-- ─────────────────────────────────────────────────────────── -->
+        <!--  VUE QUIZ                                                    -->
         <!-- ─────────────────────────────────────────────────────────── -->
         <StackPane fx:id="contentArea" visible="false" managed="false"/>
 
         <!-- ═══════════════════════════════════════════════════════════ -->
-        <!--  VUE ÉVÉNEMENTS  (FROM BRANCH)                              -->
+        <!--  VUE ÉVÉNEMENTS  (doc4 — branche Events)                    -->
         <!-- ═══════════════════════════════════════════════════════════ -->
         <VBox fx:id="viewEvents" spacing="0" visible="false" managed="false"
               style="-fx-background-color: #f5f5f5;">

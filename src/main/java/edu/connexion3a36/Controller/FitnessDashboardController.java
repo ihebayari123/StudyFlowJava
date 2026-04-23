@@ -1,4 +1,3 @@
-// MERGED: main version + branch Events feature
 package edu.connexion3a36.Controller;
 
 import edu.connexion3a36.entities.Utilisateur;
@@ -17,6 +16,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.*;
@@ -115,9 +115,45 @@ public class FitnessDashboardController implements Initializable {
     @FXML private TextField boutiqueSearchField;
 
     // =========================================================================
-    // FXML — RELAX
+    // FXML — RELAX (main version)
     // =========================================================================
-    @FXML private Button btnConsulterMedecin, btnCalculerScore;
+    @FXML private Button btnConsulterMedecin;
+    @FXML private Button btnCalculerScore;
+    @FXML private Button btnCatchStress;
+    @FXML private Button btnFitness;
+    @FXML private Button btnNutrition;
+    @FXML private Button btnEnvoyerReclamation;
+    @FXML private Button btnVip;
+
+    // ─── Nouvelles vues embarquées (main) ───────────────────────────────────
+    @FXML private VBox viewMedecin;
+    @FXML private VBox viewStress;
+    @FXML private VBox viewCatchStress;
+    @FXML private VBox viewFitness;
+    @FXML private VBox viewNutrition;
+    @FXML private VBox viewChatbot;
+    @FXML private VBox viewCabinet;
+    @FXML private VBox viewRespiration;
+    @FXML private VBox viewAPropos;
+    @FXML private VBox viewVip;
+    @FXML private VBox viewSleep;
+    @FXML private VBox viewReclamation;
+
+    @FXML private StackPane medecinArea;
+    @FXML private StackPane stressArea;
+    @FXML private StackPane catchStressArea;
+    @FXML private StackPane fitnessArea;
+    @FXML private StackPane nutritionArea;
+    @FXML private StackPane chatbotArea;
+    @FXML private StackPane cabinetArea;
+    @FXML private StackPane respirationArea;
+    @FXML private StackPane aProposArea;
+    @FXML private StackPane vipArea;
+    @FXML private StackPane sleepArea;
+
+    @FXML private Label lblMedecinTitle;
+    @FXML private TextArea reclamationTextArea;
+    @FXML private Button btnEnvoyer;
 
     // =========================================================================
     // FXML — EVENTS (branch)
@@ -175,6 +211,7 @@ public class FitnessDashboardController implements Initializable {
     private Utilisateur utilisateurConnecte;
     private Button      activeNavButton;
     private Map<Button, VBox> navMap;
+    private List<Region> allViews;  // For showView with fade transitions
 
     // =========================================================================
     // setUtilisateurConnecte  (main version — full DB wiring)
@@ -250,7 +287,23 @@ public class FitnessDashboardController implements Initializable {
         navMap.put(btnSettings, viewSettings);
         navMap.put(btnRelax,    viewRelax);
         navMap.put(btnBoutique, viewBoutique);
-        // btnEvents and btnQuiz are handled separately (special views)
+
+        // Toutes les vues, y compris celles sans bouton sidebar (main)
+        allViews = new ArrayList<>(navMap.values());
+        if (viewMedecin != null) allViews.add(viewMedecin);
+        if (viewStress != null) allViews.add(viewStress);
+        if (viewCatchStress != null) allViews.add(viewCatchStress);
+        if (viewFitness != null) allViews.add(viewFitness);
+        if (viewNutrition != null) allViews.add(viewNutrition);
+        if (viewChatbot != null) allViews.add(viewChatbot);
+        if (viewCabinet != null) allViews.add(viewCabinet);
+        if (viewRespiration != null) allViews.add(viewRespiration);
+        if (viewAPropos != null) allViews.add(viewAPropos);
+        if (viewVip != null) allViews.add(viewVip);
+        if (viewSleep != null) allViews.add(viewSleep);
+        if (viewReclamation != null) allViews.add(viewReclamation);
+        if (contentArea != null) allViews.add(contentArea);
+        if (viewEvents != null) allViews.add(viewEvents);
     }
 
     @FXML
@@ -272,16 +325,17 @@ public class FitnessDashboardController implements Initializable {
         setActiveNav(src);
     }
 
-    private void showView(VBox target) {
-        // Hide all VBox views
-        for (VBox v : navMap.values()) {
-            v.setVisible(false);
-            v.setManaged(false);
+    /**
+     * Masque toutes les vues puis affiche la cible avec une transition fade.
+     * Accepte n'importe quel Region (VBox ou StackPane).
+     */
+    private void showView(Region target) {
+        for (Region v : allViews) {
+            if (v != null) {
+                v.setVisible(false);
+                v.setManaged(false);
+            }
         }
-        // Also hide events and quiz
-        if (viewEvents != null) { viewEvents.setVisible(false); viewEvents.setManaged(false); }
-        if (contentArea != null) { contentArea.setVisible(false); contentArea.setManaged(false); }
-
         target.setVisible(true);
         target.setManaged(true);
 
@@ -293,11 +347,17 @@ public class FitnessDashboardController implements Initializable {
 
     private void showEventsView() {
         // Hide all VBox views
-        for (VBox v : navMap.values()) { v.setVisible(false); v.setManaged(false); }
-        if (contentArea != null) { contentArea.setVisible(false); contentArea.setManaged(false); }
+        for (Region v : allViews) {
+            if (v != null) {
+                v.setVisible(false);
+                v.setManaged(false);
+            }
+        }
 
-        viewEvents.setVisible(true);
-        viewEvents.setManaged(true);
+        if (viewEvents != null) {
+            viewEvents.setVisible(true);
+            viewEvents.setManaged(true);
+        }
         setActiveNav(btnEvents);
 
         FadeTransition ft = new FadeTransition(Duration.millis(220), viewEvents);
@@ -319,32 +379,917 @@ public class FitnessDashboardController implements Initializable {
     }
 
     private void handleQuizNav() {
-        for (VBox v : navMap.values()) { v.setVisible(false); v.setManaged(false); }
-        if (viewEvents != null) { viewEvents.setVisible(false); viewEvents.setManaged(false); }
+        for (Region v : allViews) {
+            if (v != null) {
+                v.setVisible(false);
+                v.setManaged(false);
+            }
+        }
 
-        contentArea.setVisible(true);
-        contentArea.setManaged(true);
+        if (contentArea != null) {
+            contentArea.setVisible(true);
+            contentArea.setManaged(true);
+        }
         setActiveNav(btnQuiz);
 
-        if (contentArea.getChildren().isEmpty()) {
+        if (contentArea != null && contentArea.getChildren().isEmpty()) {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/UserHomeView.fxml"));
-                javafx.scene.Node vue = loader.load();
+                Node vue = loader.load();
                 UserHomeController ctrl = loader.getController();
                 ctrl.setContentArea(contentArea);
                 contentArea.getChildren().setAll(vue);
-            } catch (java.io.IOException ex) {
+            } catch (IOException ex) {
                 showAlert("❌ Erreur", "Impossible de charger le module Quiz : " + ex.getMessage());
             }
         }
 
-        FadeTransition ft = new FadeTransition(Duration.millis(220), contentArea);
-        ft.setFromValue(0); ft.setToValue(1); ft.play();
+        if (contentArea != null) {
+            FadeTransition ft = new FadeTransition(Duration.millis(220), contentArea);
+            ft.setFromValue(0); ft.setToValue(1); ft.play();
+        }
     }
 
     @FXML public void goHome(ActionEvent e)  { showView(viewHome); setActiveNav(btnHome); }
     @FXML public void goToProfile(javafx.scene.input.MouseEvent e) {
         showView(viewProfile); setActiveNav(btnProfile);
+    }
+
+    /**
+     * Retour vers la vue Relaxation depuis viewMedecin ou viewStress.
+     */
+    @FXML
+    public void goToRelax(ActionEvent e) {
+        showView(viewRelax);
+        setActiveNav(btnRelax);
+    }
+
+    /**
+     * Affiche viewMedecin (accessible depuis StressOptionsController).
+     */
+    public void showViewMedecin() {
+        showView(viewMedecin);
+        setActiveNav(btnRelax);
+    }
+
+    /**
+     * Retour vers viewMedecin (stress_options) depuis viewChatbot.
+     */
+    @FXML
+    public void goToMedecin(ActionEvent e) {
+        showView(viewMedecin);
+        setActiveNav(btnRelax);
+    }
+
+    /**
+     * Ouvre le chatbot EduWell (happiness_chatbot.fxml) dans viewChatbot.
+     * Appelé par StressOptionsController via callback.
+     */
+    public void handleOpenChatbot() {
+        if (chatbotArea.getChildren().isEmpty()) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/happiness_chatbot.fxml"));
+                Node vue = loader.load();
+                HappinessChatbotController ctrl = loader.getController();
+                ctrl.setDashboardController(this);
+                chatbotArea.getChildren().setAll(vue);
+            } catch (IOException ex) {
+                Label err = new Label("❌ Impossible de charger le chatbot : " + ex.getMessage());
+                err.setStyle("-fx-text-fill: #e24b4a; -fx-font-size: 13px; -fx-padding: 24;");
+                chatbotArea.getChildren().setAll(err);
+            }
+        }
+        showView(viewChatbot);
+        setActiveNav(btnRelax);
+    }
+
+    /**
+     * Ouvre cabinet_psychiatre.fxml dans viewCabinet.
+     * Appelé par StressOptionsController via callback.
+     */
+    public void handleOpenCabinet() {
+        if (cabinetArea.getChildren().isEmpty()) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/cabinet_psychiatre.fxml"));
+                Node vue = loader.load();
+                CabinetPsychiatreController ctrl = loader.getController();
+                ctrl.setDashboardController(this);
+                cabinetArea.getChildren().setAll(vue);
+            } catch (IOException ex) {
+                Label err = new Label("❌ Impossible de charger le cabinet : " + ex.getMessage());
+                err.setStyle("-fx-text-fill: #e24b4a; -fx-font-size: 13px; -fx-padding: 24;");
+                cabinetArea.getChildren().setAll(err);
+            }
+        }
+        showView(viewCabinet);
+        setActiveNav(btnRelax);
+    }
+
+    /**
+     * Ouvre respiration.fxml dans viewRespiration.
+     * Appelé par StressOptionsController via callback.
+     */
+    public void handleOpenRespiration() {
+        // Rechargé à chaque fois pour réinitialiser l'exercice
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/respiration.fxml"));
+            Node vue = loader.load();
+            RespirationController ctrl = loader.getController();
+            ctrl.setDashboardController(this);
+            respirationArea.getChildren().setAll(vue);
+        } catch (IOException ex) {
+            Label err = new Label("❌ Impossible de charger l'exercice : " + ex.getMessage());
+            err.setStyle("-fx-text-fill: #e24b4a; -fx-font-size: 13px; -fx-padding: 24;");
+            respirationArea.getChildren().setAll(err);
+        }
+        showView(viewRespiration);
+        setActiveNav(btnRelax);
+    }
+
+    /**
+     * Ouvre a_propos.fxml dans viewAPropos.
+     * Appelé par StressOptionsController via callback.
+     */
+    public void handleOpenAPropos() {
+        if (aProposArea.getChildren().isEmpty()) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/a_propos.fxml"));
+                Node vue = loader.load();
+                AProposController ctrl = loader.getController();
+                ctrl.setDashboardController(this);
+                aProposArea.getChildren().setAll(vue);
+            } catch (IOException ex) {
+                Label err = new Label("❌ Impossible de charger la page : " + ex.getMessage());
+                err.setStyle("-fx-text-fill: #e24b4a; -fx-font-size: 13px; -fx-padding: 24;");
+                aProposArea.getChildren().setAll(err);
+            }
+        }
+        showView(viewAPropos);
+        setActiveNav(btnRelax);
+    }
+
+    /**
+     * Retour vers stress_options (viewMedecin) depuis cabinet/respiration/apropos/chatbot.
+     */
+    @FXML
+    public void goToStressOptions(ActionEvent e) {
+        showView(viewMedecin);
+        setActiveNav(btnRelax);
+    }
+
+    // =========================================================================
+    // VIP — PAIEMENT & ANALYSE SOMMEIL
+    // =========================================================================
+
+    /**
+     * Ouvre la page VIP (paiement) dans viewVip.
+     */
+    @FXML
+    public void handleVip(ActionEvent e) {
+        if (vipArea.getChildren().isEmpty()) {
+            VipPaymentController ctrl = new VipPaymentController();
+            ctrl.setDashboardController(this);
+            vipArea.getChildren().setAll(ctrl.buildUI());
+        }
+        showView(viewVip);
+        setActiveNav(btnRelax);
+    }
+
+    /**
+     * Ouvre la page d'analyse de sommeil dans viewSleep.
+     * Appelé après paiement VIP réussi.
+     */
+    public void handleOpenSleep() {
+        // Vérifier accès VIP
+        if (!VipPaymentController.isVipActive()) {
+            showView(viewVip);
+            setActiveNav(btnRelax);
+            return;
+        }
+        // Recharger à chaque fois pour une nouvelle session
+        SleepChatbotController ctrl = new SleepChatbotController();
+        ctrl.setDashboardController(this);
+        sleepArea.getChildren().setAll(ctrl.buildUI());
+        showView(viewSleep);
+        setActiveNav(btnRelax);
+    }
+
+    /**
+     * Retour vers viewVip depuis viewSleep.
+     */
+    @FXML
+    public void goToVip(ActionEvent e) {
+        showView(viewVip);
+        setActiveNav(btnRelax);
+    }
+
+    // =========================================================================
+    // RÉCLAMATION
+    // =========================================================================
+
+    /**
+     * Ouvre la vue de réclamation.
+     */
+    @FXML
+    public void handleEnvoyerReclamation(ActionEvent e) {
+        showView(viewReclamation);
+        setActiveNav(btnRelax);
+    }
+
+    /**
+     * Envoie la réclamation via Twilio SMS.
+     */
+    @FXML
+    public void handleSendReclamation(ActionEvent e) {
+        String message = reclamationTextArea.getText();
+        if (message == null || message.trim().isEmpty()) {
+            showAlert("Veuillez écrire une réclamation.");
+            return;
+        }
+        if (message.length() > 160) {
+            showAlert("La réclamation doit être courte (max 160 caractères). Veuillez la résumer.");
+            return;
+        }
+
+        try {
+            // Twilio credentials
+            String accountSid  = "aaa";
+            String authToken   = "bb";
+            String toNumber    = "+21652176756";
+            String messagingSid = "MG132a322f96e964c43e508bba78e7bb84";
+            String url = "https://api.twilio.com/2010-04-01/Accounts/" + accountSid + "/Messages.json";
+
+            // Construire la commande curl avec des arguments séparés
+            ProcessBuilder pb = new ProcessBuilder(
+                    "curl", "-s", "-w", "\n%{http_code}",
+                    url,
+                    "-X", "POST",
+                    "--data-urlencode", "To=" + toNumber,
+                    "--data-urlencode", "MessagingServiceSid=" + messagingSid,
+                    "--data-urlencode", "Body=" + message,
+                    "-u", accountSid + ":" + authToken
+            );
+            pb.redirectErrorStream(true);
+            Process process = pb.start();
+
+            // Lire la réponse complète
+            String response = new String(process.getInputStream().readAllBytes());
+            process.waitFor();
+
+            // Vérifier le code HTTP (dernière ligne)
+            String[] lines = response.trim().split("\n");
+            String httpCode = lines[lines.length - 1].trim();
+
+            if (httpCode.startsWith("2")) {
+                showAlert("✅ Réclamation envoyée avec succès !");
+                reclamationTextArea.clear();
+            } else {
+                String body = lines.length > 1 ? lines[0] : response;
+                showAlert("❌ Erreur lors de l'envoi (HTTP " + httpCode + ").\n" + body);
+            }
+        } catch (Exception ex) {
+            showAlert("Erreur : " + ex.getMessage());
+        }
+    }
+
+    // =========================================================================
+    // RELAXATION — Consulter Médecin & Calculer Score
+    // =========================================================================
+
+    /**
+     * Ouvre ajouteetudiant.fxml DANS le dashboard (viewMedecin).
+     */
+    @FXML
+    public void handleConsulterMedecin(ActionEvent e) {
+        loadConsultationForm();
+        showView(viewMedecin);
+        setActiveNav(btnRelax);
+    }
+
+    /**
+     * Charge (ou recharge) ajouteetudiant.fxml dans medecinArea.
+     */
+    public void loadConsultationForm() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ajouteetudiant.fxml"));
+            Node vue = loader.load();
+            AjouterConsultationEtudiantController ctrl = loader.getController();
+            ctrl.setDashboardController(this);
+            medecinArea.getChildren().setAll(vue);
+            if (lblMedecinTitle != null) lblMedecinTitle.setText("🩺  Consulter un Médecin");
+        } catch (IOException ex) {
+            Label err = new Label("❌ Impossible de charger le formulaire : " + ex.getMessage());
+            err.setStyle("-fx-text-fill: #e24b4a; -fx-font-size: 13px; -fx-padding: 24;");
+            medecinArea.getChildren().setAll(err);
+        }
+    }
+
+    /**
+     * Appelé par AjouterConsultationEtudiantController après enregistrement réussi.
+     */
+    public void handleFormSubmitSuccess() {
+        // Afficher un message de succès
+        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+        alert.setTitle("Succès");
+        alert.setHeaderText(null);
+        alert.setContentText("✅ Consultation enregistrée avec succès !");
+        alert.showAndWait();
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/stress_options.fxml"));
+            Node vue = loader.load();
+            StressOptionsController ctrl = loader.getController();
+            ctrl.setDashboardController(this);
+            medecinArea.getChildren().setAll(vue);
+            if (lblMedecinTitle != null) lblMedecinTitle.setText("🧘  Options Anti-Stress");
+        } catch (IOException ex) {
+            Label err = new Label("❌ Impossible de charger les options : " + ex.getMessage());
+            err.setStyle("-fx-text-fill: #e24b4a; -fx-font-size: 13px; -fx-padding: 24;");
+            medecinArea.getChildren().setAll(err);
+        }
+
+        showView(viewMedecin);
+        setActiveNav(btnRelax);
+    }
+
+    /**
+     * Ouvre AjouterStressSurveyEtudiant.fxml DANS le dashboard (viewStress).
+     */
+    @FXML
+    public void handleCalculerScore(ActionEvent e) {
+        if (stressArea.getChildren().isEmpty()) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/AjouterStressSurveyEtudiant.fxml"));
+                Node vue = loader.load();
+                stressArea.getChildren().setAll(vue);
+            } catch (IOException ex) {
+                Label err = new Label("❌ Impossible de charger le formulaire : " + ex.getMessage());
+                err.setStyle("-fx-text-fill: #e24b4a; -fx-font-size: 13px; -fx-padding: 24;");
+                stressArea.getChildren().setAll(err);
+            }
+        }
+        showView(viewStress);
+        setActiveNav(btnRelax);
+    }
+
+    @FXML
+    public void handleCatchStress(ActionEvent e) {
+        if (catchStressArea.getChildren().isEmpty()) {
+            VBox catchStressContent = new VBox(20);
+            catchStressContent.setPadding(new Insets(30));
+            catchStressContent.setStyle("-fx-background-color: #f5f5f5;");
+
+            Label title = new Label("🎯 Catch the Stress - Exercices Anti-Stress");
+            title.setStyle("-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #c62828;");
+
+            Label subtitle = new Label("Libérez vos tensions avec ces exercices simples et efficaces");
+            subtitle.setStyle("-fx-font-size: 14px; -fx-text-fill: #666; -fx-font-style: italic;");
+
+            VBox timerBox = new VBox(15);
+            timerBox.setAlignment(Pos.CENTER);
+            timerBox.setStyle("-fx-background-color: linear-gradient(to bottom, #ffebee, #ffcdd2); " +
+                    "-fx-background-radius: 15; -fx-padding: 25; -fx-border-color: #ef5350; " +
+                    "-fx-border-width: 2; -fx-border-radius: 15;");
+
+            Label timerLabel = new Label("00:00");
+            timerLabel.setStyle("-fx-font-size: 48px; -fx-font-weight: bold; -fx-text-fill: #c62828;");
+
+            Label motivationLabel = new Label("💪 Prêt à commencer ? Choisissez un exercice !");
+            motivationLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: #d32f2f; -fx-font-weight: bold; " +
+                    "-fx-wrap-text: true; -fx-text-alignment: center;");
+            motivationLabel.setMaxWidth(500);
+
+            HBox timerControls = new HBox(15);
+            timerControls.setAlignment(Pos.CENTER);
+
+            Button startTimerBtn = new Button("▶ Démarrer");
+            startTimerBtn.setStyle("-fx-background-color: #4caf50; -fx-text-fill: white; " +
+                    "-fx-font-size: 14px; -fx-padding: 10 25; -fx-background-radius: 20; -fx-cursor: hand;");
+
+            Button pauseTimerBtn = new Button("⏸ Pause");
+            pauseTimerBtn.setStyle("-fx-background-color: #ff9800; -fx-text-fill: white; " +
+                    "-fx-font-size: 14px; -fx-padding: 10 25; -fx-background-radius: 20; -fx-cursor: hand;");
+            pauseTimerBtn.setDisable(true);
+
+            Button resetTimerBtn = new Button("⏹ Reset");
+            resetTimerBtn.setStyle("-fx-background-color: #f44336; -fx-text-fill: white; " +
+                    "-fx-font-size: 14px; -fx-padding: 10 25; -fx-background-radius: 20; -fx-cursor: hand;");
+            resetTimerBtn.setDisable(true);
+
+            timerControls.getChildren().addAll(startTimerBtn, pauseTimerBtn, resetTimerBtn);
+            timerBox.getChildren().addAll(timerLabel, motivationLabel, timerControls);
+
+            String[] motivationMessages = {
+                    "💪 Excellent ! Continue comme ça !",
+                    "🔥 Tu es en feu ! Ne lâche rien !",
+                    "⭐ Bravo ! Chaque seconde compte !",
+                    "🎯 Parfait ! Tu gères ton stress !",
+                    "✨ Superbe effort ! Tu es incroyable !",
+                    "🌟 Continue ! Tu es sur la bonne voie !",
+                    "💯 Fantastique ! Tu es un champion !",
+                    "🚀 Incroyable ! Tu dépasses tes limites !"
+            };
+
+            final int[] seconds = {0};
+            final boolean[] isRunning = {false};
+            final Timeline[] timeline = {null};
+
+            startTimerBtn.setOnAction(ev -> {
+                if (!isRunning[0]) {
+                    isRunning[0] = true;
+                    startTimerBtn.setDisable(true);
+                    pauseTimerBtn.setDisable(false);
+                    resetTimerBtn.setDisable(false);
+
+                    timeline[0] = new Timeline(
+                            new KeyFrame(Duration.seconds(1), event -> {
+                                seconds[0]++;
+                                int mins = seconds[0] / 60;
+                                int secs = seconds[0] % 60;
+                                timerLabel.setText(String.format("%02d:%02d", mins, secs));
+
+                                if (seconds[0] % 10 == 0) {
+                                    int index = (seconds[0] / 10) % motivationMessages.length;
+                                    motivationLabel.setText(motivationMessages[index]);
+                                }
+                            })
+                    );
+                    timeline[0].setCycleCount(Timeline.INDEFINITE);
+                    timeline[0].play();
+                }
+            });
+
+            pauseTimerBtn.setOnAction(ev -> {
+                if (isRunning[0] && timeline[0] != null) {
+                    timeline[0].pause();
+                    isRunning[0] = false;
+                    startTimerBtn.setDisable(false);
+                    pauseTimerBtn.setDisable(true);
+                    motivationLabel.setText("⏸ Pause - Reprends quand tu es prêt !");
+                }
+            });
+
+            resetTimerBtn.setOnAction(ev -> {
+                if (timeline[0] != null) {
+                    timeline[0].stop();
+                }
+                seconds[0] = 0;
+                isRunning[0] = false;
+                timerLabel.setText("00:00");
+                startTimerBtn.setDisable(false);
+                pauseTimerBtn.setDisable(true);
+                resetTimerBtn.setDisable(true);
+                motivationLabel.setText("💪 Prêt à recommencer ? Tu peux le faire !");
+            });
+
+            Label exercisesTitle = new Label("📋 Exercices Anti-Stress Simples");
+            exercisesTitle.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #c62828; -fx-padding: 20 0 10 0;");
+
+            ScrollPane exercisesScroll = new ScrollPane();
+            exercisesScroll.setFitToWidth(true);
+            exercisesScroll.setStyle("-fx-background-color: transparent; -fx-border-color: transparent;");
+
+            VBox exercisesList = new VBox(15);
+
+            VBox ex1 = createExerciseCard(
+                    "1️⃣ Étirements du Cou",
+                    "Durée: 2-3 minutes",
+                    new String[]{
+                            "• Asseyez-vous confortablement, dos droit",
+                            "• Inclinez lentement la tête vers la droite (10 sec)",
+                            "• Revenez au centre, puis inclinez vers la gauche (10 sec)",
+                            "• Inclinez la tête vers l'avant, menton vers la poitrine (10 sec)",
+                            "• Faites 3 rotations complètes douces dans chaque sens",
+                            "• Respirez profondément pendant l'exercice"
+                    },
+                    "#e3f2fd",
+                    "#1976d2"
+            );
+
+            VBox ex2 = createExerciseCard(
+                    "2️⃣ Respiration Profonde 4-7-8",
+                    "Durée: 3-4 minutes",
+                    new String[]{
+                            "• Asseyez-vous confortablement, fermez les yeux",
+                            "• Inspirez par le nez pendant 4 secondes",
+                            "• Retenez votre souffle pendant 7 secondes",
+                            "• Expirez lentement par la bouche pendant 8 secondes",
+                            "• Répétez ce cycle 4 fois minimum",
+                            "• Sentez votre corps se détendre à chaque expiration"
+                    },
+                    "#f3e5f5",
+                    "#7b1fa2"
+            );
+
+            VBox ex3 = createExerciseCard(
+                    "3️⃣ Étirements des Épaules",
+                    "Durée: 2-3 minutes",
+                    new String[]{
+                            "• Debout ou assis, dos droit",
+                            "• Levez les épaules vers les oreilles (5 sec)",
+                            "• Relâchez brusquement - répétez 5 fois",
+                            "• Faites 10 rotations d'épaules vers l'arrière",
+                            "• Faites 10 rotations d'épaules vers l'avant",
+                            "• Croisez les bras et étirez le haut du dos (15 sec)"
+                    },
+                    "#e8f5e9",
+                    "#388e3c"
+            );
+
+            VBox ex4 = createExerciseCard(
+                    "4️⃣ Étirements des Poignets et Mains",
+                    "Durée: 2 minutes",
+                    new String[]{
+                            "• Tendez le bras droit devant vous, paume vers le haut",
+                            "• Avec la main gauche, tirez doucement les doigts vers vous (15 sec)",
+                            "• Répétez avec la paume vers le bas (15 sec)",
+                            "• Changez de bras et répétez",
+                            "• Faites 10 rotations de poignets dans chaque sens",
+                            "• Serrez les poings fort puis ouvrez grand les mains (10 fois)"
+                    },
+                    "#fff3e0",
+                    "#f57c00"
+            );
+
+            VBox ex5 = createExerciseCard(
+                    "5️⃣ Marche Active sur Place",
+                    "Durée: 3-5 minutes",
+                    new String[]{
+                            "• Debout, dos droit, regardez devant vous",
+                            "• Marchez sur place en levant bien les genoux",
+                            "• Balancez les bras naturellement",
+                            "• Augmentez progressivement le rythme",
+                            "• Ajoutez des montées de genoux plus hautes",
+                            "• Ralentissez progressivement les 30 dernières secondes"
+                    },
+                    "#fce4ec",
+                    "#c2185b"
+            );
+
+            VBox ex6 = createExerciseCard(
+                    "6️⃣ Étirements du Dos (Chat-Vache)",
+                    "Durée: 2-3 minutes",
+                    new String[]{
+                            "• À quatre pattes, mains sous les épaules, genoux sous les hanches",
+                            "• Inspirez: creusez le dos, levez la tête (position vache)",
+                            "• Expirez: arrondissez le dos, rentrez le menton (position chat)",
+                            "• Alternez lentement 10 fois",
+                            "• Sentez chaque vertèbre bouger",
+                            "• Terminez en position neutre, respirez profondément"
+                    },
+                    "#e0f2f1",
+                    "#00796b"
+            );
+
+            exercisesList.getChildren().addAll(ex1, ex2, ex3, ex4, ex5, ex6);
+            exercisesScroll.setContent(exercisesList);
+            exercisesScroll.setPrefHeight(400);
+
+            VBox tipsBox = new VBox(10);
+            tipsBox.setStyle("-fx-background-color: #fff8e1; -fx-background-radius: 10; -fx-padding: 20; " +
+                    "-fx-border-color: #fbc02d; -fx-border-width: 2; -fx-border-radius: 10;");
+
+            Label tipsTitle = new Label("💡 Conseils pour Maximiser les Bienfaits");
+            tipsTitle.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #f57f17;");
+
+            Label tips = new Label(
+                    "✓ Pratiquez ces exercices 2-3 fois par jour\n" +
+                            "✓ Choisissez un endroit calme et confortable\n" +
+                            "✓ Portez des vêtements amples\n" +
+                            "✓ Ne forcez jamais - l'étirement doit être agréable\n" +
+                            "✓ Respirez profondément pendant chaque exercice\n" +
+                            "✓ Hydratez-vous avant et après\n" +
+                            "✓ Soyez régulier pour des résultats durables"
+            );
+            tips.setStyle("-fx-font-size: 13px; -fx-text-fill: #555; -fx-line-spacing: 5;");
+
+            tipsBox.getChildren().addAll(tipsTitle, tips);
+
+            Button backBtn = new Button("← Retour aux Options Anti-Stress");
+            backBtn.setStyle("-fx-background-color: #c62828; -fx-text-fill: white; -fx-font-size: 14px; " +
+                    "-fx-padding: 12 30; -fx-background-radius: 10; -fx-cursor: hand;");
+            backBtn.setOnAction(ev -> goToRelax(ev));
+
+            catchStressContent.getChildren().addAll(
+                    title, subtitle, timerBox, exercisesTitle, exercisesScroll, tipsBox, backBtn
+            );
+
+            catchStressArea.getChildren().setAll(catchStressContent);
+        }
+        showView(viewCatchStress);
+        setActiveNav(btnRelax);
+    }
+
+    /**
+     * Crée une carte d'exercice avec titre, durée et instructions
+     */
+    private VBox createExerciseCard(String title, String duration, String[] steps,
+                                    String bgColor, String accentColor) {
+        VBox card = new VBox(12);
+        card.setStyle("-fx-background-color: " + bgColor + "; -fx-background-radius: 12; " +
+                "-fx-padding: 20; -fx-border-color: " + accentColor + "; " +
+                "-fx-border-width: 2; -fx-border-radius: 12; " +
+                "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 2);");
+
+        HBox header = new HBox(15);
+        header.setAlignment(Pos.CENTER_LEFT);
+
+        Label titleLabel = new Label(title);
+        titleLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: " + accentColor + ";");
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        Label durationLabel = new Label(duration);
+        durationLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: " + accentColor + "; " +
+                "-fx-background-color: white; -fx-padding: 5 12; -fx-background-radius: 15;");
+
+        header.getChildren().addAll(titleLabel, spacer, durationLabel);
+
+        VBox stepsBox = new VBox(6);
+        for (String step : steps) {
+            Label stepLabel = new Label(step);
+            stepLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #333; -fx-wrap-text: true;");
+            stepLabel.setMaxWidth(Double.MAX_VALUE);
+            stepsBox.getChildren().add(stepLabel);
+        }
+
+        card.getChildren().addAll(header, stepsBox);
+        return card;
+    }
+
+    @FXML
+    public void handleFitness(ActionEvent e) {
+        if (fitnessArea.getChildren().isEmpty()) {
+            VBox fitnessContent = new VBox(20);
+            fitnessContent.setPadding(new Insets(20));
+            fitnessContent.setStyle("-fx-background-color: #f5f5f5;");
+
+            Label title = new Label("💪 Exercices Avances");
+            title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #0277bd;");
+
+            Label durationLabel = new Label("Duree de l'exercice (minutes):");
+            durationLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #555;");
+
+            Slider durationSlider = new Slider(5, 60, 15);
+            durationSlider.setStyle("-fxPref-width: 300;");
+            Label durationValue = new Label("15 minutes");
+            durationValue.setStyle("-fx-font-size: 14px; -fx-text-fill: #0277bd;");
+            durationSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
+                durationValue.setText(newVal.intValue() + " minutes");
+            });
+
+            HBox exerciseButtons = new HBox(15);
+            exerciseButtons.setAlignment(Pos.CENTER);
+
+            Button btnWarmup = new Button("Echauffement");
+            btnWarmup.setStyle("-fx-background-color: #4fc3f7; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 15 25; -fx-background-radius: 10;");
+
+            Button btnCardio = new Button("Cardio");
+            btnCardio.setStyle("-fx-background-color: #039be5; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 15 25; -fx-background-radius: 10;");
+
+            Button btnStrength = new Button("Force");
+            btnStrength.setStyle("-fx-background-color: #0277bd; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 15 25; -fx-background-radius: 10;");
+
+            Button btnStretch = new Button("Etirements");
+            btnStretch.setStyle("-fx-background-color: #01579b; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 15 25; -fx-background-radius: 10;");
+
+            exerciseButtons.getChildren().addAll(btnWarmup, btnCardio, btnStrength, btnStretch);
+
+            Label advancedLabel = new Label("Exercices Avances:");
+            advancedLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #0277bd; -fx-padding: 20 0 10 0;");
+
+            HBox advancedExercises = new HBox(15);
+            advancedExercises.setAlignment(Pos.CENTER);
+
+            Button btnYoga = new Button("Yoga 3D");
+            btnYoga.setStyle("-fx-background-color: #7c4dff; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 15 25; -fx-background-radius: 10;");
+
+            Button btnPilates = new Button("Pilates");
+            btnPilates.setStyle("-fx-background-color: #651fff; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 15 25; -fx-background-radius: 10;");
+
+            Button btnHIIT = new Button("HIIT");
+            btnHIIT.setStyle("-fx-background-color: #536dfe; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 15 25; -fx-background-radius: 10;");
+
+            Button btnMeditation = new Button("Meditation");
+            btnMeditation.setStyle("-fx-background-color: #3d5afe; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 15 25; -fx-background-radius: 10;");
+
+            advancedExercises.getChildren().addAll(btnYoga, btnPilates, btnHIIT, btnMeditation);
+
+            Button backBtn = new Button("← Retour");
+            backBtn.setStyle("-fx-background-color: #0277bd; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 12 30; -fx-background-radius: 10; -fx-cursor: hand;");
+            backBtn.setOnAction(ev -> goToRelax(ev));
+
+            Label infoLabel = new Label("Selectnez un type d'exercice et ajustez la duree selon vos besoins.");
+            infoLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #888; -fx-padding: 10 0 0 0;");
+
+            fitnessContent.getChildren().addAll(title, durationLabel, durationSlider, durationValue, exerciseButtons, advancedLabel, advancedExercises, backBtn, infoLabel);
+            fitnessArea.getChildren().setAll(fitnessContent);
+        }
+        showView(viewFitness);
+        setActiveNav(btnRelax);
+    }
+
+    @FXML
+    public void handleNutrition(ActionEvent e) {
+        if (nutritionArea.getChildren().isEmpty()) {
+            VBox nutritionContent = new VBox(20);
+            nutritionContent.setPadding(new Insets(20));
+            nutritionContent.setStyle("-fx-background-color: #f5f5f5;");
+
+            Label title = new Label("🥗 Nutrition et Bien-Etre");
+            title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2e7d32;");
+
+            Label foodLabel = new Label("Aliments pour booster votre energie:");
+            foodLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #555;");
+
+            FlowPane foodGrid = new FlowPane(15, 15);
+            foodGrid.setPrefWrapLength(500);
+
+            String[][] foods = {
+                    {"Banane", "89 cal", "#fff176"},
+                    {"Avocat", "160 cal", "#a5d6a7"},
+                    {"Noix", "185 cal", "#d7ccc8"},
+                    {"Miel", "64 cal", "#ffe082"},
+                    {"Chocolat Noir", "170 cal", "#5d4037"},
+                    {"The Vert", "2 cal", "#c8e6c9"},
+                    {"Blueberries", "57 cal", "#90caf9"},
+                    {"Saumon", "208 cal", "#ef9a9a"},
+                    {"Eggs", "78 cal", "#fff59d"},
+                    {"Legumes Verts", "35 cal", "#a5d6a7"}
+            };
+
+            for (String[] food : foods) {
+                VBox foodCard = new VBox(5);
+                foodCard.setStyle("-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 15; -fx-min-width: 100;");
+                Label foodName = new Label(food[0]);
+                foodName.setStyle("-fx-font-size: 13px; -fx-font-weight: bold;");
+                Label foodCals = new Label(food[1] + " cal");
+                foodCals.setStyle("-fx-font-size: 12px; -fx-text-fill: #2e7d32;");
+                foodCard.getChildren().addAll(foodName, foodCals);
+                foodGrid.getChildren().add(foodCard);
+            }
+
+            Label calcTitle = new Label("Calculateur de Calories");
+            calcTitle.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2e7d32; -fx-padding: 20 0 10 0;");
+
+            HBox calcRow = new HBox(15);
+            calcRow.setAlignment(Pos.CENTER);
+            Label weightLabel = new Label("Poids (g):");
+            weightLabel.setStyle("-fx-font-size: 14px;");
+            TextField weightField = new TextField("100");
+            weightField.setStyle("-fx-pref-width: 80; -fx-padding: 5;");
+            Label calsPerGramLabel = new Label("Calories pour 100g:");
+            calsPerGramLabel.setStyle("-fx-font-size: 14px;");
+            TextField calsField = new TextField("89");
+            calsField.setStyle("-fx-pref-width: 80; -fx-padding: 5;");
+            Button calcBtn = new Button("Calculer");
+            calcBtn.setStyle("-fx-background-color: #2e7d32; -fx-text-fill: white; -fx-padding: 8 20; -fx-background-radius: 8;");
+            Label resultLabel = new Label("Resultat: 89 cal");
+            resultLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2e7d32;");
+            calcBtn.setOnAction(ev -> {
+                try {
+                    double weight = Double.parseDouble(weightField.getText());
+                    double calsPer100 = Double.parseDouble(calsField.getText());
+                    double totalCals = (weight * calsPer100) / 100;
+                    resultLabel.setText("Resultat: " + String.format("%.0f", totalCals) + " cal");
+                } catch (NumberFormatException ex) {
+                    resultLabel.setText("Erreur: Entrez des nombres");
+                }
+            });
+            calcRow.getChildren().addAll(weightLabel, weightField, calsPerGramLabel, calsField, calcBtn, resultLabel);
+
+            Label joyLabel = new Label("Aliments pour ameliorer l'humeur:");
+            joyLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #555; -fx-padding: 20 0 10 0;");
+
+            FlowPane joyGrid = new FlowPane(15, 15);
+            joyGrid.setPrefWrapLength(500);
+            String[][] joyFoods = {
+                    {"Chocolat", "170 cal", "🍫"},
+                    {"Fraises", "32 cal", "🍓"},
+                    {"Mangue", "60 cal", "🥭"},
+                    {"The Matcha", "2 cal", "🍵"}
+            };
+            for (String[] joy : joyFoods) {
+                HBox joyCard = new HBox(10);
+                joyCard.setStyle("-fx-background-color: #fff8e1; -fx-background-radius: 10; -fx-padding: 15;");
+                Label emoji = new Label(joy[2]);
+                emoji.setStyle("-fx-font-size: 24px;");
+                VBox joyInfo = new VBox(2);
+                Label joyName = new Label(joy[0]);
+                joyName.setStyle("-fx-font-size: 13px; -fx-font-weight: bold;");
+                Label joyCals = new Label(joy[1] + " cal - Bonheur!");
+                joyCals.setStyle("-fx-font-size: 11px; -fx-text-fill: #f57f17;");
+                joyInfo.getChildren().addAll(joyName, joyCals);
+                joyCard.getChildren().addAll(emoji, joyInfo);
+                joyGrid.getChildren().add(joyCard);
+            }
+
+            nutritionContent.getChildren().addAll(title, foodLabel, foodGrid, calcTitle, calcRow, joyLabel, joyGrid);
+
+            Button backBtn = new Button("← Retour");
+            backBtn.setStyle("-fx-background-color: #2e7d32; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 12 30; -fx-background-radius: 10; -fx-cursor: hand;");
+            backBtn.setOnAction(ev -> goToRelax(ev));
+            nutritionContent.getChildren().add(backBtn);
+            nutritionArea.getChildren().setAll(nutritionContent);
+        }
+        showView(viewNutrition);
+        setActiveNav(btnRelax);
+    }
+
+    // =========================================================================
+    // BOUTIQUE (main)
+    // =========================================================================
+    private void initBoutique() {
+        try {
+            edu.connexion3a36.services.ProduitService produitService = new edu.connexion3a36.services.ProduitService();
+            edu.connexion3a36.services.TypeCategorieService categorieService = new edu.connexion3a36.services.TypeCategorieService();
+
+            allProduits = produitService.getData();
+            List<edu.connexion3a36.entities.TypeCategorie> categories = categorieService.getData();
+            Map<Integer, String> catMap = new HashMap<>();
+            categories.forEach(c -> catMap.put(c.getId(), c.getNomCategorie()));
+
+            renderBoutique(allProduits, catMap);
+            boutiqueSearchField.textProperty().addListener((obs, oldVal, newVal) -> {
+                List<edu.connexion3a36.entities.Produit> filtered = allProduits.stream()
+                        .filter(p -> p.getNom().toLowerCase().contains(newVal.toLowerCase().trim()))
+                        .toList();
+                renderBoutique(filtered, catMap);
+            });
+        } catch (SQLException e) {
+            Label err = new Label("❌ Erreur chargement produits : " + e.getMessage());
+            err.setStyle("-fx-text-fill: #F44336;");
+            boutiqueProduitGrid.getChildren().add(err);
+        }
+    }
+
+    private void renderBoutique(List<edu.connexion3a36.entities.Produit> produits, Map<Integer, String> catMap) {
+        boutiqueProduitGrid.getChildren().clear();
+        if (produits.isEmpty()) {
+            Label empty = new Label("Aucun produit trouvé.");
+            empty.setStyle("-fx-text-fill: #9E9E9E; -fx-font-size: 14px;");
+            boutiqueProduitGrid.getChildren().add(empty);
+            return;
+        }
+        produits.forEach(p -> boutiqueProduitGrid.getChildren().add(buildProduitCard(p, catMap)));
+    }
+
+    private VBox buildProduitCard(edu.connexion3a36.entities.Produit p, Map<Integer, String> catMap) {
+        VBox card = new VBox(10);
+        card.setPrefWidth(200);
+        card.setPadding(new Insets(0, 0, 16, 0));
+        card.setStyle("-fx-background-color: white; -fx-background-radius: 18;"
+                + "-fx-border-color: #f0f0f0; -fx-border-radius: 18;"
+                + "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.07), 10, 0, 0, 3); -fx-cursor: hand;");
+
+        card.setOnMouseEntered(e -> card.setStyle(
+                "-fx-background-color: #fafafa; -fx-background-radius: 18;"
+                        + "-fx-border-color: #ddd; -fx-border-radius: 18;"
+                        + "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.13), 16, 0, 0, 5); -fx-cursor: hand;"));
+        card.setOnMouseExited(e -> card.setStyle(
+                "-fx-background-color: white; -fx-background-radius: 18;"
+                        + "-fx-border-color: #f0f0f0; -fx-border-radius: 18;"
+                        + "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.07), 10, 0, 0, 3); -fx-cursor: hand;"));
+
+        ImageView imageView = new ImageView();
+        imageView.setFitWidth(200);
+        imageView.setFitHeight(130);
+        imageView.setPreserveRatio(false);
+
+        StackPane imgContainer = new StackPane();
+        imgContainer.setPrefHeight(130);
+        imgContainer.setStyle("-fx-background-color: #E8F0FE; -fx-background-radius: 18 18 0 0;");
+
+        String imageUrl = p.getImage();
+        boolean isValidUrl = false;
+        try { new java.net.URL(imageUrl); isValidUrl = true; } catch (Exception ignored) {}
+
+        if (isValidUrl && imageUrl != null && !imageUrl.trim().isEmpty()) {
+            try {
+                Image image = new Image(imageUrl, 200, 130, false, true);
+                if (!image.isError()) { imageView.setImage(image); imgContainer.getChildren().add(imageView); }
+                else { imgContainer.getChildren().add(placeholderLabel("🖼️")); }
+            } catch (Exception ex) { imgContainer.getChildren().add(placeholderLabel("🖼️")); }
+        } else { imgContainer.getChildren().add(placeholderLabel("🖼️")); }
+
+        VBox info = new VBox(6);
+        info.setPadding(new Insets(0, 14, 0, 14));
+        Label nomLabel = new Label(p.getNom());
+        nomLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #1A1A2E; -fx-wrap-text: true;");
+        nomLabel.setMaxWidth(172);
+        String catNom = catMap.getOrDefault(p.getTypeCategorieId(), "Inconnue");
+        Label catLabel = new Label("🏷️ " + catNom);
+        catLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #5c6bc0; -fx-background-color: #e8eaf6; -fx-background-radius: 20; -fx-padding: 3 8;");
+        Label prixLabel = new Label(p.getPrix() + " DT");
+        prixLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2979FF;");
+        info.getChildren().addAll(nomLabel, catLabel, prixLabel);
+        card.getChildren().addAll(imgContainer, info);
+        return card;
+    }
+
+    private Label placeholderLabel(String text) {
+        Label l = new Label(text); l.setStyle("-fx-font-size: 40px;"); return l;
     }
 
     // =========================================================================
@@ -418,7 +1363,7 @@ public class FitnessDashboardController implements Initializable {
         emoji.setStyle("-fx-font-size: 22px;");
 
         VBox info = new VBox(2);
-        Label name   = new Label(c.name());   name.setStyle("-fx-font-weight: bold; -fx-font-size: 13px;");
+        Label name   = new Label(c.name()); name.setStyle("-fx-font-weight: bold; -fx-font-size: 13px;");
         Label author = new Label("par " + c.author()); author.setStyle("-fx-font-size: 11px; -fx-text-fill: #888;");
         info.getChildren().addAll(name, author);
         HBox.setHgrow(info, Priority.ALWAYS);
@@ -655,7 +1600,7 @@ public class FitnessDashboardController implements Initializable {
                     stage.setScene(new Scene(root));
                     stage.setTitle("StudyFlow — Login");
                     stage.show();
-                } catch (SQLException | java.io.IOException ex) {
+                } catch (SQLException | IOException ex) {
                     showAlert("❌ Erreur","Erreur suppression : " + ex.getMessage());
                 }
             }
@@ -748,118 +1693,6 @@ public class FitnessDashboardController implements Initializable {
     }
 
     // =========================================================================
-    // BOUTIQUE (main)
-    // =========================================================================
-    private void initBoutique() {
-        try {
-            edu.connexion3a36.services.ProduitService produitService = new edu.connexion3a36.services.ProduitService();
-            edu.connexion3a36.services.TypeCategorieService categorieService = new edu.connexion3a36.services.TypeCategorieService();
-
-            allProduits = produitService.getData();
-            List<edu.connexion3a36.entities.TypeCategorie> categories = categorieService.getData();
-            Map<Integer, String> catMap = new HashMap<>();
-            categories.forEach(c -> catMap.put(c.getId(), c.getNomCategorie()));
-
-            renderBoutique(allProduits, catMap);
-            boutiqueSearchField.textProperty().addListener((obs, oldVal, newVal) -> {
-                List<edu.connexion3a36.entities.Produit> filtered = allProduits.stream()
-                        .filter(p -> p.getNom().toLowerCase().contains(newVal.toLowerCase().trim()))
-                        .toList();
-                renderBoutique(filtered, catMap);
-            });
-        } catch (SQLException e) {
-            Label err = new Label("❌ Erreur chargement produits : " + e.getMessage());
-            err.setStyle("-fx-text-fill: #F44336;");
-            boutiqueProduitGrid.getChildren().add(err);
-        }
-    }
-
-    private void renderBoutique(List<edu.connexion3a36.entities.Produit> produits, Map<Integer, String> catMap) {
-        boutiqueProduitGrid.getChildren().clear();
-        if (produits.isEmpty()) {
-            boutiqueProduitGrid.getChildren().add(new Label("Aucun produit trouvé."));
-            return;
-        }
-        produits.forEach(p -> boutiqueProduitGrid.getChildren().add(buildProduitCard(p, catMap)));
-    }
-
-    private VBox buildProduitCard(edu.connexion3a36.entities.Produit p, Map<Integer, String> catMap) {
-        VBox card = new VBox(10);
-        card.setPrefWidth(200);
-        card.setPadding(new Insets(0, 0, 16, 0));
-        card.setStyle("-fx-background-color: white; -fx-background-radius: 18;"
-                + "-fx-border-color: #f0f0f0; -fx-border-radius: 18;"
-                + "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.07), 10, 0, 0, 3); -fx-cursor: hand;");
-        card.setOnMouseEntered(e -> card.setStyle(
-                "-fx-background-color: #fafafa; -fx-background-radius: 18;"
-                        + "-fx-border-color: #ddd; -fx-border-radius: 18;"
-                        + "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.13), 16, 0, 0, 5); -fx-cursor: hand;"));
-        card.setOnMouseExited(e -> card.setStyle(
-                "-fx-background-color: white; -fx-background-radius: 18;"
-                        + "-fx-border-color: #f0f0f0; -fx-border-radius: 18;"
-                        + "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.07), 10, 0, 0, 3); -fx-cursor: hand;"));
-
-        ImageView imageView = new ImageView();
-        imageView.setFitWidth(200); imageView.setFitHeight(130); imageView.setPreserveRatio(false);
-        StackPane imgContainer = new StackPane();
-        imgContainer.setPrefHeight(130);
-        imgContainer.setStyle("-fx-background-color: #E8F0FE; -fx-background-radius: 18 18 0 0;");
-
-        String imageUrl = p.getImage();
-        boolean isValidUrl = false;
-        try { new java.net.URL(imageUrl); isValidUrl = true; } catch (Exception ignored) {}
-
-        if (isValidUrl && imageUrl != null && !imageUrl.trim().isEmpty()) {
-            try {
-                Image image = new Image(imageUrl, 200, 130, false, true);
-                if (!image.isError()) { imageView.setImage(image); imgContainer.getChildren().add(imageView); }
-                else { imgContainer.getChildren().add(placeholderLabel("🖼️")); }
-            } catch (Exception ex) { imgContainer.getChildren().add(placeholderLabel("🖼️")); }
-        } else { imgContainer.getChildren().add(placeholderLabel("🖼️")); }
-
-        VBox info = new VBox(6);
-        info.setPadding(new Insets(0, 14, 0, 14));
-        Label nomLabel = new Label(p.getNom()); nomLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #1A1A2E; -fx-wrap-text: true;"); nomLabel.setMaxWidth(172);
-        String catNom = catMap.getOrDefault(p.getTypeCategorieId(), "Inconnue");
-        Label catLabel = new Label("🏷️ " + catNom); catLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #5c6bc0; -fx-background-color: #e8eaf6; -fx-background-radius: 20; -fx-padding: 3 8;");
-        Label prixLabel = new Label(p.getPrix() + " DT"); prixLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2979FF;");
-        info.getChildren().addAll(nomLabel, catLabel, prixLabel);
-        card.getChildren().addAll(imgContainer, info);
-        return card;
-    }
-
-    private Label placeholderLabel(String text) {
-        Label l = new Label(text); l.setStyle("-fx-font-size: 40px;"); return l;
-    }
-
-    // =========================================================================
-    // RELAX
-    // =========================================================================
-    @FXML public void handleConsulterMedecin(ActionEvent e) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ajouteetudiant.fxml"));
-            Parent root = loader.load();
-            Stage stage = new Stage();
-            stage.setTitle("Ajouter Étudiant - Consultation Médecin");
-            stage.setScene(new Scene(root)); stage.setResizable(false); stage.show();
-        } catch (java.io.IOException ex) {
-            showAlert("Erreur", "Impossible d'ouvrir le formulaire : " + ex.getMessage());
-        }
-    }
-
-    @FXML public void handleCalculerScore(ActionEvent e) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/AjouterStressSurveyEtudiant.fxml"));
-            Parent root = loader.load();
-            Stage stage = new Stage();
-            stage.setTitle("Calculer mon score - Stress Survey");
-            stage.setScene(new Scene(root)); stage.setResizable(false); stage.show();
-        } catch (java.io.IOException ex) {
-            showAlert("Erreur", "Impossible d'ouvrir le formulaire : " + ex.getMessage());
-        }
-    }
-
-    // =========================================================================
     // MISC
     // =========================================================================
     @FXML public void handleNotif(ActionEvent e) { showAlert("Notifications","🔔 Vous avez 3 nouvelles notifications."); }
@@ -875,7 +1708,7 @@ public class FitnessDashboardController implements Initializable {
                     Parent root = loader.load();
                     Stage stage = (Stage) btnHome.getScene().getWindow();
                     stage.setScene(new Scene(root)); stage.setTitle("StudyFlow — Login"); stage.show();
-                } catch (java.io.IOException ex) { ex.printStackTrace(); }
+                } catch (IOException ex) { ex.printStackTrace(); }
             }
         });
     }
@@ -1285,6 +2118,13 @@ public class FitnessDashboardController implements Initializable {
         Alert a = new Alert(Alert.AlertType.INFORMATION);
         a.setTitle(title); a.setHeaderText(null); a.setContentText(message);
         a.getDialogPane().setStyle("-fx-font-size: 13px;");
+        a.showAndWait();
+    }
+
+    private void showAlert(String message) {
+        Alert a = new Alert(Alert.AlertType.INFORMATION);
+        a.setHeaderText(null);
+        a.setContentText(message);
         a.showAndWait();
     }
 }

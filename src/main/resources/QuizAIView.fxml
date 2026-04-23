@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="edu.connexion3a36.Controller.QuizAIController"
+      spacing="0"
+      style="-fx-background-color:#F2F2F2; -fx-font-family:'Courier New';">
+
+    <!-- ══ TOPBAR ══ -->
+    <HBox alignment="CENTER_LEFT" spacing="0"
+          style="-fx-background-color:#FFFFFF; -fx-min-height:50;
+                 -fx-border-color:#1A1A1A; -fx-border-width:0 0 3 0;">
+
+        <Button onAction="#retourHome" text="&lt; RETOUR"
+                style="-fx-background-color:transparent; -fx-border-color:#1A1A1A;
+                       -fx-border-width:0 3 0 0; -fx-background-radius:0; -fx-border-radius:0;
+                       -fx-font-family:'Courier New'; -fx-font-size:10; -fx-font-weight:bold;
+                       -fx-text-fill:#888888; -fx-padding:0 16; -fx-min-height:50; -fx-cursor:hand;"/>
+
+        <HBox alignment="CENTER"
+              style="-fx-background-color:#C47A00; -fx-padding:0 14; -fx-min-height:50;
+                     -fx-border-color:#1A1A1A; -fx-border-width:0 3 0 0;">
+            <Label text="PDF"
+                   style="-fx-font-family:'Courier New'; -fx-font-size:11; -fx-font-weight:bold;
+                          -fx-text-fill:#FFFFFF;"/>
+        </HBox>
+
+        <Label text="// GENERATEUR DE QUIZ PAR IA"
+               style="-fx-font-family:'Courier New'; -fx-font-size:12; -fx-font-weight:bold;
+                      -fx-text-fill:#1A1A1A; -fx-padding:0 16;" HBox.hgrow="ALWAYS"/>
+
+        <HBox alignment="CENTER"
+              style="-fx-background-color:#0A5A8A; -fx-padding:0 14; -fx-min-height:50;
+                     -fx-border-color:#1A1A1A; -fx-border-width:0 0 0 3;">
+            <Label text="Ollama / Mistral"
+                   style="-fx-font-family:'Courier New'; -fx-font-size:10; -fx-font-weight:bold;
+                          -fx-text-fill:#FFFFFF;"/>
+        </HBox>
+    </HBox>
+
+    <!-- ══ BODY ══ -->
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                style="-fx-background:#F2F2F2; -fx-background-color:#F2F2F2; -fx-border-color:transparent;">
+        <VBox spacing="0" style="-fx-padding:20; -fx-max-width:780; -fx-background-color:#F2F2F2;">
+
+            <!-- HERO BANNER -->
+            <StackPane style="-fx-padding:0 0 18 0;">
+                <VBox style="-fx-background-color:#888888;
+                             -fx-translate-x:6; -fx-translate-y:6; -fx-min-height:100;"/>
+                <VBox style="-fx-background-color:#0A5A8A; -fx-border-color:#1A1A1A;
+                             -fx-border-width:4; -fx-padding:20 24;">
+                    <Label text="PDF → IA → QUESTIONS"
+                           style="-fx-font-family:'Courier New'; -fx-font-size:9; -fx-font-weight:bold;
+                                  -fx-letter-spacing:3; -fx-text-fill:rgba(255,255,255,0.6); -fx-padding:0 0 6 0;"/>
+                    <Label text="GENERATEUR INTELLIGENT DE QUIZ"
+                           style="-fx-font-family:'Courier New'; -fx-font-size:18; -fx-font-weight:bold;
+                                  -fx-text-fill:#FFFFFF;"/>
+                    <Label text="Uploadez un PDF → Ollama analyse → Approuvez les questions → Insertion en BDD"
+                           style="-fx-font-family:'Courier New'; -fx-font-size:11;
+                                  -fx-text-fill:rgba(255,255,255,0.7); -fx-padding:6 0 0 0;"/>
+                </VBox>
+            </StackPane>
+
+            <!-- SECTION 1 : Sélection Quiz + PDF -->
+            <HBox alignment="CENTER_LEFT"
+                  style="-fx-border-color:#1A1A1A; -fx-border-width:0 0 3 0; -fx-padding:12 0 8 0;">
+                <Label text="// ETAPE 1 — SELECTION"
+                       style="-fx-font-family:'Courier New'; -fx-font-size:10; -fx-font-weight:bold;
+                              -fx-letter-spacing:2; -fx-text-fill:#888888;"/>
+            </HBox>
+
+            <VBox style="-fx-background-color:#FFFFFF; -fx-border-color:#1A1A1A;
+                         -fx-border-width:3; -fx-padding:18; -fx-spacing:14;
+                         -fx-margin-bottom:16;">
+
+                <!-- Choix du Quiz -->
+                <HBox alignment="CENTER_LEFT" spacing="14">
+                    <Label text="QUIZ CIBLE :"
+                           style="-fx-font-family:'Courier New'; -fx-font-size:11; -fx-font-weight:bold;
+                                  -fx-text-fill:#1A1A1A; -fx-min-width:120;"/>
+                    <ComboBox fx:id="cbQuiz" prefWidth="360"
+                              style="-fx-font-family:'Courier New'; -fx-font-size:12;
+                                     -fx-background-color:#F5F5F5; -fx-border-color:#1A1A1A;
+                                     -fx-border-width:2; -fx-background-radius:0; -fx-border-radius:0;"/>
+                </HBox>
+
+                <!-- Choix PDF -->
+                <HBox alignment="CENTER_LEFT" spacing="14">
+                    <Label text="FICHIER PDF :"
+                           style="-fx-font-family:'Courier New'; -fx-font-size:11; -fx-font-weight:bold;
+                                  -fx-text-fill:#1A1A1A; -fx-min-width:120;"/>
+                    <Button fx:id="btnChoosePdf" text="[ PARCOURIR ]" onAction="#choisirPdf"
+                            style="-fx-font-family:'Courier New'; -fx-font-size:11; -fx-font-weight:bold;
+                                   -fx-background-color:#F5F5F5; -fx-text-fill:#1A1A1A;
+                                   -fx-border-color:#1A1A1A; -fx-border-width:2;
+                                   -fx-background-radius:0; -fx-border-radius:0;
+                                   -fx-padding:8 16; -fx-cursor:hand;"/>
+                    <Label fx:id="lblPdfPath" text="Aucun fichier sélectionné"
+                           style="-fx-font-family:'Courier New'; -fx-font-size:11; -fx-text-fill:#888888;"/>
+                </HBox>
+
+                <!-- Bouton Générer -->
+                <HBox alignment="CENTER_LEFT" spacing="14">
+                    <StackPane>
+                        <VBox style="-fx-background-color:#888888; -fx-translate-x:4; -fx-translate-y:4;"/>
+                        <Button fx:id="btnGenerate" text="[ GENERER LES QUESTIONS ]" onAction="#genererQuestions"
+                                style="-fx-font-family:'Courier New'; -fx-font-size:12; -fx-font-weight:bold;
+                                       -fx-letter-spacing:1; -fx-background-color:#C47A00;
+                                       -fx-text-fill:#FFFFFF; -fx-border-color:#1A1A1A;
+                                       -fx-border-width:2; -fx-background-radius:0; -fx-border-radius:0;
+                                       -fx-padding:12 24; -fx-cursor:hand;"/>
+                    </StackPane>
+                    <ProgressIndicator fx:id="progressIndicator" prefWidth="30" prefHeight="30"/>
+                </HBox>
+
+                <!-- Status -->
+                <Label fx:id="lblStatus" text=""
+                       style="-fx-font-family:'Courier New'; -fx-font-size:11; -fx-text-fill:#555555;
+                              -fx-wrap-text:true;" wrapText="true"/>
+            </VBox>
+
+            <!-- SECTION 2 : Approbation -->
+            <HBox alignment="CENTER_LEFT"
+                  style="-fx-border-color:#1A1A1A; -fx-border-width:0 0 3 0; -fx-padding:12 0 8 0;">
+                <Label text="// ETAPE 2 — APPROBATION"
+                       style="-fx-font-family:'Courier New'; -fx-font-size:10; -fx-font-weight:bold;
+                              -fx-letter-spacing:2; -fx-text-fill:#888888;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="lblCount" text=""
+                       style="-fx-font-family:'Courier New'; -fx-font-size:10; -fx-font-weight:bold;
+                              -fx-text-fill:#C47A00;"/>
+            </HBox>
+
+            <!-- Liste des questions à approuver -->
+            <ScrollPane fx:id="scrollApproval" fitToWidth="true"
+                        prefHeight="380" visible="false"
+                        style="-fx-background:#F2F2F2; -fx-background-color:#F2F2F2; -fx-border-color:#1A1A1A;
+                               -fx-border-width:3;">
+                <VBox fx:id="approvalList" spacing="10"
+                      style="-fx-padding:14; -fx-background-color:#F2F2F2;"/>
+            </ScrollPane>
+
+            <!-- Bouton Confirmer -->
+            <HBox fx:id="hboxConfirm" style="-fx-padding:12 0 0 0;" visible="false">
+                <StackPane HBox.hgrow="ALWAYS">
+                    <VBox style="-fx-background-color:#005070; -fx-translate-x:5; -fx-translate-y:5;"/>
+                    <Button fx:id="btnConfirm" text="[✓]  INSERER EN BASE DE DONNEES" onAction="#confirmerQuestions"
+                            maxWidth="10000"
+                            style="-fx-font-family:'Courier New'; -fx-font-size:13; -fx-font-weight:bold;
+                                   -fx-letter-spacing:1; -fx-background-color:#0A5A8A;
+                                   -fx-text-fill:#FFFFFF; -fx-border-color:#1A1A1A;
+                                   -fx-border-width:3; -fx-background-radius:0; -fx-border-radius:0;
+                                   -fx-padding:14 0; -fx-cursor:hand;"/>
+                </StackPane>
+            </HBox>
+
+            <!-- INFO BOX -->
+            <VBox style="-fx-background-color:#FFF8E6; -fx-border-color:#C47A00;
+                         -fx-border-width:0 0 0 4; -fx-padding:12 16; -fx-margin-top:16;">
+                <Label text="PREREQUIS :"
+                       style="-fx-font-family:'Courier New'; -fx-font-size:10; -fx-font-weight:bold;
+                              -fx-text-fill:#C47A00; -fx-padding:0 0 6 0;"/>
+                <Label text="1. Ollama doit etre actif : ollama serve"
+                       style="-fx-font-family:'Courier New'; -fx-font-size:10; -fx-text-fill:#C47A00;"/>
+                <Label text="2. Modele Mistral installe : ollama pull mistral"
+                       style="-fx-font-family:'Courier New'; -fx-font-size:10; -fx-text-fill:#C47A00;"/>
+                <Label text="3. generate_java.py dans : ai/generate_java.py"
+                       style="-fx-font-family:'Courier New'; -fx-font-size:10; -fx-text-fill:#C47A00;"/>
+                <Label text="4. PyMuPDF + requests : py -m pip install pymupdf requests"
+                       style="-fx-font-family:'Courier New'; -fx-font-size:10; -fx-text-fill:#C47A00;"/>
+            </VBox>
+
+        </VBox>
+    </ScrollPane>
+</VBox>
