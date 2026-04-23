@@ -104,6 +104,29 @@ public class StressSurveyService implements IService {
         System.out.println("StressSurvey modifié !");
     }
 
+    /**
+     * Récupère un StressSurvey par son ID. Retourne null si non trouvé.
+     */
+    public StressSurvey getById(int id) throws SQLException {
+        String req = "SELECT * FROM stress_survey WHERE id = ?";
+        try (PreparedStatement pst = cnx.prepareStatement(req)) {
+            pst.setInt(1, id);
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    StressSurvey s = new StressSurvey(
+                            rs.getDate("date"),
+                            rs.getInt("sleep_hours"),
+                            rs.getInt("study_hours"),
+                            rs.getInt("user_id")
+                    );
+                    s.setId(rs.getInt("id"));
+                    return s;
+                }
+            }
+        }
+        return null;
+    }
+
     @Override
     public List<StressSurvey> getData() throws SQLException {
         List<StressSurvey> list = new ArrayList<>();
