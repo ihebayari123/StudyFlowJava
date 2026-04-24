@@ -139,6 +139,9 @@ public class FitnessDashboardController implements Initializable {
     @FXML private VBox viewSleep;
     @FXML private VBox viewReclamation;
 
+    @FXML private VBox viewWellBeingForm;
+    @FXML private VBox viewWellBeingResult;
+
     @FXML private StackPane medecinArea;
     @FXML private StackPane stressArea;
     @FXML private StackPane catchStressArea;
@@ -150,6 +153,8 @@ public class FitnessDashboardController implements Initializable {
     @FXML private StackPane aProposArea;
     @FXML private StackPane vipArea;
     @FXML private StackPane sleepArea;
+    @FXML private StackPane wellBeingFormArea;
+    @FXML private StackPane wellBeingResultArea;
 
     @FXML private Label lblMedecinTitle;
     @FXML private TextArea reclamationTextArea;
@@ -302,6 +307,8 @@ public class FitnessDashboardController implements Initializable {
         if (viewVip != null) allViews.add(viewVip);
         if (viewSleep != null) allViews.add(viewSleep);
         if (viewReclamation != null) allViews.add(viewReclamation);
+        if (viewWellBeingForm != null) allViews.add(viewWellBeingForm);
+        if (viewWellBeingResult != null) allViews.add(viewWellBeingResult);
         if (contentArea != null) allViews.add(contentArea);
         if (viewEvents != null) allViews.add(viewEvents);
     }
@@ -714,21 +721,66 @@ public class FitnessDashboardController implements Initializable {
 
     /**
      * Ouvre AjouterStressSurveyEtudiant.fxml DANS le dashboard (viewStress).
+     * Recharge à chaque fois pour permettre une nouvelle saisie.
      */
     @FXML
     public void handleCalculerScore(ActionEvent e) {
-        if (stressArea.getChildren().isEmpty()) {
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/AjouterStressSurveyEtudiant.fxml"));
-                Node vue = loader.load();
-                stressArea.getChildren().setAll(vue);
-            } catch (IOException ex) {
-                Label err = new Label("❌ Impossible de charger le formulaire : " + ex.getMessage());
-                err.setStyle("-fx-text-fill: #e24b4a; -fx-font-size: 13px; -fx-padding: 24;");
-                stressArea.getChildren().setAll(err);
-            }
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/AjouterStressSurveyEtudiant.fxml"));
+            Node vue = loader.load();
+            AjouterStressSurveyEtudiantController ctrl = loader.getController();
+            ctrl.setDashboardController(this);
+            stressArea.getChildren().setAll(vue);
+        } catch (IOException ex) {
+            Label err = new Label("❌ Impossible de charger le formulaire : " + ex.getMessage());
+            err.setStyle("-fx-text-fill: #e24b4a; -fx-font-size: 13px; -fx-padding: 24;");
+            stressArea.getChildren().setAll(err);
         }
         showView(viewStress);
+        setActiveNav(btnRelax);
+    }
+
+    /**
+     * Appelé par AjouterStressSurveyEtudiantController après enregistrement réussi.
+     * Ouvre directement le chatbot stress IA dans viewWellBeingResult.
+     * Passe l'ID du survey + heures sommeil/étude au chatbot.
+     */
+    public void handleStressSurveySuccess(int surveyId, int sleep, int study) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/stress_chatbot.fxml"));
+            Node vue = loader.load();
+            StressChatbotController ctrl = loader.getController();
+            ctrl.setDashboardController(this);
+            ctrl.initWithData(surveyId, sleep, study);
+            wellBeingResultArea.getChildren().setAll(vue);
+        } catch (IOException ex) {
+            Label err = new Label("❌ Impossible de charger le chatbot : " + ex.getMessage());
+            err.setStyle("-fx-text-fill: #e24b4a; -fx-font-size: 13px; -fx-padding: 24;");
+            wellBeingResultArea.getChildren().setAll(err);
+        }
+        showView(viewWellBeingResult);
+        setActiveNav(btnRelax);
+    }
+
+    /**
+     * Appelé par AjouterWellBeingScoreEtudiantController après enregistrement réussi.
+     * Ouvre le chatbot stress IA dans viewWellBeingResult.
+     * Passe le score, les heures de sommeil et d'étude au chatbot.
+     */
+    public void handleWellBeingScoreSuccess(int score, int sleep, int study) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/stress_chatbot.fxml"));
+            Node vue = loader.load();
+            StressChatbotController ctrl = loader.getController();
+            ctrl.setDashboardController(this);
+            ctrl.initWithData(score, sleep, study);
+            wellBeingResultArea.getChildren().setAll(vue);
+        } catch (IOException ex) {
+            Label err = new Label("❌ Impossible de charger le chatbot : " + ex.getMessage());
+            err.setStyle("-fx-text-fill: #e24b4a; -fx-font-size: 13px; -fx-padding: 24;");
+            wellBeingResultArea.getChildren().setAll(err);
+        }
+        showView(viewWellBeingResult);
         setActiveNav(btnRelax);
     }
 
