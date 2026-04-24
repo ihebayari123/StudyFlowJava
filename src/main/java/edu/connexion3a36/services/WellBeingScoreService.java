@@ -80,6 +80,33 @@ public class WellBeingScoreService implements IService {
         System.out.println("WellBeingScore modifié !");
     }
 
+    /**
+     * Récupère le WellBeingScore correspondant à un survey_id donné.
+     * Retourne null si aucun enregistrement n'est trouvé.
+     */
+    public WellBeingScore getBySurveyId(int surveyId) throws SQLException {
+        String req = "SELECT * FROM well_being_score WHERE survey_id = ?";
+        PreparedStatement pst = cnx.prepareStatement(req);
+        pst.setInt(1, surveyId);
+        ResultSet rs = pst.executeQuery();
+        if (rs.next()) {
+            WellBeingScore wbs = new WellBeingScore(
+                    rs.getString("recommendation"),
+                    rs.getString("action_plan"),
+                    rs.getString("comment"),
+                    rs.getInt("score")
+            );
+            wbs.setId(rs.getInt("id"));
+            wbs.setSurvey_id(rs.getInt("survey_id"));
+            rs.close();
+            pst.close();
+            return wbs;
+        }
+        rs.close();
+        pst.close();
+        return null;
+    }
+
     @Override
     public List<WellBeingScore> getData() throws SQLException {
         List<WellBeingScore> list = new ArrayList<>();

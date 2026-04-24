@@ -1546,6 +1546,58 @@
         <StackPane fx:id="contentArea" visible="false" managed="false"/>
 
         <!-- ═══════════════════════════════════════════════════════════ -->
+        <!--  VUE FORMULAIRE WELL-BEING SCORE (après StressSurvey)       -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <VBox fx:id="viewWellBeingForm" spacing="0" visible="false" managed="false">
+
+            <HBox prefHeight="70" alignment="CENTER_LEFT" spacing="16"
+                  style="-fx-background-color: linear-gradient(to right, #f3e5f5, #ede7f6);
+                         -fx-border-color: transparent transparent #e0e0e0 transparent;
+                         -fx-border-width: 0 0 1 0;">
+                <padding><Insets top="0" right="28" bottom="0" left="28"/></padding>
+                <Button text="← Retour"
+                        onAction="#goToRelax"
+                        style="-fx-background-color: white; -fx-border-color: #ddd;
+                               -fx-border-radius: 10; -fx-background-radius: 10;
+                               -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px;"/>
+                <Label text="📊  Évaluation du Bien-Être"
+                       style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-font-family: 'Georgia';
+                              -fx-text-fill: #6a1b9a;"/>
+            </HBox>
+
+            <StackPane fx:id="wellBeingFormArea" VBox.vgrow="ALWAYS"/>
+
+        </VBox>
+
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!--  VUE RÉSULTAT WELL-BEING SCORE — Chatbot Stress IA          -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <VBox fx:id="viewWellBeingResult" spacing="0" visible="false" managed="false">
+
+            <HBox prefHeight="70" alignment="CENTER_LEFT" spacing="16"
+                  style="-fx-background-color: linear-gradient(to right, #0f3460, #1a1a2e);
+                         -fx-border-color: transparent transparent #6a1b9a transparent;
+                         -fx-border-width: 0 0 2 0;">
+                <padding><Insets top="0" right="28" bottom="0" left="28"/></padding>
+                <Button text="← Retour"
+                        onAction="#goToRelax"
+                        style="-fx-background-color: rgba(255,255,255,0.1); -fx-text-fill: white;
+                               -fx-border-color: rgba(255,255,255,0.3); -fx-border-radius: 10;
+                               -fx-background-radius: 10;
+                               -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px;"/>
+                <Label text="🧠  Analyse de Stress — IA"
+                       style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-font-family: 'Georgia';
+                              -fx-text-fill: #ce93d8;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label text="🤖 Chatbot IA"
+                       style="-fx-font-size: 12px; -fx-text-fill: #ce93d8; -fx-font-weight: bold;"/>
+            </HBox>
+
+            <StackPane fx:id="wellBeingResultArea" VBox.vgrow="ALWAYS"/>
+
+        </VBox>
+
+        <!-- ═══════════════════════════════════════════════════════════ -->
         <!--  VUE ÉVÉNEMENTS  (doc4 — branche Events)                    -->
         <!-- ═══════════════════════════════════════════════════════════ -->
         <VBox fx:id="viewEvents" spacing="0" visible="false" managed="false"
