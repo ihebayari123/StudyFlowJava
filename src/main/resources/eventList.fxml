@@ -28,17 +28,7 @@
                        -fx-font-weight: bold; -fx-font-size: 13px;
                        -fx-padding: 10 20; -fx-background-radius: 20;
                        -fx-cursor: hand;"/>
-
-
-        <Button text="🤖 Recommandations IA" onAction="#handleRecommandationsIA"
-                style="-fx-background-color: #9b59b6; -fx-text-fill: white;
-                       -fx-font-weight: bold; -fx-font-size: 13px;
-                       -fx-padding: 10 20; -fx-background-radius: 20;
-                       -fx-cursor: hand;"/>
-
     </HBox>
-
-
 
     <!-- ── BARRE RECHERCHE ── -->
     <HBox alignment="CENTER" style="-fx-padding: 20 30 10 30; -fx-background-color: #f0f4f8;">
