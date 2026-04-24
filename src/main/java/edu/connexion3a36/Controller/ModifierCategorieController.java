@@ -43,10 +43,10 @@ public class ModifierCategorieController {
         String nom = nomField.getText().trim();
         String desc = descField.getText().trim();
 
-        // ✅ Reset styles
+
         resetAllStyles();
 
-        // ✅ Contrôle nom
+
         if (nom.isEmpty()) {
             showError("❌ Le nom est obligatoire !");
             setFieldError(nomField);
@@ -68,7 +68,7 @@ public class ModifierCategorieController {
             return;
         }
 
-        // ✅ Contrôle description
+
         if (desc.isEmpty()) {
             showError("❌ La description est obligatoire !");
             setAreaError(descField);
@@ -85,7 +85,7 @@ public class ModifierCategorieController {
             return;
         }
 
-        // ✅ Tout valide → on sauvegarde
+        // Tout valide → on sauvegarde
         try {
             typeCategorie.setNomCategorie(nom);
             typeCategorie.setDescription(desc);
@@ -97,23 +97,23 @@ public class ModifierCategorieController {
         }
     }
 
-    // ✅ Message erreur rouge
+
     private void showError(String message) {
         statusLabel.setStyle("-fx-text-fill: #F44336; -fx-font-size: 13;");
         statusLabel.setText(message);
     }
 
-    // ✅ Bordure rouge TextField
+
     private void setFieldError(TextField field) {
         field.setStyle("-fx-border-color: #F44336; -fx-border-radius: 8; -fx-background-radius: 8; -fx-background-color: #FFFFFF; -fx-padding: 10;");
     }
 
-    // ✅ Bordure rouge TextArea
+
     private void setAreaError(TextArea area) {
         area.setStyle("-fx-border-color: #F44336; -fx-border-radius: 8; -fx-background-radius: 8; -fx-background-color: #FFFFFF; -fx-padding: 10;");
     }
 
-    // ✅ Reset tous les styles
+
     private void resetAllStyles() {
         String normal = "-fx-background-color: #FFFFFF; -fx-background-radius: 8; -fx-border-color: transparent; -fx-padding: 10;";
         nomField.setStyle(normal);

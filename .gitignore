@@ -12,6 +12,11 @@ target/
 *.iml
 *.ipr
 
+
+
+# Secrets — ne jamais commit
+src/main/resources/config.properties
+
 ### Eclipse ###
 .apt_generated
 .classpath
