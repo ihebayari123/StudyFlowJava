@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="edu.connexion3a36.controllers.RecommendationController"
+      spacing="16"
+      style="-fx-background-color: #f0f4f8; -fx-padding: 28;">
+
+    <Label text="🤖 Recommandations IA"
+           style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1a1a2e;"/>
+
+    <Label text="Analyse automatique des événements disponibles."
+           style="-fx-text-fill: #666; -fx-font-size: 13px;"/>
+
+    <Button fx:id="btnRecommander"
+            text="✨ Générer les recommandations"
+            onAction="#handleRecommander"
+            style="-fx-background-color: #2979FF; -fx-text-fill: white;
+                   -fx-font-weight: bold; -fx-font-size: 13px;
+                   -fx-pref-height: 42; -fx-background-radius: 8;
+                   -fx-cursor: hand; -fx-padding: 0 24;"/>
+
+    <Label fx:id="statusLabel" text=""
+           style="-fx-font-size: 12px; -fx-text-fill: #888;"/>
+
+    <TextArea fx:id="resultArea"
+              prefHeight="280" wrapText="true" editable="false"
+              promptText="Les recommandations apparaîtront ici..."
+              style="-fx-background-radius: 10; -fx-border-color: #e0e0e0;
+                     -fx-border-radius: 10; -fx-font-size: 13px; -fx-padding: 12;"/>
+</VBox>

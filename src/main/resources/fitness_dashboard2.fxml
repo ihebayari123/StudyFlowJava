@@ -1560,6 +1560,13 @@
                                    -fx-background-radius: 10; -fx-padding: 8 16; -fx-cursor: hand; -fx-font-size: 13px;"/>
                     <Label text="🎉 Événements"
                            style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white; -fx-font-family: 'Georgia';"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="🤖 Recommandations IA"
+                            onAction="#handleRecommandationsIA"
+                            style="-fx-background-color: #9b59b6; -fx-text-fill: white;
+                                   -fx-font-weight: bold; -fx-font-size: 13px;
+                                   -fx-padding: 10 20; -fx-background-radius: 20;
+                                   -fx-cursor: hand;"/>
                 </HBox>
                 <HBox alignment="CENTER_LEFT" spacing="8" style="-fx-padding: 8 0 0 0;">
                     <Label text="Découvrez tous les événements disponibles"

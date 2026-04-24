@@ -1,5 +1,6 @@
 package edu.connexion3a36.controllers;
 
+
 import edu.connexion3a36.models.Event;
 import edu.connexion3a36.models.Sponsor;
 import edu.connexion3a36.services.EventService;
@@ -25,6 +26,8 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
+import javafx.scene.control.Alert;
+import java.sql.SQLException;
 
 public class EventListController implements Initializable {
 
@@ -49,6 +52,20 @@ public class EventListController implements Initializable {
         }
     }
 
+
+    @FXML
+    private void handleRecommandations() {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/views/recommendation.fxml")            );
+            Node page = loader.load();
+            StackPane contentArea = (StackPane)
+                    searchField.getScene().lookup("#contentArea");
+            contentArea.getChildren().setAll(page);
+        } catch (Exception e) {
+            System.err.println("Erreur navigation : " + e.getMessage());
+        }
+    }
     private void afficherCartes(List<Event> events) {
         cardsContainer.getChildren().clear();
         for (int i = 0; i < events.size(); i++) {
@@ -288,6 +305,43 @@ public class EventListController implements Initializable {
     }
 
     @FXML
+    private void handleRecommandationsIA() {
+        try {
+            List<Event> events = eventService.recupererTous();
+            if (events.isEmpty()) {
+                showAlert("Aucun événement disponible.");
+                return;
+            }
+            new Thread(() -> {
+                try {
+                    edu.connexion3a36.services.RecommendationService rs =
+                            new edu.connexion3a36.services.RecommendationService();
+                    String resultat = rs.recommander(events);
+                    javafx.application.Platform.runLater(() -> {
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("🤖 Recommandations IA");
+                        alert.setHeaderText(null);
+                        alert.setContentText(resultat);
+                        alert.getDialogPane().setPrefWidth(600);
+                        alert.showAndWait();
+                    });
+                } catch (Exception e) {
+                    javafx.application.Platform.runLater(() ->
+                            showAlert("❌ Erreur : " + e.getMessage()));
+                }
+            }).start();
+        } catch (SQLException e) {
+            showAlert("❌ Erreur : " + e.getMessage());
+        }
+    }
+
+    private void showAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+    @FXML
     private void handleGerer() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/event.fxml"));
@@ -300,4 +354,10 @@ public class EventListController implements Initializable {
             System.err.println("Erreur navigation : " + e.getMessage());
         }
     }
+
+
+
 }
+
+
+
