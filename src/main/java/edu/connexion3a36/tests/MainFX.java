@@ -22,7 +22,7 @@ public class MainFX extends Application {
 
       //  FXMLLoader loader = new FXMLLoader(getClass().getResource("/fitness_dashboard2.fxml"));
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/login.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fitness_dashboard2.fxml"));
         Parent root = loader.load();
         Scene sc = new Scene(root);
         primaryStage.setTitle("Fitness Dashboard");
