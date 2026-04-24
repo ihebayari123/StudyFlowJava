@@ -52,6 +52,12 @@ public class Utilisateur {
     @Column(name = "last_login")
     private LocalDateTime lastLogin;
 
+    @Column(name = "login_frequency")
+    private int loginFrequency;
+
+    @Column(name = "failed_login_attempts")
+    private int failedLoginAttempts;
+
     @Column(length = 255)
     private String avatar;
 
@@ -150,6 +156,12 @@ public class Utilisateur {
 
     public List<Cours> getCours() { return cours; }
     public void setCours(List<Cours> cours) { this.cours = cours; }
+
+    public int getLoginFrequency() { return loginFrequency; }
+    public void setLoginFrequency(int loginFrequency) { this.loginFrequency = loginFrequency; }
+
+    public int getFailedLoginAttempts() { return failedLoginAttempts; }
+    public void setFailedLoginAttempts(int failedLoginAttempts) { this.failedLoginAttempts = failedLoginAttempts; }
 
     // Méthodes utilitaires
     public String getFullName() { return prenom + " " + nom; }

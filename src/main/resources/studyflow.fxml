@@ -88,6 +88,15 @@
                                    text="Utilisateurs" />
                         </HBox>
 
+                        <HBox fx:id="anomaliesItem" alignment="CENTER_LEFT"
+                              prefHeight="40" spacing="10"
+                              style="-fx-background-radius: 8;
+                              -fx-padding: 0 12 0 12; -fx-cursor: hand;">
+                            <Label style="-fx-font-size: 14;" text="🛡️" />
+                            <Label style="-fx-font-size: 13; -fx-text-fill: #757575;"
+                                   text="Anomalies" />
+                        </HBox>
+
                         <!-- Mes Cours -->
                         <HBox fx:id="coursItem" alignment="CENTER_LEFT"
                               prefHeight="40" spacing="10"

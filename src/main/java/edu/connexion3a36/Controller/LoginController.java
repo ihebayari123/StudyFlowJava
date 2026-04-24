@@ -84,7 +84,10 @@ public class LoginController {
                 case "EMAIL_INTROUVABLE"      -> afficherErreurGlobale("❌ Aucun compte trouvé avec cet email.");
                 case "COMPTE_BLOQUE"          -> afficherErreurGlobale("🔒 Votre compte est bloqué. Contactez un administrateur.");
                 case "COMPTE_INACTIF"         -> afficherErreurGlobale("⚠️ Votre compte n'est pas encore activé.");
-                case "MOT_DE_PASSE_INCORRECT" -> afficherErreurGlobale("❌ Mot de passe incorrect.");
+                case "MOT_DE_PASSE_INCORRECT" -> {
+                    try { service.incrementFailedAttempts(email); } catch (SQLException ignored) {}
+                    afficherErreurGlobale("❌ Mot de passe incorrect.");
+                }
                 default                       -> afficherErreurGlobale("❌ Erreur de connexion : " + e.getMessage());
             }
         }

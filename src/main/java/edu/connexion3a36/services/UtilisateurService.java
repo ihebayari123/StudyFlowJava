@@ -101,7 +101,13 @@ public class UtilisateurService implements IService<Utilisateur> {
             throw new SQLException("MOT_DE_PASSE_INCORRECT");
         }
 
-        // ✅ Tout est bon
+        // ✅ Tout est bon → mettre à jour lastLogin, frequency, reset failed attempts
+        String update = "UPDATE utilisateur SET last_login = NOW(), " +
+                "login_frequency = login_frequency + 1, " +
+                "failed_login_attempts = 0 WHERE id = ?";
+        PreparedStatement pstUpdate = cnx.prepareStatement(update);
+        pstUpdate.setLong(1, u.getId());
+        pstUpdate.executeUpdate();
         return u;
     }
 
@@ -117,6 +123,15 @@ public class UtilisateurService implements IService<Utilisateur> {
         pst.executeUpdate();
         System.out.println("Statut changé → " + nouveauStatut);
     }
+    // UtilisateurService.java
+    public void bloquerDebloquerParId(long id) throws SQLException {
+        String requete = "UPDATE utilisateur SET statut_compte = " +
+                "CASE WHEN statut_compte = 'ACTIF' THEN 'BLOQUE' ELSE 'ACTIF' END " +
+                "WHERE id = ?";
+        PreparedStatement pst = cnx.prepareStatement(requete);
+        pst.setLong(1, id);
+        pst.executeUpdate();
+    }
 
     // ═══════════════════════════════
     // HELPER
@@ -131,6 +146,10 @@ public class UtilisateurService implements IService<Utilisateur> {
         u.setRole(rs.getString("role"));
         u.setStatutCompte(rs.getString("statut_compte"));
         u.setFaceAttempts(rs.getInt("face_attempts"));
+        u.setLoginFrequency(rs.getInt("login_frequency"));
+        u.setFailedLoginAttempts(rs.getInt("failed_login_attempts"));
+        Timestamp lastLogin = rs.getTimestamp("last_login");
+        if (lastLogin != null) u.setLastLogin(lastLogin.toLocalDateTime());
         return u;
     }
 
@@ -197,4 +216,12 @@ public class UtilisateurService implements IService<Utilisateur> {
         pst.setLong(1, userId);
         pst.executeUpdate();
     }
+
+    public void incrementFailedAttempts(String email) throws SQLException {
+        String requete = "UPDATE utilisateur SET failed_login_attempts = failed_login_attempts + 1 WHERE email = ?";
+        PreparedStatement pst = cnx.prepareStatement(requete);
+        pst.setString(1, email);
+        pst.executeUpdate();
+    }
+
 }
