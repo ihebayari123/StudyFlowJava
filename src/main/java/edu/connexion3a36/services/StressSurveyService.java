@@ -35,6 +35,28 @@ public class StressSurveyService implements IService {
         System.out.println("StressSurvey ajouté !");
     }
 
+    /**
+     * Insère un StressSurvey et retourne l'ID auto-généré.
+     */
+    public int addEntityAndGetId(StressSurvey s) throws SQLException {
+        String req = "INSERT INTO stress_survey (date, sleep_hours, study_hours, user_id) VALUES (?,?,?,?)";
+        PreparedStatement pst = cnx.prepareStatement(req, Statement.RETURN_GENERATED_KEYS);
+        pst.setDate(1, s.getDate());
+        pst.setInt(2, s.getSleep_hours());
+        pst.setInt(3, s.getStudy_hours());
+        pst.setInt(4, s.getUser_id());
+        pst.executeUpdate();
+        int generatedId = 0;
+        ResultSet keys = pst.getGeneratedKeys();
+        if (keys.next()) {
+            generatedId = keys.getInt(1);
+        }
+        keys.close();
+        pst.close();
+        System.out.println("StressSurvey ajouté ! ID = " + generatedId);
+        return generatedId;
+    }
+
     @Override
     public void deleteEntity(Object o) throws SQLException {
         StressSurvey s = (StressSurvey) o;
