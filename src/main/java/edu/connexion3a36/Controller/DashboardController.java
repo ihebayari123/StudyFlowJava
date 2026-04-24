@@ -57,6 +57,8 @@ public class DashboardController {
     @FXML private HBox voirScoreItem;
     @FXML private HBox deconnexionItem;
 
+    @FXML private HBox anomaliesItem;
+
     @FXML private StackPane contentArea;
 
     private boolean antiStressMenuOpen = false;
@@ -92,6 +94,8 @@ public class DashboardController {
             administrationItem.setOnMouseClicked(e -> loadView("admin"));
         if (utilisateursItem != null)
             utilisateursItem.setOnMouseClicked(e -> loadView("gestionUtilisateurs"));
+        if (anomaliesItem != null)
+            anomaliesItem.setOnMouseClicked(e -> loadView("anomalyDashboard"));
 
         // ── Anti-Stress toggle ──
         progressionItem.setOnMouseClicked(e -> toggleAntiStressMenu());
@@ -121,10 +125,11 @@ public class DashboardController {
                 homeItem, coursItem, chapitresItem, quizItem, exercicesItem,
                 eventsItem, sponsorsItem,
                 categorieItem, produitItem, progressionItem,
-                administrationItem, settingsItem, utilisateursItem,
+                administrationItem, settingsItem, utilisateursItem, anomaliesItem,
                 ajouterMedecinItem, listeMedecinsItem, ajouterConsultationItem,
                 listeConsultationsItem, antiStresseItem,
                 ajouterScoreEtudiantItem, ajouterBienEtreItem, voirScoreItem
+
         };
         for (HBox item : allItems) {
             if (item != null) addHoverEffect(item);
@@ -216,7 +221,7 @@ public class DashboardController {
                 homeItem, coursItem, chapitresItem, quizItem,
                 exercicesItem, eventsItem, sponsorsItem,
                 categorieItem, produitItem, progressionItem,
-                administrationItem, settingsItem, utilisateursItem
+                administrationItem, settingsItem, utilisateursItem, anomaliesItem
         };
         for (HBox item : items) {
             if (item != null) {
@@ -257,6 +262,7 @@ public class DashboardController {
             case "admin":               activeItem = administrationItem; break;
             case "gestionUtilisateurs": activeItem = utilisateursItem;   break;
             case "settings":            activeItem = settingsItem;       break;
+            case "anomalyDashboard": activeItem = anomaliesItem; break;
             default: break;
         }
 
@@ -312,7 +318,9 @@ public class DashboardController {
     public void setUtilisateurConnecte(Utilisateur u) {
         this.utilisateurConnecte = u;
 
-        if (u.getRole().equals("ENSEIGNANT")) {
+        String role = u.getRole().replace("ROLE_", "");
+
+        if (role.equals("ENSEIGNANT")) {
             hideItem(utilisateursItem);
             hideItem(administrationItem);
             hideItem(categorieItem);

@@ -52,6 +52,12 @@ public class Utilisateur {
     @Column(name = "last_login")
     private LocalDateTime lastLogin;
 
+    @Column(name = "login_frequency")
+    private int loginFrequency;
+
+    @Column(name = "failed_login_attempts")
+    private int failedLoginAttempts;
+
     @Column(length = 255)
     private String avatar;
 
@@ -63,6 +69,9 @@ public class Utilisateur {
 
     @Column(name = "face_encoding", columnDefinition = "LONGTEXT")
     private String faceEncoding;
+
+    @Column(name = "face_attempts")
+    private int faceAttempts;
 
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,
@@ -142,8 +151,17 @@ public class Utilisateur {
     public String getFaceEncoding() { return faceEncoding; }
     public void setFaceEncoding(String faceEncoding) { this.faceEncoding = faceEncoding; }
 
+    public int getFaceAttempts() { return faceAttempts; }
+    public void setFaceAttempts(int faceAttempts) { this.faceAttempts = faceAttempts; }
+
     public List<Cours> getCours() { return cours; }
     public void setCours(List<Cours> cours) { this.cours = cours; }
+
+    public int getLoginFrequency() { return loginFrequency; }
+    public void setLoginFrequency(int loginFrequency) { this.loginFrequency = loginFrequency; }
+
+    public int getFailedLoginAttempts() { return failedLoginAttempts; }
+    public void setFailedLoginAttempts(int failedLoginAttempts) { this.failedLoginAttempts = failedLoginAttempts; }
 
     // Méthodes utilitaires
     public String getFullName() { return prenom + " " + nom; }
