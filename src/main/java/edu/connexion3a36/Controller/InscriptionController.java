@@ -15,6 +15,13 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.sql.SQLException;
 
+import edu.connexion3a36.utils.OtpService;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import java.io.IOException;
+
 public class InscriptionController {
 
     @FXML private TextField     nomField;
@@ -150,16 +157,52 @@ public class InscriptionController {
                 return;
             }
 
+            // NOUVEAU
             Utilisateur nouvel = new Utilisateur(nom, prenom, email, mdp);
-            service.addEntity(nouvel);
 
-            Alert success = new Alert(Alert.AlertType.INFORMATION);
-            success.setTitle("Inscription réussie");
-            success.setHeaderText(null);
-            success.setContentText("✅ Compte créé avec succès ! Vous pouvez maintenant vous connecter.");
-            success.showAndWait();
+            // Envoyer OTP dans un thread séparé
+            afficherErreurGlobale("⏳ Envoi du code de vérification...");
 
-            allerVersLogin(null);
+            new Thread(() -> {
+                boolean envoye = OtpService.sendOtp(email, prenom);
+                javafx.application.Platform.runLater(() -> {
+                    if (!envoye) {
+                        afficherErreurGlobale("❌ Échec envoi email. Vérifiez votre adresse.");
+                        return;
+                    }
+
+                    // Ouvrir fenêtre OTP
+                    try {
+                        FXMLLoader loader = new FXMLLoader(
+                                getClass().getResource("/otpVerification.fxml"));
+                        Parent root = loader.load();
+
+                        OtpController otpController = loader.getController();
+                        otpController.setUtilisateur(nouvel, () -> {
+                            // ✅ OTP validé → aller au login
+                            Alert success = new Alert(Alert.AlertType.INFORMATION);
+                            success.setTitle("Inscription réussie");
+                            success.setHeaderText(null);
+                            success.setContentText(
+                                    "✅ Email vérifié ! Compte créé avec succès.");
+                            success.showAndWait();
+                            allerVersLogin(null);
+                        });
+
+                        Stage otpStage = new Stage();
+                        otpStage.initModality(Modality.APPLICATION_MODAL);
+                        otpStage.setTitle("Vérification Email");
+                        otpStage.setScene(new Scene(root));
+                        otpStage.setResizable(false);
+                        otpStage.show();
+
+                        inscriptionError.setVisible(false);
+
+                    } catch (IOException e) {
+                        afficherErreurGlobale("❌ Erreur ouverture OTP : " + e.getMessage());
+                    }
+                });
+            }).start();
 
         } catch (SQLException e) {
             afficherErreurGlobale("❌ Erreur : " + e.getMessage());

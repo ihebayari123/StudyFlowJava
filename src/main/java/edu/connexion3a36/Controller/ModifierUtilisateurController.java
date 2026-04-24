@@ -11,6 +11,12 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
+import edu.connexion3a36.utils.OtpService;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Modality;
+import java.io.IOException;
 
 import java.sql.SQLException;
 
@@ -185,6 +191,9 @@ public class ModifierUtilisateurController {
             return;
         }
 
+        // NOUVEAU
+        boolean emailChange = !email.equalsIgnoreCase(utilisateurActuel.getEmail());
+
         utilisateurActuel.setNom(nom);
         utilisateurActuel.setPrenom(prenom);
         utilisateurActuel.setEmail(email);
@@ -192,13 +201,63 @@ public class ModifierUtilisateurController {
         utilisateurActuel.setRole(role);
         utilisateurActuel.setStatutCompte(statut);
 
-        try {
-            service.updateEntity(utilisateurActuel.getId().intValue(), utilisateurActuel);
-            afficherAlert(Alert.AlertType.INFORMATION, "Succès", "✅ Utilisateur modifié avec succès !");
-            webcam.stopCamera();
-            fermerFenetre();
-        } catch (SQLException e) {
-            afficherAlert(Alert.AlertType.ERROR, "Erreur", "❌ Erreur : " + e.getMessage());
+        if (emailChange) {
+            // Email changé → OTP requis
+            new Thread(() -> {
+                boolean envoye = OtpService.sendOtp(email, prenom);
+                javafx.application.Platform.runLater(() -> {
+                    if (!envoye) {
+                        afficherAlert(Alert.AlertType.ERROR, "Erreur",
+                                "❌ Impossible d'envoyer le code. Vérifiez l'email.");
+                        return;
+                    }
+                    try {
+                        FXMLLoader loader = new FXMLLoader(
+                                getClass().getResource("/otpVerification.fxml"));
+                        Parent root = loader.load();
+
+                        OtpController otpController = loader.getController();
+                        otpController.setUtilisateur(utilisateurActuel, () -> {
+                            // ✅ OTP validé → sauvegarder
+                            try {
+                                service.updateEntity(
+                                        utilisateurActuel.getId().intValue(),
+                                        utilisateurActuel);
+                                afficherAlert(Alert.AlertType.INFORMATION, "Succès",
+                                        "✅ Email vérifié ! Profil mis à jour.");
+                                webcam.stopCamera();
+                                fermerFenetre();
+                            } catch (SQLException e) {
+                                afficherAlert(Alert.AlertType.ERROR, "Erreur",
+                                        "❌ Erreur : " + e.getMessage());
+                            }
+                        });
+
+                        Stage otpStage = new Stage();
+                        otpStage.initModality(Modality.APPLICATION_MODAL);
+                        otpStage.setTitle("Vérification Email");
+                        otpStage.setScene(new Scene(root));
+                        otpStage.setResizable(false);
+                        otpStage.show();
+
+                    } catch (IOException e) {
+                        afficherAlert(Alert.AlertType.ERROR, "Erreur",
+                                "❌ Erreur OTP : " + e.getMessage());
+                    }
+                });
+            }).start();
+
+        } else {
+            // Email inchangé → sauvegarder directement
+            try {
+                service.updateEntity(utilisateurActuel.getId().intValue(), utilisateurActuel);
+                afficherAlert(Alert.AlertType.INFORMATION, "Succès",
+                        "✅ Profil modifié avec succès !");
+                webcam.stopCamera();
+                fermerFenetre();
+            } catch (SQLException e) {
+                afficherAlert(Alert.AlertType.ERROR, "Erreur", "❌ Erreur : " + e.getMessage());
+            }
         }
     }
 
