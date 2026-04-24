@@ -2415,4 +2415,38 @@ public class FitnessDashboardController implements Initializable {
         a.setContentText(message);
         a.showAndWait();
     }
+    @FXML
+    private void handleRecommandationsIA() {
+        try {
+            List<Event> events = eventService.recupererTous();
+            if (events.isEmpty()) {
+                showAlert("Aucun événement", "Pas d'événements disponibles.");
+                return;
+            }
+
+            new Thread(() -> {
+                try {
+                    edu.connexion3a36.services.RecommendationService rs =
+                            new edu.connexion3a36.services.RecommendationService();
+                    String resultat = rs.recommander(events);
+
+                    javafx.application.Platform.runLater(() ->
+                            showAlert("🤖 Recommandations IA", resultat));
+
+                } catch (Exception e) {
+                    javafx.application.Platform.runLater(() ->
+                            showAlert("❌ Erreur", e.getMessage()));
+                }
+            }).start();
+
+        } catch (SQLException e) {
+            showAlert("❌ Erreur", e.getMessage());
+        }
+    }
+
+
+
+
 }
+
+
