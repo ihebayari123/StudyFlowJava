@@ -1,7 +1,9 @@
 package edu.connexion3a36.Controller;
 
 import edu.connexion3a36.entities.Question;
+import edu.connexion3a36.services.AIHintService;
 import edu.connexion3a36.services.QuestionService;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -29,6 +31,11 @@ public class QuestionController {
     @FXML private TextField        tfIndice;
     @FXML private Label            lblErreurTexte;
     @FXML private Label            lblErreurType;
+
+    // ── AI Hint Generator ─────────────────────────────────────
+    @FXML private Button           btnGenererIndice;
+    @FXML private ProgressIndicator piHintLoading;
+    @FXML private Label            lblHintSource;
 
     // ── Panneaux dynamiques ───────────────────────────────────
     @FXML private VBox vboxChoix;
@@ -76,8 +83,23 @@ public class QuestionController {
 
         cacherTousPanneaux();
 
-        // Affichage dynamique du panneau selon le type choisi
-        cbType.setOnAction(e -> afficherPanneau(cbType.getValue()));
+        // Initialiser état bouton IA
+        if (piHintLoading != null) piHintLoading.setVisible(false);
+        if (lblHintSource  != null) lblHintSource.setText("");
+
+        // Activer bouton IA seulement si texte + type renseignés
+        if (btnGenererIndice != null) {
+            Runnable checkAI = () -> {
+                boolean ok = !taTexte.getText().trim().isEmpty()
+                          && cbType.getValue() != null;
+                btnGenererIndice.setDisable(!ok);
+            };
+            taTexte.textProperty().addListener((o, ol, nv) -> checkAI.run());
+            cbType.setOnAction(e -> { afficherPanneau(cbType.getValue()); checkAI.run(); });
+        } else {
+            // Affichage dynamique du panneau selon le type choisi
+            cbType.setOnAction(e -> afficherPanneau(cbType.getValue()));
+        }
 
         // Remplissage formulaire au clic
         tableQuestion.getSelectionModel().selectedItemProperty().addListener(
@@ -142,6 +164,68 @@ public class QuestionController {
                 } catch (Exception e) { erreur(e.getMessage()); }
             }
         });
+    }
+
+    /**
+     * Génère un indice IA pour la question en cours de saisie.
+     * Appelé par le bouton "🤖 Générer un indice" dans QuestionView.fxml.
+     */
+    @FXML
+    public void genererIndice() {
+        String texte = taTexte.getText().trim();
+        String type  = cbType.getValue();
+
+        if (texte.isEmpty() || type == null) {
+            erreur("Saisissez d'abord le texte de la question et choisissez un type.");
+            return;
+        }
+
+        // Construire une Question partielle pour l'IA
+        Question q = new Question();
+        q.setTexte(texte);
+        q.setType(type);
+        q.setNiveau(cbNiveau.getValue() != null ? cbNiveau.getValue() : "moyen");
+        // Ajouter les choix si disponibles
+        if ("choix_multiple".equals(type)) {
+            q.setChoixA(tfChoixA.getText().trim());
+            q.setChoixB(tfChoixB.getText().trim());
+            q.setChoixC(tfChoixC.getText().trim());
+            q.setChoixD(tfChoixD.getText().trim());
+        } else if ("vrai_faux".equals(type)) {
+            q.setBonneReponseBool("Vrai".equals(cbVraiFaux.getValue()));
+        } else if ("texte".equals(type)) {
+            q.setReponseAttendue(tfReponseAttendue.getText().trim());
+        }
+
+        // UI — mode chargement
+        if (btnGenererIndice != null) btnGenererIndice.setDisable(true);
+        if (piHintLoading    != null) piHintLoading.setVisible(true);
+        if (lblHintSource    != null) lblHintSource.setText("Génération en cours…");
+        tfIndice.setPromptText("Génération IA en cours…");
+
+        // Appel asynchrone — ne bloque pas l'UI JavaFX
+        new Thread(() -> {
+            AIHintService.HintResult result = AIHintService.generer(q);
+
+            Platform.runLater(() -> {
+                // Remplir le champ indice
+                tfIndice.setText(result.indice());
+
+                // Afficher la source
+                if (lblHintSource != null) {
+                    lblHintSource.setText(
+                        "AI".equals(result.source())
+                            ? "🤖 Généré par IA (Groq / LLaMA-3)"
+                            : "📝 Suggestion locale"
+                    );
+                }
+
+                // Réinitialiser UI
+                if (piHintLoading    != null) piHintLoading.setVisible(false);
+                if (btnGenererIndice != null) btnGenererIndice.setDisable(false);
+                tfIndice.setPromptText("Aide pour l'étudiant…");
+            });
+        }).start();
     }
 
     @FXML

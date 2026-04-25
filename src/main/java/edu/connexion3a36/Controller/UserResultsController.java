@@ -1,178 +1,348 @@
 package edu.connexion3a36.Controller;
 
-import edu.connexion3a36.Controller.UserQuizController.ResultItem;
+import edu.connexion3a36.entities.Question;
 import edu.connexion3a36.entities.Quiz;
+import edu.connexion3a36.services.AIFeedbackService;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javafx.scene.shape.Circle;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 
-import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class UserResultsController {
 
-    @FXML private Label lblScorePct;
-    @FXML private Label lblResultTitle;
-    @FXML private Label lblResultMsg;
-    @FXML private Label lblTotal;
-    @FXML private Label lblCorrect;
-    @FXML private Label lblWrong;
-    @FXML private Label lblPoints;
-    @FXML private VBox  reviewList;
+    // ── FXML — Score Hero ─────────────────────────────────────────────────────
+    @FXML private Label  lblScorePct;
+    @FXML private Label  lblResultTitle;
+    @FXML private Label  lblResultMsg;
+    @FXML private Label  lblTotal;
+    @FXML private Label  lblPoints;
+    @FXML private Label  lblCorrect;
+    @FXML private Label  lblWrong;
 
-    private Quiz             quiz;
-    private List<ResultItem> items;
-    private int              scoreCorrect;
-    private int              scorePoints;
-    private StackPane        contentArea;
+    // ── FXML — Récapitulatif ──────────────────────────────────────────────────
+    @FXML private VBox   reviewList;
 
-    public void setContentArea(StackPane sp) { this.contentArea = sp; }
-    public void setData(Quiz q, List<ResultItem> it, int sc, int sp) {
-        this.quiz = q; this.items = it; this.scoreCorrect = sc; this.scorePoints = sp;
-    }
+    // ── FXML — Section AI Feedback ────────────────────────────────────────────
+    @FXML private VBox              vboxAIFeedback;
+    @FXML private ProgressIndicator piAILoading;
+    @FXML private Label             lblAIMention;
+    @FXML private Label             lblAIEncouragement;
+    @FXML private Label             lblAIPointsForts;
+    @FXML private Label             lblAIPointsFaibles;
+    @FXML private Label             lblAIConseil;
+    @FXML private Label             lblAISource;
 
-    @FXML public void initialize() {}
+    // ── État ──────────────────────────────────────────────────────────────────
+    private Quiz                                    quiz;
+    private List<Question>                          questions;
+    private List<UserQuizController.ResultItem>     resultItems;
+    private Map<Integer, Boolean>                   reponsesMap;
+    private int                                     score;
+    private int                                     scorePoints;
+    private StackPane                               contentArea;
 
-    // Appelé après setData() depuis UserQuizController
-    public void afficher() {
-        if (items == null || items.isEmpty()) return;
-        int total = items.size();
-        int wrong = total - scoreCorrect;
-        int pct   = (int) Math.round((scoreCorrect * 100.0) / total);
+    // =========================================================================
+    // ── API appelée par UserQuizController ───────────────────────────────────
+    // =========================================================================
 
-        lblScorePct.setText(pct + "%");
-        String[] msg = getMessage(pct);
-        lblResultTitle.setText(msg[0]);
-        lblResultMsg  .setText(msg[1]);
+    /**
+     * Point d'entrée appelé depuis UserQuizController après la fin du quiz.
+     *
+     * @param quiz         Quiz qui vient d'être passé
+     * @param resultItems  Liste des résultats (une entrée par question)
+     * @param scoreCorrect Nombre de bonnes réponses
+     * @param scorePoints  Total de points accumulés
+     */
+    public void setData(Quiz quiz,
+                        List<UserQuizController.ResultItem> resultItems,
+                        int scoreCorrect,
+                        int scorePoints) {
+        this.quiz        = quiz;
+        this.resultItems = resultItems;
+        this.score       = scoreCorrect;
+        this.scorePoints = scorePoints;
 
-        String col = pct >= 80 ? "#C47A00" : pct >= 50 ? "#0A5A8A" : "#C0222E";
-        lblScorePct.setStyle("-fx-font-family:'Courier New'; -fx-font-size:38;" +
-                             "-fx-font-weight:bold; -fx-text-fill:" + col + ";");
+        // Construire questions et reponsesMap à partir de resultItems
+        this.questions = resultItems.stream()
+                .map(UserQuizController.ResultItem::question)
+                .collect(Collectors.toList());
 
-        lblTotal  .setText(String.valueOf(total));
-        lblCorrect.setText(String.valueOf(scoreCorrect));
-        lblWrong  .setText(String.valueOf(wrong));
-        lblPoints .setText(scorePoints + " pts");
-
-        construireRecap();
-    }
-
-    private void construireRecap() {
-        reviewList.getChildren().clear();
-        for (int i = 0; i < items.size(); i++) {
-            ResultItem item = items.get(i);
-            HBox row = new HBox(12); row.setAlignment(Pos.TOP_LEFT);
-            row.setStyle("-fx-padding:12 0; -fx-border-color:transparent transparent #EBEBEB transparent; -fx-border-width:1;");
-
-            Circle dot = new Circle(5);
-            dot.setFill(item.correct() ? Color.web("#0A8A5A")
-                : (item.userAnswer().equals("—") ? Color.web("#AAAAAA") : Color.web("#C0222E")));
-            dot.setTranslateY(5);
-
-            VBox content = new VBox(3); HBox.setHgrow(content, Priority.ALWAYS);
-            String texteQ = item.question().getTexte();
-            Label qLbl = new Label((i+1) + ". " + (texteQ.length() > 80 ? texteQ.substring(0,80) + "..." : texteQ));
-            qLbl.setStyle("-fx-font-family:'Courier New'; -fx-font-size:12; -fx-font-weight:bold;" +
-                          "-fx-text-fill:#1A1A1A;"); qLbl.setWrapText(true);
-
-            HBox ansRow = new HBox(6); ansRow.setAlignment(Pos.CENTER_LEFT);
-            if (item.correct()) {
-                Label a = new Label("OK -- " + fmt(item));
-                a.setStyle("-fx-font-family:'Courier New'; -fx-font-size:11; -fx-text-fill:#0A8A5A;");
-                ansRow.getChildren().add(a);
-            } else if (item.userAnswer().equals("—")) {
-                Label a = new Label("TEMPS -- bonne: " + getBonne(item));
-                a.setStyle("-fx-font-family:'Courier New'; -fx-font-size:11; -fx-text-fill:#AAAAAA;");
-                ansRow.getChildren().add(a);
-            } else {
-                Label a = new Label("ERR -- " + fmt(item));
-                a.setStyle("-fx-font-family:'Courier New'; -fx-font-size:11; -fx-text-fill:#C0222E;");
-                Label ar = new Label(" >> " + getBonne(item));
-                ar.setStyle("-fx-font-family:'Courier New'; -fx-font-size:11; -fx-text-fill:#0A8A5A;");
-                ansRow.getChildren().addAll(a, ar);
-            }
-            content.getChildren().addAll(qLbl, ansRow);
-
-            Label pts = new Label("+" + item.points() + "pt");
-            pts.setStyle("-fx-font-family:'Courier New'; -fx-font-size:9; -fx-font-weight:bold; -fx-padding:2 6;" +
-                         "-fx-background-color:" + (item.correct() ? "#FFF0CC" : "#F0F0F0") + ";" +
-                         "-fx-border-color:" + (item.correct() ? "#C47A00" : "#CCCCCC") + ";" +
-                         "-fx-border-width:1; -fx-text-fill:" + (item.correct() ? "#C47A00" : "#999999") + ";");
-
-            row.getChildren().addAll(dot, content, pts);
-            reviewList.getChildren().add(row);
+        this.reponsesMap = new HashMap<>();
+        for (UserQuizController.ResultItem item : resultItems) {
+            reponsesMap.put(item.question().getId(), item.correct());
         }
     }
 
-    @FXML public void rejouer() {
-        resolveCA(); if (contentArea == null) return;
+    /**
+     * Ancienne API conservée pour compatibilité éventuelle.
+     */
+    public void setDonnees(Quiz quiz, List<Question> questions,
+                           Map<Integer, Boolean> reponsesMap,
+                           int score, StackPane contentArea) {
+        this.quiz        = quiz;
+        this.questions   = questions;
+        this.reponsesMap = reponsesMap;
+        this.score       = score;
+        this.contentArea = contentArea;
+    }
+
+    public void setContentArea(StackPane contentArea) {
+        this.contentArea = contentArea;
+    }
+
+    /**
+     * Appelé après setData() pour déclencher l'affichage.
+     */
+    public void afficher() {
+        afficherStats();
+        construireRecapitulatif();
+        lancerFeedbackIA();
+    }
+
+    // =========================================================================
+    // ── Statistiques ─────────────────────────────────────────────────────────
+    // =========================================================================
+
+    private void afficherStats() {
+        int total   = questions.size();
+        int correct = score;
+        int wrong   = total - correct;
+        double pct  = total > 0 ? (correct * 100.0 / total) : 0;
+
+        lblTotal  .setText(String.valueOf(total));
+        lblPoints .setText(scorePoints + " pts");
+        lblCorrect.setText(String.valueOf(correct));
+        lblWrong  .setText(String.valueOf(wrong));
+        lblScorePct.setText(String.format("%.0f%%", pct));
+
+        if (pct >= 80) {
+            lblResultTitle.setText("EXCELLENT !");
+            lblResultMsg.setText("Performance remarquable. Vous maîtrisez très bien ce sujet.");
+        } else if (pct >= 60) {
+            lblResultTitle.setText("BIEN JOUÉ");
+            lblResultMsg.setText("Bon résultat ! Quelques notions à consolider.");
+        } else if (pct >= 40) {
+            lblResultTitle.setText("PEUT MIEUX FAIRE");
+            lblResultMsg.setText("Résultat passable. Revoyez le cours avant de retenter.");
+        } else {
+            lblResultTitle.setText("À REVOIR");
+            lblResultMsg.setText("Ne vous découragez pas. Relisez le cours et réessayez !");
+        }
+    }
+
+    // =========================================================================
+    // ── Récapitulatif détaillé ────────────────────────────────────────────────
+    // =========================================================================
+
+    private void construireRecapitulatif() {
+        reviewList.getChildren().clear();
+
+        for (int i = 0; i < questions.size(); i++) {
+            Question q      = questions.get(i);
+            boolean correct = Boolean.TRUE.equals(reponsesMap.get(q.getId()));
+
+            // Séparateur (sauf premier élément)
+            if (i > 0) {
+                Region sep = new Region();
+                sep.setPrefHeight(1);
+                sep.setStyle("-fx-background-color: #f0f0f0;");
+                reviewList.getChildren().add(sep);
+            }
+
+            // Ligne question
+            HBox ligne = new HBox(14);
+            ligne.setStyle("-fx-padding: 14 0;");
+            ligne.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+
+            // Pastille numéro
+            StackPane badge  = new StackPane();
+            Circle    cercle = new Circle(16);
+            cercle.setFill(Color.web(correct ? "#e8f5e9" : "#fce4ec"));
+            cercle.setStroke(Color.web(correct ? "#a5d6a7" : "#f48fb1"));
+            cercle.setStrokeWidth(1.5);
+            Label num = new Label(String.valueOf(i + 1));
+            num.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: "
+                    + (correct ? "#2e7d32" : "#c62828") + ";");
+            badge.getChildren().addAll(cercle, num);
+
+            // Icône résultat
+            Label icone = new Label(correct ? "✅" : "❌");
+            icone.setStyle("-fx-font-size: 16px;");
+
+            // Réponse de l'utilisateur (si disponible via resultItems)
+            String userAnswer = "";
+            if (resultItems != null && i < resultItems.size()) {
+                userAnswer = resultItems.get(i).userAnswer();
+            }
+
+            // Texte question + type + réponse
+            VBox infos = new VBox(3);
+            HBox.setHgrow(infos, Priority.ALWAYS);
+
+            Label txtQ = new Label(q.getTexte());
+            txtQ.setWrapText(true);
+            txtQ.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1a1a2e;");
+
+            HBox badges = new HBox(6);
+            badges.getChildren().addAll(
+                    pillBadge(q.getType(),   "#e3f2fd", "#1565c0"),
+                    pillBadge(q.getNiveau(), niveauBg(q.getNiveau()), niveauFg(q.getNiveau()))
+            );
+
+            infos.getChildren().addAll(txtQ, badges);
+
+            // Afficher la réponse donnée si incorrect
+            if (!correct && !userAnswer.isBlank() && !"—".equals(userAnswer)) {
+                Label rep = new Label("Votre réponse : " + userAnswer);
+                rep.setStyle("-fx-font-size: 11px; -fx-text-fill: #c62828;");
+                infos.getChildren().add(rep);
+            }
+
+            ligne.getChildren().addAll(badge, icone, infos);
+            reviewList.getChildren().add(ligne);
+        }
+    }
+
+    // =========================================================================
+    // ── Feedback IA — asynchrone ──────────────────────────────────────────────
+    // =========================================================================
+
+    private void lancerFeedbackIA() {
+        piAILoading.setVisible(true);
+        cacherContenuIA();
+
+        new Thread(() -> {
+            AIFeedbackService.FeedbackResult r = AIFeedbackService.generer(
+                    quiz, questions, reponsesMap, score, questions.size()
+            );
+            Platform.runLater(() -> afficherFeedback(r));
+        }).start();
+    }
+
+    private void afficherFeedback(AIFeedbackService.FeedbackResult r) {
+        piAILoading.setVisible(false);
+
+        String mentionColor = switch (r.mention()) {
+            case "Excellent" -> "#2e7d32";
+            case "Bien"      -> "#1565c0";
+            case "Passable"  -> "#e65100";
+            default          -> "#c62828";
+        };
+        String mentionBg = switch (r.mention()) {
+            case "Excellent" -> "#e8f5e9";
+            case "Bien"      -> "#e3f2fd";
+            case "Passable"  -> "#fff3e0";
+            default          -> "#fce4ec";
+        };
+
+        lblAIMention.setText(r.mention());
+        lblAIMention.setStyle(
+                "-fx-font-size: 15px; -fx-font-weight: bold;"
+                        + "-fx-text-fill: " + mentionColor + ";"
+                        + "-fx-background-color: " + mentionBg + ";"
+                        + "-fx-padding: 6 16; -fx-background-radius: 20;"
+        );
+
+        lblAIEncouragement.setText("💬  " + r.encouragement());
+        lblAIPointsForts  .setText(r.pointsForts());
+        lblAIPointsFaibles.setText(r.pointsFaibles());
+        lblAIConseil      .setText("👉  " + r.conseil());
+
+        lblAISource.setText(
+                "AI".equals(r.source())
+                        ? "🤖 Généré par intelligence artificielle (Groq / LLaMA-3)"
+                        : "📝 Analyse automatique locale"
+        );
+
+        vboxAIFeedback.setVisible(true);
+        vboxAIFeedback.setManaged(true);
+    }
+
+    private void cacherContenuIA() {
+        lblAIMention      .setText("");
+        lblAIEncouragement.setText("");
+        lblAIPointsForts  .setText("");
+        lblAIPointsFaibles.setText("");
+        lblAIConseil      .setText("");
+        lblAISource       .setText("");
+    }
+
+    // =========================================================================
+    // ── Helpers visuels ───────────────────────────────────────────────────────
+    // =========================================================================
+
+    private Label pillBadge(String text, String bg, String fg) {
+        Label l = new Label(text);
+        l.setStyle("-fx-font-size: 10px; -fx-font-weight: bold;"
+                + "-fx-background-color: " + bg + ";"
+                + "-fx-text-fill: " + fg + ";"
+                + "-fx-padding: 3 10; -fx-background-radius: 10;");
+        return l;
+    }
+
+    private String niveauBg(String n) {
+        return switch (n) {
+            case "facile"    -> "#e8f5e9";
+            case "moyen"     -> "#fff8e1";
+            case "difficile" -> "#fce4ec";
+            default          -> "#f5f5f5";
+        };
+    }
+
+    private String niveauFg(String n) {
+        return switch (n) {
+            case "facile"    -> "#2e7d32";
+            case "moyen"     -> "#f57f17";
+            case "difficile" -> "#c62828";
+            default          -> "#757575";
+        };
+    }
+
+    // =========================================================================
+    // ── Actions boutons ───────────────────────────────────────────────────────
+    // =========================================================================
+
+    @FXML
+    public void rejouer() {
+        if (quiz == null || contentArea == null) return;
         try {
             FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/views/UserQuizView.fxml")
+                    getClass().getResource("/views/UserQuizView.fxml")
             );
             Node vue = loader.load();
             UserQuizController ctrl = loader.getController();
-            ctrl.setQuiz(quiz); ctrl.setContentArea(contentArea);
+            // ✅ CORRIGÉ : utiliser les méthodes séparées au lieu de setQuiz(quiz, contentArea)
+            ctrl.setQuiz(quiz);
+            ctrl.setContentArea(contentArea);
             contentArea.getChildren().setAll(vue);
             ctrl.demarrer();
-        } catch (IOException e) {
-            new Alert(Alert.AlertType.ERROR, "Erreur rejouer : " + e.getMessage()).show();
+        } catch (Exception e) {
+            new Alert(Alert.AlertType.ERROR, "Erreur relance quiz : " + e.getMessage()).show();
         }
     }
 
-    @FXML public void retourHome() {
-        resolveCA(); if (contentArea == null) return;
+    @FXML
+    public void retourHome() {
+        if (contentArea == null) return;
         try {
             FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/views/UserHomeView.fxml")
+                    getClass().getResource("/views/UserHomeView.fxml")
             );
             Node vue = loader.load();
             UserHomeController ctrl = loader.getController();
             ctrl.setContentArea(contentArea);
             contentArea.getChildren().setAll(vue);
-        } catch (IOException e) {
-            new Alert(Alert.AlertType.ERROR, "Erreur retour : " + e.getMessage()).show();
+        } catch (Exception e) {
+            new Alert(Alert.AlertType.ERROR, "Erreur retour accueil : " + e.getMessage()).show();
         }
-    }
-
-    private void resolveCA() {
-        if (contentArea == null && lblScorePct.getScene() != null)
-            contentArea = (StackPane) lblScorePct.getScene().lookup("#contentArea");
-    }
-
-    private String[] getMessage(int p) {
-        if (p >= 80) return new String[]{"EXCELLENT !", "Parfaite maitrise. Continuez !"};
-        if (p >= 60) return new String[]{"BIEN !", "Bon resultat. Quelques points a revoir."};
-        if (p >= 40) return new String[]{"A REVOIR", "Revisez et reessayez !"};
-        return new String[]{"COURAGE !", "N'abandonnez pas !"};
-    }
-
-    private String fmt(ResultItem item) {
-        String a = item.userAnswer();
-        if (a == null || a.isBlank()) return "--";
-        if ("choix_multiple".equals(item.question().getType()))
-            return switch (a) {
-                case "a" -> item.question().getChoixA(); case "b" -> item.question().getChoixB();
-                case "c" -> item.question().getChoixC(); case "d" -> item.question().getChoixD();
-                default  -> a;
-            };
-        return a.length() > 50 ? a.substring(0,50) + "..." : a;
-    }
-
-    private String getBonne(ResultItem item) {
-        return switch (item.question().getType()) {
-            case "choix_multiple" -> switch (item.question().getBonneReponseChoix() == null ? "" : item.question().getBonneReponseChoix()) {
-                case "a" -> item.question().getChoixA(); case "b" -> item.question().getChoixB();
-                case "c" -> item.question().getChoixC(); case "d" -> item.question().getChoixD();
-                default  -> "?";
-            };
-            case "vrai_faux" -> Boolean.TRUE.equals(item.question().getBonneReponseBool()) ? "Vrai" : "Faux";
-            default -> item.question().getReponseAttendue() != null ? item.question().getReponseAttendue() : "?";
-        };
     }
 }
