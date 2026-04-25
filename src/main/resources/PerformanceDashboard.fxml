@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.geometry.Insets?>
+
+<ScrollPane fitToWidth="true"
+            style="-fx-background: #F0F2F5; -fx-background-color: #F0F2F5;"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="edu.connexion3a36.Controller.PerformanceDashboardController">
+
+    <VBox spacing="20" style="-fx-padding: 28; -fx-background-color: #F0F2F5;">
+
+        <!-- ══ HEADER ══ -->
+        <HBox alignment="CENTER_LEFT" spacing="12">
+            <Label text="📊" style="-fx-font-size: 28;" />
+            <VBox>
+                <Label text="Dashboard — Performance ML"
+                       style="-fx-font-size: 22; -fx-font-weight: bold; -fx-text-fill: #1A1A2E;" />
+                <Label fx:id="lastUpdateLabel" text="Chargement..."
+                       style="-fx-font-size: 12; -fx-text-fill: #888;" />
+            </VBox>
+            <Region HBox.hgrow="ALWAYS" />
+            <Button fx:id="refreshBtn" text="🔄 Actualiser"
+                    style="-fx-background-color: #2979FF; -fx-text-fill: white;
+                           -fx-font-size: 13; -fx-font-weight: bold;
+                           -fx-background-radius: 8; -fx-padding: 8 18; -fx-cursor: hand;" />
+        </HBox>
+
+        <!-- ══ MÉTRIQUES ══ -->
+        <HBox spacing="16">
+            <!-- Produits -->
+            <VBox fx:id="cardProduits" spacing="6" HBox.hgrow="ALWAYS"
+                  style="-fx-background-color: white; -fx-background-radius: 12;
+                         -fx-padding: 20; -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.07),8,0,0,2);">
+                <Label text="🛒  Produits en base"
+                       style="-fx-font-size: 12; -fx-text-fill: #888;" />
+                <Label fx:id="totalProduitsLabel" text="—"
+                       style="-fx-font-size: 32; -fx-font-weight: bold; -fx-text-fill: #1A1A2E;" />
+                <Label fx:id="produitStatusLabel" text=""
+                       style="-fx-font-size: 11; -fx-text-fill: #F57C00;" />
+            </VBox>
+
+            <!-- Catégories -->
+            <VBox spacing="6" HBox.hgrow="ALWAYS"
+                  style="-fx-background-color: white; -fx-background-radius: 12;
+                         -fx-padding: 20; -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.07),8,0,0,2);">
+                <Label text="📂  Catégories"
+                       style="-fx-font-size: 12; -fx-text-fill: #888;" />
+                <Label fx:id="totalCategoriesLabel" text="—"
+                       style="-fx-font-size: 32; -fx-font-weight: bold; -fx-text-fill: #1A1A2E;" />
+                <Label text="types de produits"
+                       style="-fx-font-size: 11; -fx-text-fill: #888;" />
+            </VBox>
+
+            <!-- Prédictions -->
+            <VBox spacing="6" HBox.hgrow="ALWAYS"
+                  style="-fx-background-color: white; -fx-background-radius: 12;
+                         -fx-padding: 20; -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.07),8,0,0,2);">
+                <Label text="🔮  Prédictions faites"
+                       style="-fx-font-size: 12; -fx-text-fill: #888;" />
+                <Label fx:id="totalPredictionsLabel" text="—"
+                       style="-fx-font-size: 32; -fx-font-weight: bold; -fx-text-fill: #1A1A2E;" />
+                <Label text="depuis le début" style="-fx-font-size: 11; -fx-text-fill: #888;" />
+            </VBox>
+
+            <!-- MAE -->
+            <VBox spacing="6" HBox.hgrow="ALWAYS"
+                  style="-fx-background-color: white; -fx-background-radius: 12;
+                         -fx-padding: 20; -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.07),8,0,0,2);">
+                <Label text="📏  Erreur moyenne (MAE)"
+                       style="-fx-font-size: 12; -fx-text-fill: #888;" />
+                <Label fx:id="maeLabel" text="—"
+                       style="-fx-font-size: 32; -fx-font-weight: bold; -fx-text-fill: #1A1A2E;" />
+                <Label fx:id="maeStatusLabel" text=""
+                       style="-fx-font-size: 11; -fx-text-fill: #888;" />
+            </VBox>
+        </HBox>
+
+        <!-- ══ GRAPHIQUES ══ -->
+        <HBox spacing="16">
+
+            <!-- Graphique courbe prix prédit vs réel -->
+            <VBox spacing="10" HBox.hgrow="ALWAYS"
+                  style="-fx-background-color: white; -fx-background-radius: 12;
+                         -fx-padding: 20; -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.07),8,0,0,2);">
+                <Label text="📈  Prix prédit vs Prix réel"
+                       style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #1A1A2E;" />
+                <Label text="Chaque point = une prédiction (idéal = ligne diagonale)"
+                       style="-fx-font-size: 11; -fx-text-fill: #999;" />
+                <ScatterChart fx:id="scatterChart" prefHeight="280">
+                    <xAxis>
+                        <NumberAxis label="Prix réel (DT)" fx:id="xAxis" />
+                    </xAxis>
+                    <yAxis>
+                        <NumberAxis label="Prix prédit (DT)" fx:id="yAxis" />
+                    </yAxis>
+                </ScatterChart>
+            </VBox>
+
+            <!-- Barres par catégorie -->
+            <VBox spacing="10" HBox.hgrow="ALWAYS"
+                  style="-fx-background-color: white; -fx-background-radius: 12;
+                         -fx-padding: 20; -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.07),8,0,0,2);">
+                <Label text="📦  Produits par catégorie"
+                       style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #1A1A2E;" />
+                <Label text="Nombre de produits enregistrés par type"
+                       style="-fx-font-size: 11; -fx-text-fill: #999;" />
+                <BarChart fx:id="barChart" prefHeight="280" legendVisible="false">
+                    <xAxis>
+                        <CategoryAxis fx:id="barXAxis" />
+                    </xAxis>
+                    <yAxis>
+                        <NumberAxis fx:id="barYAxis" label="Nombre de produits" />
+                    </yAxis>
+                </BarChart>
+            </VBox>
+
+        </HBox>
+
+        <!-- ══ TABLEAU DERNIÈRES PRÉDICTIONS ══ -->
+        <VBox spacing="12"
+              style="-fx-background-color: white; -fx-background-radius: 12;
+                     -fx-padding: 20; -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.07),8,0,0,2);">
+            <Label text="🕐  Dernières prédictions"
+                   style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #1A1A2E;" />
+
+            <!-- En-tête tableau -->
+            <HBox style="-fx-background-color: #F5F6FA; -fx-background-radius: 8; -fx-padding: 10 14;">
+                <Label text="Produit" style="-fx-font-size: 12; -fx-font-weight: bold; -fx-text-fill: #555;" HBox.hgrow="ALWAYS" minWidth="200"/>
+                <Label text="Catégorie" style="-fx-font-size: 12; -fx-font-weight: bold; -fx-text-fill: #555;" minWidth="120"/>
+                <Label text="Prix prédit" style="-fx-font-size: 12; -fx-font-weight: bold; -fx-text-fill: #555;" minWidth="100"/>
+                <Label text="Prix réel" style="-fx-font-size: 12; -fx-font-weight: bold; -fx-text-fill: #555;" minWidth="100"/>
+                <Label text="Écart" style="-fx-font-size: 12; -fx-font-weight: bold; -fx-text-fill: #555;" minWidth="90"/>
+                <Label text="Date" style="-fx-font-size: 12; -fx-font-weight: bold; -fx-text-fill: #555;" minWidth="150"/>
+            </HBox>
+
+            <VBox fx:id="logContainer" spacing="4" />
+
+            <Label fx:id="noDataLabel" text="Aucune prédiction encore — utilisez le bouton Prédire !"
+                   style="-fx-font-size: 12; -fx-text-fill: #aaa; -fx-padding: 10 0;" />
+        </VBox>
+
+    </VBox>
+</ScrollPane>

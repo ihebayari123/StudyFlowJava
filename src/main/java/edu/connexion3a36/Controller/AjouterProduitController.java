@@ -21,16 +21,136 @@ public class AjouterProduitController {
     @FXML private ComboBox<Integer> userCombo;
     @FXML private Button ajouterBtn;
     @FXML private Label statusLabel;
+    @FXML private Button predireBtn;
+    @FXML private Button dashboardBtn;
 
     private ProduitService produitService = new ProduitService();
     private TypeCategorieService typeCategorieService = new TypeCategorieService();
+    //------------
+    private int dernierPrixPredit = 0;
 
     @FXML
     public void initialize() {
         loadCategories();
         loadUsers();
         ajouterBtn.setOnAction(e -> ajouterProduit());
+        predireBtn.setOnAction(e -> predirePrix());
+        dashboardBtn.setOnAction(e -> ouvrirDashboard());
     }
+
+    //-----------------------dashborad-----------------------
+    private void ouvrirDashboard() {
+        try {
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
+                    getClass().getResource("/PerformanceDashboard.fxml")
+            );
+
+            javafx.scene.Parent root = loader.load();
+
+            javafx.stage.Stage stage = new javafx.stage.Stage();
+            stage.setTitle("📊 Dashboard de performance");
+            stage.setScene(new javafx.scene.Scene(root));
+            stage.show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            showError(statusLabel, "❌ Erreur ouverture dashboard : " + e.getMessage());
+        }
+    }
+
+    //-------------------------------------PREDICTION---------------------------------------------------
+    private void logPrediction(String nom, String desc, String categorie, int prixPredit, int prixReel) {
+        new Thread(() -> {
+            try {
+                String json = String.format(
+                        "{\"nom\":\"%s\",\"description\":\"%s\",\"categorie\":\"%s\",\"prix_predit\":%d,\"prix_reel\":%d}",
+                        nom.replace("\"", "\\\""),
+                        desc.replace("\"", "\\\""),
+                        categorie.replace("\"", "\\\""),
+                        prixPredit, prixReel
+                );
+                java.net.URL url = new java.net.URL("http://localhost:5000/log");
+                java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setDoOutput(true);
+                try (java.io.OutputStream os = conn.getOutputStream()) {
+                    os.write(json.getBytes("UTF-8"));
+                }
+                conn.getResponseCode(); // déclenche l'envoi
+            } catch (Exception ignored) {}
+        }).start();
+    }
+
+    //                    ------------                           --------------
+    private void predirePrix() {
+        String nom  = nomField.getText().trim();
+        String desc = descField.getText().trim();
+        TypeCategorie cat = typeCategorieCombo.getValue();
+
+
+
+        if (nom.isEmpty() || desc.isEmpty() || cat == null) {
+            showError(statusLabel, "❌ Remplissez nom, description et catégorie d'abord !");
+            return;
+        }
+
+        statusLabel.setStyle("-fx-text-fill: #7C3AED; -fx-font-size: 13;");
+        statusLabel.setText("⏳ Prédiction en cours...");
+
+        new Thread(() -> {
+            try {
+                String json = String.format(
+                        "{\"nom\":\"%s\",\"description\":\"%s\",\"categorie\":\"%s\"}",
+                        nom.replace("\"", "\\\""),
+                        desc.replace("\"", "\\\""),
+                        cat.getNomCategorie().replace("\"", "\\\"")
+                );
+
+                java.net.URL url = new java.net.URL("http://localhost:5000/predict");
+                java.net.HttpURLConnection conn =
+                        (java.net.HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setDoOutput(true);
+
+                try (java.io.OutputStream os = conn.getOutputStream()) {
+                    os.write(json.getBytes("UTF-8"));
+                }
+
+                java.io.BufferedReader br = new java.io.BufferedReader(
+                        new java.io.InputStreamReader(conn.getInputStream(), "UTF-8")
+                );
+                StringBuilder response = new StringBuilder();
+                String line;
+                while ((line = br.readLine()) != null) response.append(line);
+                br.close();
+
+                String body = response.toString();
+                double prix = Double.parseDouble(
+                        body.replaceAll(".*\"prix\"\\s*:\\s*([\\d.]+).*", "$1")
+                );
+
+                javafx.application.Platform.runLater(() -> {
+                    prixField.setText(String.valueOf((int) prix));
+                    dernierPrixPredit = (int) prix;
+                    statusLabel.setStyle("-fx-text-fill: #7C3AED; -fx-font-size: 13;");
+                    statusLabel.setText("Prix predit : " + (int) prix + " DT");
+                });
+
+            } catch (Exception ex) {
+                javafx.application.Platform.runLater(() -> {
+                    showError(statusLabel, "❌ Erreur : Flask est-il lancé ? " + ex.getMessage());
+                });
+            }
+        }).start();
+    }
+
+
+
+
+
+
 
     private void loadCategories() {
         try {
@@ -164,6 +284,19 @@ public class AjouterProduitController {
         try {
             Produit p = new Produit(nom, desc, prix, image, selectedCat.getId(), selectedUser);
             produitService.addP(p);
+
+
+
+            //------------------------------
+            // Loguer la prédiction si elle a été faite
+            String prixPreditStr = prixField.getText().trim();
+            if (dernierPrixPredit > 0) {
+                logPrediction(nom, desc, selectedCat.getNomCategorie(), dernierPrixPredit, prix);
+            }
+            //-----------------------
+
+
+
             statusLabel.setStyle("-fx-text-fill: #4CAF50; -fx-font-size: 13;");
             statusLabel.setText("✅ Produit ajouté avec succès !");
             clearFields();

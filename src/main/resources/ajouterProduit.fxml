@@ -45,9 +45,18 @@
                   style="-fx-background-color: #FFFFFF; -fx-background-radius: 8;" />
     </VBox>
 
+
+    <Button fx:id="predireBtn" text="Predire le prix" maxWidth="Infinity"
+            style="-fx-background-color: #7C3AED; -fx-text-fill: white; -fx-font-size: 13;
+               -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 10; -fx-cursor: hand;" />
+
     <Button fx:id="ajouterBtn" text="✅ Ajouter" maxWidth="Infinity"
             style="-fx-background-color: #2979FF; -fx-text-fill: white; -fx-font-size: 14;
                    -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 12; -fx-cursor: hand;" />
+
+    <Button fx:id="dashboardBtn" text="📊 Voir dashboard de performance" maxWidth="Infinity"
+            style="-fx-background-color: #00B894; -fx-text-fill: white; -fx-font-size: 13;
+               -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 10; -fx-cursor: hand;" />
 
     <Label fx:id="statusLabel" style="-fx-font-size: 13;" text="" />
 

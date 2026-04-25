@@ -20,7 +20,7 @@ public class MainFX extends Application {
         //FXMLLoader loader = new FXMLLoader(getClass().getResource("/login.fxml"));
 
 
-      //  FXMLLoader loader = new FXMLLoader(getClass().getResource("/fitness_dashboard2.fxml"));
+      //  FXMLLoader loader = new FXMLLoader(getClass().getResource("/PerformanceDashboard.fxml"));
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/studyflow.fxml"));
         Parent root = loader.load();
