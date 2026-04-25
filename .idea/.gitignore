@@ -3,3 +3,7 @@
 /workspace.xml
 # Editor-based HTTP Client requests
 /httpRequests/
+ai/.env
+ai/cloudflared.exe
+ai/ngrok.exe
+ai/__pycache__/

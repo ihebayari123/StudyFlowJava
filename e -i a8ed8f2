@@ -1,0 +1,33 @@
+[33m2b8cc4a[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mGestion_quiz-questions[m[33m)[m add SmartValidator quiz module (exclude secrets and binaries)
+[33md391f58[m add  SmartValidator quiz module
+[33ma8ed8f2[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Merge pull request #34 from ihebayari123/gestion_event
+[33m63810f8[m fix: remove duplicate CalendarController (case conflict)
+[33m8b47964[m restore AI recommendation feature
+[33m123f3e2[m restore calendar from GitHub
+[33mf1ae12a[m Merge pull request #33 from ihebayari123/gestion_stress
+[33mdbc7888[m restore AI feature and update MainFX
+[33m54e94e1[m restore AI recommendation feature
+[33m567633a[m Merge branch 'main' into gestion_stress
+[33m88318cb[m mise à jour MainFX
+[33m4163bd4[m mise à jour gestion stress
+[33mb4e26c0[m Merge pull request #31 from ihebayari123/gestion_utilisateurs
+[33m0eff476[m feat: détection anomalies comportementales ML
+[33me57f945[m Merge branch 'main' of https://github.com/ihebayari123/StudyFlowJava into gestion_utilisateurs
+[33m85af479[m Merge pull request #30 from ihebayari123/GestionProduitsCommandes
+[33m23ad863[m fix: resolve merge conflicts
+[33m1c05c7d[m Merge branch 'main' of https://github.com/ihebayari123/StudyFlowJava into gestion_utilisateurs
+[33mc6b3c18[m Merge pull request #29 from ihebayari123/gestion_stress
+[33mb0aaef2[m conserver mainfx de la branche main
+[33m5388ba0[m Mon travail sur la gestion du stress
+[33ma5837b4[m Merge pull request #27 from ihebayari123/gestion_event
+[33m2c5ea6d[m sauvegarde avant reset
+[33m4c78b17[m Merge pull request #26 from ihebayari123/Gestion_quiz-questions
+[33m471a7e7[m Merge branch 'main' of https://github.com/ihebayari123/StudyFlowJava into gestion_utilisateurs
+[33m0d1fbf4[m Merge branch 'main' of https://github.com/ihebayari123/StudyFlowJava into gestion_utilisateurs
+[33m134265c[m Merge branch 'main' of https://github.com/ihebayari123/StudyFlowJava into gestion_utilisateurs
+[33m5a7dda1[m modif 3 tentatives
+[33m4fc303c[m Merge branch 'main' of https://github.com/ihebayari123/StudyFlowJava into gestion_utilisateurs
+[33m475adef[m[33m ([m[1;31morigin/gestion_utilisateurs[m[33m)[m modify pom.xml
+[33m284898b[m[33m ([m[1;31morigin/GestionProduitsCommandes[m[33m)[m Feature: paiement Stripe + email confirmation
+[33m0387e87[m[33m ([m[1;32mgestion_utilisateurs[m[33m)[m ajout du securite 3 tentatives pour le face id + modif du pom.xml
+[33m96c0efa[m feat: ajout script installation automatique
