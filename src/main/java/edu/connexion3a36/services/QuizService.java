@@ -24,12 +24,22 @@ public class QuizService implements IService<Quiz> {
     public void addEntity(Quiz q) throws SQLException {
         valider(q);
         String sql = "INSERT INTO quiz (titre, duree, date_creation, course_id) VALUES (?,?,?,?)";
-        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+
+        try (PreparedStatement ps = cnx.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString   (1, q.getTitre().trim());
             ps.setInt      (2, q.getDuree());
             ps.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()));
             ps.setInt      (4, q.getCourseId());
             ps.executeUpdate();
+
+
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) {
+                    int newId = rs.getInt(1);
+                    q.setId(newId);
+                    WhatsAppNotifier.notifierNouveauQuiz(newId); // ← السطر الوحيد الجديد
+                }
+            }
         }
     }
 
