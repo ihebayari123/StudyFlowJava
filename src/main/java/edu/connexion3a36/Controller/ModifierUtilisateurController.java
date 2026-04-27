@@ -218,20 +218,12 @@ public class ModifierUtilisateurController {
 
                         OtpController otpController = loader.getController();
                         otpController.setUtilisateur(utilisateurActuel, () -> {
-                            // ✅ OTP validé → sauvegarder
-                            try {
-                                service.updateEntity(
-                                        utilisateurActuel.getId().intValue(),
-                                        utilisateurActuel);
-                                afficherAlert(Alert.AlertType.INFORMATION, "Succès",
-                                        "✅ Email vérifié ! Profil mis à jour.");
-                                webcam.stopCamera();
-                                fermerFenetre();
-                            } catch (SQLException e) {
-                                afficherAlert(Alert.AlertType.ERROR, "Erreur",
-                                        "❌ Erreur : " + e.getMessage());
-                            }
+                            afficherAlert(Alert.AlertType.INFORMATION, "Succès",
+                                    "✅ Email vérifié ! Profil mis à jour.");
+                            webcam.stopCamera();
+                            fermerFenetre();
                         });
+                        otpController.setModification(true); // ← AJOUTER CETTE LIGNE
 
                         Stage otpStage = new Stage();
                         otpStage.initModality(Modality.APPLICATION_MODAL);

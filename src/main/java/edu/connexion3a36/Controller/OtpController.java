@@ -28,6 +28,7 @@ public class OtpController {
     private int secondesRestantes = 300; // 5 minutes
     private boolean otpValide = false;
     private Runnable onSuccess;
+    private boolean isModification = false;
 
     private final UtilisateurService service = new UtilisateurService();
 
@@ -144,18 +145,22 @@ public class OtpController {
             case SUCCESS -> {
                 if (countdown != null) countdown.stop();
                 try {
-                    // Créer le compte
-                    service.addEntity(utilisateurEnAttente);
+                    if (isModification) {
+                        // Modifier l'utilisateur existant
+                        service.updateEntity(
+                                utilisateurEnAttente.getId().intValue(),
+                                utilisateurEnAttente
+                        );
+                    } else {
+                        // Créer un nouveau compte
+                        service.addEntity(utilisateurEnAttente);
+                    }
                     otpValide = true;
-                    // Fermer la fenêtre OTP
                     Stage stage = (Stage) otp1.getScene().getWindow();
                     stage.close();
-                    // Callback → InscriptionController
-                    if (onSuccess != null) {
-                        Platform.runLater(onSuccess);
-                    }
+                    if (onSuccess != null) Platform.runLater(onSuccess);
                 } catch (SQLException e) {
-                    afficherErreur("❌ Erreur création compte : " + e.getMessage());
+                    afficherErreur("❌ Erreur : " + e.getMessage());
                 }
             }
             case WRONG_CODE -> afficherErreur("❌ Code incorrect. Réessayez.");
@@ -202,5 +207,9 @@ public class OtpController {
         errorLabel.setText(message);
         errorLabel.setVisible(true);
         errorLabel.setManaged(true);
+    }
+
+    public void setModification(boolean isModification) {
+        this.isModification = isModification;
     }
 }
