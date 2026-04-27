@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="edu.connexion3a36.Controller.UserHomeController"
+      spacing="0"
+      style="-fx-background-color: #f5f5f5;">
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!--  TOPBAR  — style fitness_dashboard                     -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <HBox prefHeight="64" alignment="CENTER_LEFT" spacing="16"
+          style="-fx-background-color: white;
+                 -fx-border-color: transparent transparent #e0e0e0 transparent;
+                 -fx-border-width: 0 0 1 0;">
+        <padding><Insets top="0" right="28" bottom="0" left="28"/></padding>
+
+        <!-- Titre section -->
+        <VBox spacing="2">
+            <Label text="📝 Quiz &amp; Questions"
+                   style="-fx-font-size: 20px; -fx-font-weight: bold;
+                          -fx-font-family: 'Georgia'; -fx-text-fill: #1a1a2e;"/>
+            <Label text="Testez vos connaissances sur vos cours."
+                   style="-fx-font-size: 12px; -fx-text-fill: #888888;"/>
+        </VBox>
+
+        <Region HBox.hgrow="ALWAYS"/>
+
+        <!-- Barre de recherche -->
+        <HBox alignment="CENTER_LEFT" spacing="8"
+              style="-fx-background-color: #f5f5f5; -fx-background-radius: 20;
+                     -fx-border-color: #dddddd; -fx-border-radius: 20;
+                     -fx-padding: 6 14;">
+            <Label text="🔍" style="-fx-font-size: 13px;"/>
+            <TextField fx:id="tfRecherche" promptText="Rechercher un quiz..."
+                       prefWidth="200"
+                       style="-fx-background-color: transparent;
+                              -fx-border-color: transparent;
+                              -fx-font-size: 13px;"/>
+        </HBox>
+
+        <!-- Filtre difficulté -->
+        <ComboBox fx:id="cbDifficulte" prefWidth="210"
+                  style="-fx-background-color: white; -fx-background-radius: 8;
+                         -fx-border-color: #dddddd; -fx-border-radius: 8;
+                         -fx-font-size: 12px; -fx-padding: 4 8;"/>
+
+        <!-- Chips stats -->
+        <HBox alignment="CENTER" spacing="6"
+              style="-fx-background-color: #111111; -fx-background-radius: 20;
+                     -fx-padding: 6 16;">
+            <Label fx:id="lblTotalQuiz" text="--"
+                   style="-fx-font-size: 16px; -fx-font-weight: bold;
+                          -fx-text-fill: white;"/>
+            <Label text="quiz"
+                   style="-fx-font-size: 11px; -fx-text-fill: #aaaaaa;"/>
+        </HBox>
+    </HBox>
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!--  BODY                                                   -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                style="-fx-background-color: #f5f5f5; -fx-border-color: transparent;">
+        <VBox spacing="24">
+            <padding><Insets top="28" right="28" bottom="28" left="28"/></padding>
+
+            <!-- HERO BANNER -->
+            <HBox prefHeight="130" spacing="0"
+                  style="-fx-background-color: #111111; -fx-background-radius: 20;
+                         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.13), 16, 0, 0, 5);"
+                  alignment="CENTER_LEFT">
+                <padding><Insets top="28" right="32" bottom="28" left="32"/></padding>
+
+                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                    <Label text="MODULE QUIZ"
+                           style="-fx-font-size: 10px; -fx-font-weight: bold;
+                                  -fx-letter-spacing: 3; -fx-text-fill: #888888;"/>
+                    <Label text="Testez vos Connaissances"
+                           style="-fx-font-size: 22px; -fx-font-weight: bold;
+                                  -fx-font-family: 'Georgia'; -fx-text-fill: white;"/>
+                    <Label text="Choisissez un quiz, répondez question par question, voyez votre score."
+                           style="-fx-font-size: 12px; -fx-text-fill: #aaaaaa; -fx-wrap-text: true;"
+                           prefWidth="380"/>
+                </VBox>
+
+                <!-- Stats chips sur fond sombre -->
+                <HBox spacing="0">
+                    <VBox alignment="CENTER" spacing="2"
+                          style="-fx-background-color: rgba(255,255,255,0.08);
+                                 -fx-border-color: rgba(255,255,255,0.15);
+                                 -fx-border-width: 1; -fx-border-radius: 12 0 0 12;
+                                 -fx-background-radius: 12 0 0 12;
+                                 -fx-padding: 14 22;">
+                        <Label fx:id="lblTotalQuiz" text="--"
+                               style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                        <Label text="Quiz"
+                               style="-fx-font-size: 10px; -fx-text-fill: #aaaaaa;"/>
+                    </VBox>
+                    <VBox alignment="CENTER" spacing="2"
+                          style="-fx-background-color: rgba(255,255,255,0.05);
+                                 -fx-border-color: rgba(255,255,255,0.15);
+                                 -fx-border-width: 1 1 1 0; -fx-border-radius: 0 12 12 0;
+                                 -fx-background-radius: 0 12 12 0;
+                                 -fx-padding: 14 22;">
+                        <Label fx:id="lblCompletes" text="0"
+                               style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #aaaaaa;"/>
+                        <Label text="Complétés"
+                               style="-fx-font-size: 10px; -fx-text-fill: #888888;"/>
+                    </VBox>
+                </HBox>
+            </HBox>
+
+            <!-- SECTION LABEL -->
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <Label text="Quiz disponibles"
+                       style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1a1a2e;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label text="Cliquez sur [ GO ] pour démarrer"
+                       style="-fx-font-size: 11px; -fx-text-fill: #aaaaaa;"/>
+            </HBox>
+
+            <!-- GRILLE quiz -->
+            <FlowPane fx:id="quizGrid" hgap="20" vgap="20"
+                      prefWrapLength="900"
+                      style="-fx-background-color: transparent;"/>
+
+        </VBox>
+    </ScrollPane>
+</VBox>

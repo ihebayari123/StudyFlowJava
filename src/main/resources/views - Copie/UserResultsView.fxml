@@ -27,6 +27,7 @@
 
         <Region HBox.hgrow="ALWAYS"/>
 
+        <!-- Badge statut -->
         <HBox alignment="CENTER" spacing="6"
               style="-fx-background-color: #e8f5e9; -fx-background-radius: 20;
                      -fx-padding: 6 16;">
@@ -71,6 +72,7 @@
 
                 <!-- Stats 4 cases -->
                 <VBox spacing="12" HBox.hgrow="ALWAYS">
+
                     <HBox spacing="12">
                         <VBox alignment="CENTER" spacing="4" HBox.hgrow="ALWAYS"
                               style="-fx-background-color: white; -fx-background-radius: 16;
@@ -122,100 +124,9 @@
                                    style="-fx-font-size: 11px; -fx-text-fill: #e53935;"/>
                         </VBox>
                     </HBox>
+
                 </VBox>
             </HBox>
-
-            <!-- ════════════════════════════════════════════════ -->
-            <!--  SECTION AI FEEDBACK  ← NOUVEAU                  -->
-            <!-- ════════════════════════════════════════════════ -->
-            <VBox spacing="14"
-                  style="-fx-background-color: white; -fx-background-radius: 20;
-                         -fx-border-color: #eeeeee; -fx-border-radius: 20;
-                         -fx-border-width: 1.5;
-                         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 12, 0, 0, 4);
-                         -fx-padding: 22 24;">
-
-                <!-- Titre section -->
-                <HBox alignment="CENTER_LEFT" spacing="10">
-                    <Label text="🤖 Analyse IA de votre performance"
-                           style="-fx-font-size: 15px; -fx-font-weight: bold;
-                                  -fx-text-fill: #1a1a2e;"/>
-                    <Region HBox.hgrow="ALWAYS"/>
-                    <!-- Spinner pendant chargement -->
-                    <ProgressIndicator fx:id="piAILoading"
-                                       prefWidth="22" prefHeight="22"
-                                       style="-fx-progress-color: #111111;"/>
-                </HBox>
-
-                <!-- Contenu feedback (visible après chargement) -->
-                <VBox fx:id="vboxAIFeedback" spacing="14"
-                      visible="false" managed="false">
-
-                    <!-- Mention -->
-                    <HBox alignment="CENTER_LEFT" spacing="12">
-                        <Label text="Mention :"
-                               style="-fx-font-size: 12px; -fx-text-fill: #888888;"/>
-                        <Label fx:id="lblAIMention" text=""
-                               style="-fx-font-size: 15px; -fx-font-weight: bold;"/>
-                    </HBox>
-
-                    <!-- Encouragement -->
-                    <Label fx:id="lblAIEncouragement" text="" wrapText="true"
-                           style="-fx-font-size: 14px; -fx-font-weight: bold;
-                                  -fx-text-fill: #1a1a2e;"/>
-
-                    <Region prefHeight="2"
-                            style="-fx-background-color: #f5f5f5;"/>
-
-                    <!-- Points forts -->
-                    <VBox spacing="5">
-                        <HBox spacing="8" alignment="CENTER_LEFT">
-                            <Label text="✅"
-                                   style="-fx-font-size: 13px;"/>
-                            <Label text="Points forts"
-                                   style="-fx-font-size: 12px; -fx-font-weight: bold;
-                                          -fx-text-fill: #2e7d32;"/>
-                        </HBox>
-                        <Label fx:id="lblAIPointsForts" text="" wrapText="true"
-                               style="-fx-font-size: 13px; -fx-text-fill: #333333;
-                                      -fx-padding: 0 0 0 22;"/>
-                    </VBox>
-
-                    <!-- Points faibles -->
-                    <VBox spacing="5">
-                        <HBox spacing="8" alignment="CENTER_LEFT">
-                            <Label text="⚠️"
-                                   style="-fx-font-size: 13px;"/>
-                            <Label text="À améliorer"
-                                   style="-fx-font-size: 12px; -fx-font-weight: bold;
-                                          -fx-text-fill: #e65100;"/>
-                        </HBox>
-                        <Label fx:id="lblAIPointsFaibles" text="" wrapText="true"
-                               style="-fx-font-size: 13px; -fx-text-fill: #333333;
-                                      -fx-padding: 0 0 0 22;"/>
-                    </VBox>
-
-                    <!-- Conseil -->
-                    <VBox spacing="4"
-                          style="-fx-background-color: #f0f4ff; -fx-background-radius: 10;
-                                 -fx-border-color: #c5ceff; -fx-border-radius: 10;
-                                 -fx-padding: 12 16;">
-                        <Label text="Conseil personnalisé"
-                               style="-fx-font-size: 11px; -fx-font-weight: bold;
-                                      -fx-text-fill: #3949ab;"/>
-                        <Label fx:id="lblAIConseil" text="" wrapText="true"
-                               style="-fx-font-size: 13px; -fx-text-fill: #1a237e;"/>
-                    </VBox>
-
-                    <!-- Source -->
-                    <Label fx:id="lblAISource" text=""
-                           style="-fx-font-size: 10px; -fx-text-fill: #aaaaaa;
-                                  -fx-font-style: italic;"/>
-                </VBox>
-            </VBox>
-            <!-- ════════════════════════════════════════════════ -->
-            <!--  FIN SECTION AI FEEDBACK                          -->
-            <!-- ════════════════════════════════════════════════ -->
 
             <!-- RECAPITULATIF LABEL -->
             <HBox alignment="CENTER_LEFT" spacing="10">
