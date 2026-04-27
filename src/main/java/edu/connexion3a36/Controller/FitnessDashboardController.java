@@ -45,6 +45,9 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
+import edu.connexion3a36.utils.OtpService;
+import edu.connexion3a36.Controller.OtpController;
+import javafx.stage.Modality;
 
 public class FitnessDashboardController implements Initializable {
 
@@ -1863,12 +1866,12 @@ public class FitnessDashboardController implements Initializable {
     @FXML
     public void handleSaveProfile(ActionEvent e) {
         String prenom = fieldFirstName.getText().trim();
-        String nom = fieldLastName.getText().trim();
-        String email = fieldEmail.getText().trim();
+        String nom    = fieldLastName.getText().trim();
+        String email  = fieldEmail.getText().trim();
 
         String msgPrenom = Validation.messageNom(prenom);
-        String msgNom = Validation.messageNom(nom);
-        String msgEmail = Validation.messageEmail(email);
+        String msgNom    = Validation.messageNom(nom);
+        String msgEmail  = Validation.messageEmail(email);
 
         erreurPrenom.setText(msgPrenom);
         erreurNom.setText(msgNom);
@@ -1886,17 +1889,58 @@ public class FitnessDashboardController implements Initializable {
 
         if (!msgPrenom.isEmpty() || !msgNom.isEmpty() || !msgEmail.isEmpty()) return;
 
+        boolean emailChange = !email.equalsIgnoreCase(utilisateurConnecte.getEmail());
+
         utilisateurConnecte.setPrenom(prenom);
         utilisateurConnecte.setNom(nom);
         utilisateurConnecte.setEmail(email);
 
-        try {
-            new UtilisateurService().updateEntity(utilisateurConnecte.getId().intValue(), utilisateurConnecte);
-            profileFullName.setText(nom + " " + prenom);
-            lblGreeting.setText("Bonjour, " + prenom + " !");
-            showAlert("✅ Succès", "Votre profil a été mis à jour avec succès !");
-        } catch (SQLException ex) {
-            showAlert("❌ Erreur", "Erreur mise à jour : " + ex.getMessage());
+        if (emailChange) {
+            // Email changé → OTP requis
+            new Thread(() -> {
+                boolean envoye = OtpService.sendOtp(email, prenom);
+                javafx.application.Platform.runLater(() -> {
+                    if (!envoye) {
+                        showAlert("❌ Erreur", "Impossible d'envoyer le code. Vérifiez l'email.");
+                        return;
+                    }
+                    try {
+                        FXMLLoader loader = new FXMLLoader(
+                                getClass().getResource("/otpVerification.fxml"));
+                        Parent root = loader.load();
+
+                        OtpController otpController = loader.getController();
+                        otpController.setUtilisateur(utilisateurConnecte, () -> {
+                            profileFullName.setText(nom + " " + prenom);
+                            lblGreeting.setText("Bonjour, " + prenom + " !");
+                            showAlert("✅ Succès", "Email vérifié ! Profil mis à jour.");
+                        });
+                        otpController.setModification(true);
+
+                        javafx.stage.Stage otpStage = new javafx.stage.Stage();
+                        otpStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+                        otpStage.setTitle("Vérification Email");
+                        otpStage.setScene(new javafx.scene.Scene(root));
+                        otpStage.setResizable(false);
+                        otpStage.show();
+
+                    } catch (IOException ex) {
+                        showAlert("❌ Erreur", "Erreur OTP : " + ex.getMessage());
+                    }
+                });
+            }).start();
+
+        } else {
+            // Email inchangé → sauvegarder directement
+            try {
+                new UtilisateurService().updateEntity(
+                        utilisateurConnecte.getId().intValue(), utilisateurConnecte);
+                profileFullName.setText(nom + " " + prenom);
+                lblGreeting.setText("Bonjour, " + prenom + " !");
+                showAlert("✅ Succès", "Votre profil a été mis à jour avec succès !");
+            } catch (SQLException ex) {
+                showAlert("❌ Erreur", "Erreur mise à jour : " + ex.getMessage());
+            }
         }
     }
 

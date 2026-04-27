@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+
+<StackPane xmlns="http://javafx.com/javafx/25"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="edu.connexion3a36.Controller.OtpController"
+           style="-fx-background-color: rgba(0,0,0,0.5);">
+
+    <VBox alignment="CENTER" spacing="0"
+          maxWidth="420"
+          style="-fx-background-color: white;
+                 -fx-background-radius: 20;
+                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 30, 0, 0, 8);">
+
+        <!-- HEADER -->
+        <VBox alignment="CENTER" spacing="8"
+              style="-fx-background-color: #2979FF;
+                     -fx-background-radius: 20 20 0 0;
+                     -fx-padding: 28 32 28 32;">
+            <Label text="🔐" style="-fx-font-size: 32;" />
+            <Label text="Vérification Email"
+                   style="-fx-font-size: 20; -fx-font-weight: bold;
+                          -fx-text-fill: white;" />
+            <Label fx:id="emailLabel" text="Code envoyé à : ..."
+                   style="-fx-font-size: 12; -fx-text-fill: rgba(255,255,255,0.8);" />
+        </VBox>
+
+        <!-- BODY -->
+        <VBox alignment="CENTER" spacing="20"
+              style="-fx-padding: 32 32 28 32;">
+
+            <Label text="Entrez le code à 6 chiffres"
+                   style="-fx-font-size: 13; -fx-text-fill: #757575;" />
+
+            <!-- 6 CHAMPS OTP -->
+            <HBox alignment="CENTER" spacing="10">
+                <TextField fx:id="otp1" maxWidth="48" prefHeight="56"
+                           style="-fx-font-size: 22; -fx-font-weight: bold;
+                                  -fx-alignment: center; -fx-text-fill: #2979FF;
+                                  -fx-border-color: #E0E0E0; -fx-border-radius: 10;
+                                  -fx-background-radius: 10; -fx-border-width: 2;" />
+                <TextField fx:id="otp2" maxWidth="48" prefHeight="56"
+                           style="-fx-font-size: 22; -fx-font-weight: bold;
+                                  -fx-alignment: center; -fx-text-fill: #2979FF;
+                                  -fx-border-color: #E0E0E0; -fx-border-radius: 10;
+                                  -fx-background-radius: 10; -fx-border-width: 2;" />
+                <TextField fx:id="otp3" maxWidth="48" prefHeight="56"
+                           style="-fx-font-size: 22; -fx-font-weight: bold;
+                                  -fx-alignment: center; -fx-text-fill: #2979FF;
+                                  -fx-border-color: #E0E0E0; -fx-border-radius: 10;
+                                  -fx-background-radius: 10; -fx-border-width: 2;" />
+                <TextField fx:id="otp4" maxWidth="48" prefHeight="56"
+                           style="-fx-font-size: 22; -fx-font-weight: bold;
+                                  -fx-alignment: center; -fx-text-fill: #2979FF;
+                                  -fx-border-color: #E0E0E0; -fx-border-radius: 10;
+                                  -fx-background-radius: 10; -fx-border-width: 2;" />
+                <TextField fx:id="otp5" maxWidth="48" prefHeight="56"
+                           style="-fx-font-size: 22; -fx-font-weight: bold;
+                                  -fx-alignment: center; -fx-text-fill: #2979FF;
+                                  -fx-border-color: #E0E0E0; -fx-border-radius: 10;
+                                  -fx-background-radius: 10; -fx-border-width: 2;" />
+                <TextField fx:id="otp6" maxWidth="48" prefHeight="56"
+                           style="-fx-font-size: 22; -fx-font-weight: bold;
+                                  -fx-alignment: center; -fx-text-fill: #2979FF;
+                                  -fx-border-color: #E0E0E0; -fx-border-radius: 10;
+                                  -fx-background-radius: 10; -fx-border-width: 2;" />
+            </HBox>
+
+            <!-- TIMER -->
+            <HBox alignment="CENTER" spacing="6">
+                <Label text="⏱️" style="-fx-font-size: 13;" />
+                <Label fx:id="timerLabel" text="Expire dans : 05:00"
+                       style="-fx-font-size: 13; -fx-font-weight: bold;
+                              -fx-text-fill: #2979FF;" />
+            </HBox>
+
+            <!-- MESSAGE ERREUR -->
+            <Label fx:id="errorLabel" text=""
+                   style="-fx-font-size: 12; -fx-text-fill: #E53935;"
+                   visible="false" managed="false" />
+
+            <!-- BOUTON VÉRIFIER -->
+            <Button text="✅ Vérifier le code"
+                    prefWidth="320" prefHeight="46"
+                    style="-fx-background-color: #2979FF;
+                           -fx-text-fill: white; -fx-font-weight: bold;
+                           -fx-font-size: 14; -fx-background-radius: 10;
+                           -fx-cursor: hand;"
+                    onAction="#verifierOtp" />
+
+            <!-- BOUTON RENVOYER -->
+            <HBox alignment="CENTER" spacing="6">
+                <Label text="Vous n'avez pas reçu le code ?"
+                       style="-fx-font-size: 12; -fx-text-fill: #9E9E9E;" />
+                <Label fx:id="renvoyerLabel" text="Renvoyer"
+                       style="-fx-font-size: 12; -fx-text-fill: #2979FF;
+                              -fx-font-weight: bold; -fx-cursor: hand;"
+                       onMouseClicked="#renvoyerOtp" />
+            </HBox>
+
+        </VBox>
+    </VBox>
+</StackPane>
