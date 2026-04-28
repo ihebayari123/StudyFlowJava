@@ -148,6 +148,9 @@ public class UtilisateurService implements IService<Utilisateur> {
         u.setFaceAttempts(rs.getInt("face_attempts"));
         u.setLoginFrequency(rs.getInt("login_frequency"));
         u.setFailedLoginAttempts(rs.getInt("failed_login_attempts"));
+        u.setLastLoginIp(rs.getString("last_login_ip"));
+        u.setLastLoginCountry(rs.getString("last_login_country"));
+        u.setLastLoginCity(rs.getString("last_login_city"));
         Timestamp lastLogin = rs.getTimestamp("last_login");
         if (lastLogin != null) u.setLastLogin(lastLogin.toLocalDateTime());
         return u;
@@ -222,6 +225,26 @@ public class UtilisateurService implements IService<Utilisateur> {
         PreparedStatement pst = cnx.prepareStatement(requete);
         pst.setString(1, email);
         pst.executeUpdate();
+    }
+
+    public void updateGeoLogin(Utilisateur u) throws SQLException {
+        String requete = "UPDATE utilisateur SET last_login_ip=?, last_login_country=?, last_login_city=? WHERE id=?";
+        PreparedStatement pst = cnx.prepareStatement(requete);
+        pst.setString(1, u.getLastLoginIp());
+        pst.setString(2, u.getLastLoginCountry());
+        pst.setString(3, u.getLastLoginCity());
+        pst.setLong(4, u.getId());
+        pst.executeUpdate();
+    }
+    public List<Utilisateur> getAdmins() throws SQLException {
+        List<Utilisateur> admins = new ArrayList<>();
+        String requete = "SELECT * FROM utilisateur WHERE role = 'ADMIN'";
+        Statement st = cnx.createStatement();
+        ResultSet rs = st.executeQuery(requete);
+        while (rs.next()) {
+            admins.add(mapRow(rs));
+        }
+        return admins;
     }
 
 }

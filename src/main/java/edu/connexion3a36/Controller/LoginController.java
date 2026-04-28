@@ -22,6 +22,11 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import edu.connexion3a36.services.GeoLocationService;
+import javafx.concurrent.Task;
+import edu.connexion3a36.entities.Notification;
+import edu.connexion3a36.services.NotificationService;
+
 
 public class LoginController {
 
@@ -37,6 +42,8 @@ public class LoginController {
 
     private WebcamCaptureUtil webcam = new WebcamCaptureUtil();
     private ScheduledExecutorService faceScanner;
+    private int countdown = 3;
+
     UtilisateurService service = new UtilisateurService();
 
     @FXML
@@ -78,6 +85,7 @@ public class LoginController {
 
         try {
             Utilisateur u = service.login(email, mdp);
+            enregistrerGeoLogin(u);
             redirigerVersTableauDeBord(u);
         } catch (SQLException e) {
             switch (e.getMessage()) {
@@ -103,6 +111,7 @@ public class LoginController {
 
         webcam.startCamera(webcamView);
 
+        countdown = 3;
         faceScanner = Executors.newSingleThreadScheduledExecutor();
         faceScanner.scheduleAtFixedRate(() -> {
             try {
@@ -132,6 +141,7 @@ public class LoginController {
                         }
 
                         service.resetFaceAttempts(u.getId());
+                        enregistrerGeoLogin(u);
 
                         String confidence = String.format("%.1f", result.confidence);
                         Platform.runLater(() -> {
@@ -146,9 +156,19 @@ public class LoginController {
                     }
                 }
 
-                // Aucun visage reconnu — continuer à scanner
+                countdown -= 1;
+                if (countdown <= 0) {
+                    Platform.runLater(() -> {
+                        webcamSection.setVisible(false);
+                        webcamSection.setManaged(false);
+                        loginError.setText("⏱ Aucun visage reconnu après 3 tentatives. Utilisez email et mot de passe.");
+                        loginError.setVisible(true);
+                    });
+                    arreterScanner();
+                    return;
+                }
                 Platform.runLater(() -> {
-                    faceStatusLabel.setText("🔍 Recherche en cours...");
+                    faceStatusLabel.setText("🔍 Recherche en cours... tentative " + (3 - countdown) + "/3");
                     faceStatusLabel.setStyle("-fx-text-fill: #757575;");
                 });
 
@@ -231,5 +251,59 @@ public class LoginController {
         } catch (IOException e) {
             afficherErreurGlobale("❌ Erreur navigation : " + e.getMessage());
         }
+    }
+    private void enregistrerGeoLogin(Utilisateur u) {
+        Task<Void> task = new Task<>() {
+            @Override
+            protected Void call() {
+                GeoLocationService geoService = new GeoLocationService();
+                GeoLocationService.GeoInfo geo = geoService.fetchGeoInfo();
+
+                if (geo.success) {
+                    System.out.println("[GEO] IP: " + geo.ip);
+                    System.out.println("[GEO] Pays détecté: " + geo.country);
+                    System.out.println("[GEO] Pays en BDD: " + u.getLastLoginCountry());
+                    boolean suspect = u.getLastLoginCountry() != null
+                            && !u.getLastLoginCountry().equalsIgnoreCase(geo.country);
+
+                    String ancienPays = u.getLastLoginCountry(); // sauvegarder avant d'écraser
+
+                    u.setLastLoginIp(geo.ip);
+                    u.setLastLoginCountry(geo.country);
+                    u.setLastLoginCity(geo.city);
+
+                    try {
+                        service.updateGeoLogin(u);
+                    } catch (Exception e) {
+                        System.err.println("[GeoLogin] Erreur update : " + e.getMessage());
+                    }
+
+                    if (suspect) {
+                        System.out.println("[GeoLogin] SUSPECT : connexion depuis " + geo.country
+                                + " (habituel : " + u.getLastLoginCountry() + ")");
+
+                        // Trouver l'admin pour lui envoyer la notification
+                        try {
+                            List<Utilisateur> admins = service.getAdmins();
+                            if (!admins.isEmpty()) {
+                                NotificationService notifService = new NotificationService();
+                                Notification notif = new Notification(
+                                        "🚨 Connexion suspecte",
+                                        u.getFullName() + " s'est connecté depuis " + geo.country
+                                                + " (habituel : " + ancienPays + ") [userId:" + u.getId() + "]",
+                                        "SECURITY",
+                                        admins.get(0).getId().intValue()
+                                );
+                                notifService.addNotification(notif);
+                            }
+                        } catch (Exception ex) {
+                            System.err.println("[GeoLogin] Erreur notification : " + ex.getMessage());
+                        }
+                    }
+                }
+                return null;
+            }
+        };
+        new Thread(task).start();
     }
 }
