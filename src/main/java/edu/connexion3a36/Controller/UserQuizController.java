@@ -3,6 +3,7 @@ package edu.connexion3a36.Controller;
 import edu.connexion3a36.entities.Question;
 import edu.connexion3a36.entities.Quiz;
 import edu.connexion3a36.services.QuestionService;
+import edu.connexion3a36.services.SmartValidatorService;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -21,6 +22,7 @@ import java.util.List;
 
 public class UserQuizController {
 
+    // ── FXML ──────────────────────────────────────────────────────────────────
     @FXML private Label       lblQuizTitle;
     @FXML private Label       lblQCounter;
     @FXML private Button      btnRetour;
@@ -37,9 +39,12 @@ public class UserQuizController {
     @FXML private TextArea    taReponse;
     @FXML private VBox        feedbackBox;
     @FXML private Label       lblFeedback;
+    @FXML private Label       lblFeedbackIA;   // ← Explication sémantique Mistral
+    @FXML private Label       lblConfidence;   // ← Confidence %
     @FXML private Button      btnValider;
     @FXML private Button      btnSuivant;
 
+    // ── État ──────────────────────────────────────────────────────────────────
     private Quiz              quiz;
     private List<Question>    questions  = new ArrayList<>();
     private int               qIndex     = 0;
@@ -54,7 +59,12 @@ public class UserQuizController {
     private List<ResultItem>  resultItems    = new ArrayList<>();
 
     private StackPane         contentArea;
-    private final QuestionService qService = new QuestionService();
+
+    // ── Services ──────────────────────────────────────────────────────────────
+    private final QuestionService      qService   = new QuestionService();
+    private final SmartValidatorService validator  = new SmartValidatorService();
+
+    // ── API ───────────────────────────────────────────────────────────────────
 
     public void setQuiz(Quiz q)              { this.quiz = q; }
     public void setContentArea(StackPane sp) { this.contentArea = sp; }
@@ -66,13 +76,12 @@ public class UserQuizController {
         btnRetour .setOnAction(e -> retourHome());
     }
 
-    // ── Point d'entrée appelé après setQuiz() ─────────────────
     public void demarrer() {
         try {
             questions = qService.getByQuizId(quiz.getId());
             if (questions.isEmpty()) {
                 new Alert(Alert.AlertType.WARNING,
-                    "Ce quiz ne contient aucune question.").show();
+                        "Ce quiz ne contient aucune question.").show();
                 retourHome(); return;
             }
             timePerQ = Math.max(10, (quiz.getDuree() * 60) / questions.size());
@@ -81,11 +90,11 @@ public class UserQuizController {
             afficherQuestion();
         } catch (Exception e) {
             new Alert(Alert.AlertType.ERROR,
-                "Erreur chargement questions : " + e.getMessage()).show();
+                    "Erreur chargement questions : " + e.getMessage()).show();
         }
     }
 
-    // ── Afficher une question ─────────────────────────────────
+    // ── Afficher une question ─────────────────────────────────────────────────
 
     private void afficherQuestion() {
         answered = false; selectedChoice = null; selectedTF = null;
@@ -113,7 +122,8 @@ public class UserQuizController {
         btnValider.setVisible(true);   btnValider.setManaged(true);
         btnValider.setDisable(true);
         btnSuivant.setVisible(false);  btnSuivant.setManaged(false);
-        btnSuivant.setText(qIndex < questions.size() - 1 ? "SUIVANT >>" : "RESULTATS >>");
+        btnSuivant.setText(qIndex < questions.size() - 1
+                ? "Question suivante →" : "Voir les résultats →");
 
         mettreAJourProgressRow();
         demarrerTimer();
@@ -125,7 +135,7 @@ public class UserQuizController {
         texteArea  .setVisible(false); texteArea  .setManaged(false);
     }
 
-    // ── Zones de réponse ─────────────────────────────────────
+    // ── Zones de réponse ─────────────────────────────────────────────────────
 
     private void construireChoix(Question q) {
         optionsArea.setVisible(true); optionsArea.setManaged(true);
@@ -140,7 +150,7 @@ public class UserQuizController {
             opt.setStyle(styleOpt(false));
             Label kl = new Label(key.toUpperCase());
             kl.setStyle("-fx-font-family:'Courier New'; -fx-font-size:11; -fx-font-weight:bold;" +
-                        "-fx-background-color:#DDDDDD; -fx-text-fill:#555555; -fx-padding:3 8;");
+                    "-fx-background-color:#DDDDDD; -fx-text-fill:#555555; -fx-padding:3 8;");
             Label vl = new Label(val);
             vl.setStyle("-fx-font-family:'Courier New'; -fx-font-size:13; -fx-text-fill:#1A1A1A;");
             vl.setWrapText(true);
@@ -157,16 +167,13 @@ public class UserQuizController {
     private void construireVraiFaux() {
         tfArea.setVisible(true); tfArea.setManaged(true);
         tfArea.getChildren().clear();
-        tfArea.getChildren().addAll(btnTF(">> VRAI", true), btnTF(">> FAUX", false));
+        tfArea.getChildren().addAll(btnTF("✅  VRAI", true), btnTF("❌  FAUX", false));
     }
 
     private Button btnTF(String label, boolean val) {
         Button b = new Button(label); b.setId("tf-" + val);
         b.setMaxWidth(Double.MAX_VALUE); HBox.setHgrow(b, Priority.ALWAYS);
-        b.setStyle("-fx-font-family:'Courier New'; -fx-font-size:14; -fx-font-weight:bold;" +
-                   "-fx-background-color:#F5F5F5; -fx-border-color:#CCCCCC; -fx-border-width:2;" +
-                   "-fx-background-radius:0; -fx-border-radius:0; -fx-padding:16; -fx-cursor:hand;" +
-                   "-fx-text-fill:#1A1A1A;");
+        b.setStyle(styleTF());
         b.setOnAction(e -> selectionnerTF(val));
         return b;
     }
@@ -175,10 +182,10 @@ public class UserQuizController {
         texteArea.setVisible(true); texteArea.setManaged(true);
         taReponse.clear();
         taReponse.textProperty().addListener((obs, old, v) ->
-            btnValider.setDisable(v.trim().length() < 2));
+                btnValider.setDisable(v.trim().length() < 2));
     }
 
-    // ── Sélection ─────────────────────────────────────────────
+    // ── Sélection ─────────────────────────────────────────────────────────────
 
     private void selectionnerChoix(String key) {
         if (answered) return;
@@ -200,7 +207,9 @@ public class UserQuizController {
         btnValider.setDisable(false);
     }
 
-    // ── Validation ────────────────────────────────────────────
+    // ══════════════════════════════════════════════════════════════════════════
+    // ── VALIDATION — SmartValidator intégré pour le type "texte" ─────────────
+    // ══════════════════════════════════════════════════════════════════════════
 
     @FXML private void valider() {
         if (answered) return;
@@ -209,33 +218,133 @@ public class UserQuizController {
         boolean correct; String userAnswer;
 
         switch (q.getType()) {
+
             case "choix_multiple" -> {
                 userAnswer = selectedChoice;
                 correct    = q.getBonneReponseChoix() != null
-                          && q.getBonneReponseChoix().equals(selectedChoice);
+                        && q.getBonneReponseChoix().equals(selectedChoice);
                 coloriserChoix(q.getBonneReponseChoix(), selectedChoice, correct);
             }
+
             case "vrai_faux" -> {
                 userAnswer = selectedTF == null ? "?" : (selectedTF ? "Vrai" : "Faux");
                 correct    = selectedTF != null && selectedTF.equals(q.getBonneReponseBool());
                 coloriserTF(q.getBonneReponseBool(), selectedTF);
             }
+
+            // ── Texte libre → SmartValidator (Ollama/Mistral) ────────────────
             default -> {
                 userAnswer = taReponse.getText().trim();
-                correct    = verifierTexte(userAnswer, q.getReponseAttendue());
-                taReponse.setStyle(taReponse.getStyle() +
-                    (correct ? "-fx-border-color:#0A8A5A;" : "-fx-border-color:#C0222E;"));
+
+                // 1. Afficher un feedback "Analyse en cours..."
+                afficherFeedbackLoading();
+                btnValider.setVisible(false); btnValider.setManaged(false);
+
+                // 2. Appel SmartValidator en background (non-bloquant)
+                final String finalUserAnswer = userAnswer;
+                final Question finalQ        = q;
+
+                new Thread(() -> {
+                    SmartValidatorService.ValidationResult result = validator.valider(
+                            finalQ.getTexte(),
+                            finalQ.getReponseAttendue(),
+                            finalUserAnswer
+                    );
+
+                    Platform.runLater(() -> {
+                        boolean ok = result.isCorrect();
+
+                        // Coloriser la textarea
+                        taReponse.setStyle(taReponse.getStyle() +
+                                (ok ? "-fx-border-color:#0A8A5A;" : "-fx-border-color:#C0222E;"));
+
+                        int pts = ok ? getPoints(finalQ.getNiveau()) : 0;
+                        if (ok) { scoreCorrect++; scorePoints += pts; }
+                        resultItems.add(new ResultItem(finalQ, finalUserAnswer, ok, pts));
+
+                        afficherFeedbackTexte(ok, pts, result);
+                        btnSuivant.setVisible(true); btnSuivant.setManaged(true);
+                    });
+                }, "smart-validator-thread").start();
+
+                return; // sortir — le reste se fait dans Platform.runLater
             }
         }
 
+        // Pour choix_multiple et vrai_faux (exécution synchrone)
         int pts = correct ? getPoints(q.getNiveau()) : 0;
         if (correct) { scoreCorrect++; scorePoints += pts; }
         resultItems.add(new ResultItem(q, userAnswer, correct, pts));
-        afficherFeedback(correct, q, pts);
+        afficherFeedbackStandard(correct, q, pts);
 
         btnValider.setVisible(false); btnValider.setManaged(false);
         btnSuivant.setVisible(true);  btnSuivant.setManaged(true);
     }
+
+    // ── Feedback ─────────────────────────────────────────────────────────────
+
+    /** Pendant l'appel Ollama pour les textes libres */
+    private void afficherFeedbackLoading() {
+        feedbackBox.setVisible(true); feedbackBox.setManaged(true);
+        feedbackBox.setStyle("-fx-background-color:#FFF8E6; -fx-border-color:#C47A00;" +
+                "-fx-border-width:0 0 0 4; -fx-padding:10 14;");
+        lblFeedback.setText("⏳ Analyse sémantique en cours (Mistral)...");
+        lblFeedback.setStyle("-fx-font-family:'Courier New'; -fx-font-size:12;" +
+                "-fx-font-weight:bold; -fx-text-fill:#C47A00;");
+        if (lblFeedbackIA != null) lblFeedbackIA.setText("");
+        if (lblConfidence != null) lblConfidence.setText("");
+    }
+
+    /** Résultat SmartValidator pour les textes libres */
+    private void afficherFeedbackTexte(boolean correct, int pts,
+                                       SmartValidatorService.ValidationResult result) {
+        feedbackBox.setVisible(true); feedbackBox.setManaged(true);
+        String borderColor = correct ? "#0A8A5A" : "#C0222E";
+        String bgColor     = correct ? "#D4F5E4" : "#FFE0E3";
+        feedbackBox.setStyle("-fx-background-color:" + bgColor + ";" +
+                "-fx-border-color:" + borderColor + ";" +
+                "-fx-border-width:0 0 0 4; -fx-padding:10 14;");
+
+        // Ligne 1 : résultat + points
+        lblFeedback.setText(correct
+                ? "✅ Réponse correcte sémantiquement ! (+" + pts + " pts)"
+                : "❌ Réponse incorrecte selon l'analyse IA");
+        lblFeedback.setStyle("-fx-font-family:'Courier New'; -fx-font-size:12;" +
+                "-fx-font-weight:bold; -fx-text-fill:" + borderColor + ";");
+
+        // Ligne 2 : explication Mistral
+        if (lblFeedbackIA != null) {
+            lblFeedbackIA.setText("🤖 " + result.explanation());
+            lblFeedbackIA.setStyle("-fx-font-family:'Courier New'; -fx-font-size:11;" +
+                    "-fx-text-fill:#555555; -fx-wrap-text:true;");
+        }
+
+        // Ligne 3 : confiance
+        if (lblConfidence != null) {
+            lblConfidence.setText("Confiance : " + result.confidence() + "%");
+            lblConfidence.setStyle("-fx-font-family:'Courier New'; -fx-font-size:10;" +
+                    "-fx-text-fill:#888888;");
+        }
+    }
+
+    /** Feedback standard pour choix_multiple et vrai_faux */
+    private void afficherFeedbackStandard(boolean correct, Question q, int pts) {
+        feedbackBox.setVisible(true); feedbackBox.setManaged(true);
+        String borderColor = correct ? "#0A8A5A" : "#C0222E";
+        String bgColor     = correct ? "#D4F5E4" : "#FFE0E3";
+        feedbackBox.setStyle("-fx-background-color:" + bgColor + ";" +
+                "-fx-border-color:" + borderColor + ";" +
+                "-fx-border-width:0 0 0 4; -fx-padding:10 14;");
+        lblFeedback.setText(correct
+                ? "✅ Bonne réponse ! (+" + pts + " pts)"
+                : "❌ Bonne réponse : " + getBonneLabel(q));
+        lblFeedback.setStyle("-fx-font-family:'Courier New'; -fx-font-size:12;" +
+                "-fx-font-weight:bold; -fx-text-fill:" + borderColor + ";");
+        if (lblFeedbackIA != null) lblFeedbackIA.setText("");
+        if (lblConfidence != null) lblConfidence.setText("");
+    }
+
+    // ── Colorisation ─────────────────────────────────────────────────────────
 
     private void coloriserChoix(String bonne, String choisie, boolean correct) {
         optionsArea.getChildren().forEach(n -> {
@@ -253,24 +362,10 @@ public class UserQuizController {
             Button b = (Button) n;
             boolean isOk    = b.getId().equals("tf-" + bonne);
             boolean isWrong = choisie != null && !choisie.equals(bonne)
-                           && b.getId().equals("tf-" + choisie);
-            String base = "-fx-font-family:'Courier New'; -fx-font-size:14; -fx-font-weight:bold;" +
-                          "-fx-background-radius:0; -fx-border-radius:0; -fx-padding:16; -fx-text-fill:#1A1A1A;";
-            if      (isOk)    b.setStyle(base + "-fx-background-color:#D4F5E4; -fx-border-color:#0A8A5A; -fx-border-width:3;");
-            else if (isWrong) b.setStyle(base + "-fx-background-color:#FFE0E3; -fx-border-color:#C0222E; -fx-border-width:3;");
+                    && b.getId().equals("tf-" + choisie);
+            if      (isOk)    b.setStyle(styleTF().replace("#F5F5F5","#D4F5E4").replace("#CCCCCC","#0A8A5A"));
+            else if (isWrong) b.setStyle(styleTF().replace("#F5F5F5","#FFE0E3").replace("#CCCCCC","#C0222E"));
         });
-    }
-
-    private void afficherFeedback(boolean correct, Question q, int pts) {
-        feedbackBox.setVisible(true); feedbackBox.setManaged(true);
-        feedbackBox.setStyle("-fx-background-color:" + (correct ? "#D4F5E4" : "#FFE0E3") + ";" +
-                             "-fx-border-color:" + (correct ? "#0A8A5A" : "#C0222E") + ";" +
-                             "-fx-border-width:0 0 0 4; -fx-padding:10 14;");
-        lblFeedback.setText(correct
-            ? "OK — Bonne reponse ! (+" + pts + " pts)"
-            : "ERREUR — Bonne reponse : " + getBonneLabel(q));
-        lblFeedback.setStyle("-fx-font-family:'Courier New'; -fx-font-size:12; -fx-font-weight:bold;" +
-                             "-fx-text-fill:" + (correct ? "#0A8A5A" : "#C0222E") + ";");
     }
 
     @FXML private void suivant() {
@@ -279,7 +374,7 @@ public class UserQuizController {
         else afficherQuestion();
     }
 
-    // ── Timer ─────────────────────────────────────────────────
+    // ── Timer ─────────────────────────────────────────────────────────────────
 
     private void demarrerTimer() {
         stopTimer();
@@ -287,9 +382,8 @@ public class UserQuizController {
         pbTimer.setProgress(1.0);
         updateTimerUI();
         timerAnim = new Timeline(new KeyFrame(Duration.seconds(timePerQ),
-            new KeyValue(pbTimer.progressProperty(), 0.0)));
+                new KeyValue(pbTimer.progressProperty(), 0.0)));
         timerAnim.play();
-
         javafx.animation.AnimationTimer cd = new javafx.animation.AnimationTimer() {
             long last = 0;
             @Override public void handle(long now) {
@@ -314,26 +408,29 @@ public class UserQuizController {
         lblTimerVal.setText(String.format("%d:%02d", timeLeft / 60, timeLeft % 60));
         double pct = (double) timeLeft / timePerQ;
         String col = pct > 0.5 ? "#C47A00" : pct > 0.25 ? "#CC6600" : "#C0222E";
-        lblTimerVal.setStyle("-fx-font-family:'Courier New'; -fx-font-size:16; " +
-                             "-fx-font-weight:bold; -fx-text-fill:" + col + ";");
+        lblTimerVal.setStyle("-fx-font-family:'Courier New'; -fx-font-size:16;" +
+                "-fx-font-weight:bold; -fx-text-fill:" + col + ";");
         pbTimer.setStyle("-fx-pref-height:6; -fx-accent:" + col + "; -fx-background-color:#DDDDDD;");
     }
 
     private void expirer() {
         if (answered) return;
         answered = true;
-        resultItems.add(new ResultItem(questions.get(qIndex), "—", false, 0));
+        Question q = questions.get(qIndex);
+        resultItems.add(new ResultItem(q, "—", false, 0));
         feedbackBox.setVisible(true); feedbackBox.setManaged(true);
         feedbackBox.setStyle("-fx-background-color:#FFE0E3; -fx-border-color:#C0222E;" +
-                             "-fx-border-width:0 0 0 4; -fx-padding:10 14;");
-        lblFeedback.setText("TEMPS ECOULE — Bonne reponse : " + getBonneLabel(questions.get(qIndex)));
-        lblFeedback.setStyle("-fx-font-family:'Courier New'; -fx-font-size:12; " +
-                             "-fx-font-weight:bold; -fx-text-fill:#C0222E;");
+                "-fx-border-width:0 0 0 4; -fx-padding:10 14;");
+        lblFeedback.setText("⏱ Temps écoulé ! Bonne réponse : " + getBonneLabel(q));
+        lblFeedback.setStyle("-fx-font-family:'Courier New'; -fx-font-size:12;" +
+                "-fx-font-weight:bold; -fx-text-fill:#C0222E;");
+        if (lblFeedbackIA != null) lblFeedbackIA.setText("");
+        if (lblConfidence != null) lblConfidence.setText("");
         btnValider.setVisible(false); btnValider.setManaged(false);
         btnSuivant.setVisible(true);  btnSuivant.setManaged(true);
     }
 
-    // ── Progress dots ─────────────────────────────────────────
+    // ── Progress dots ─────────────────────────────────────────────────────────
 
     private void construireProgressRow() {
         progressRow.getChildren().clear();
@@ -354,14 +451,14 @@ public class UserQuizController {
         }
     }
 
-    // ── Résultats ─────────────────────────────────────────────
+    // ── Résultats ─────────────────────────────────────────────────────────────
 
     private void afficherResultats() {
         resolveCA();
         if (contentArea == null) return;
         try {
             FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/views/UserResultsView.fxml")
+                    getClass().getResource("/views/UserResultsView.fxml")
             );
             Node vue = loader.load();
             UserResultsController ctrl = loader.getController();
@@ -371,7 +468,7 @@ public class UserQuizController {
             ctrl.afficher();
         } catch (IOException e) {
             new Alert(Alert.AlertType.ERROR,
-                "Erreur affichage résultats : " + e.getMessage()).show();
+                    "Erreur affichage résultats : " + e.getMessage()).show();
         }
     }
 
@@ -380,7 +477,7 @@ public class UserQuizController {
         if (contentArea == null) return;
         try {
             FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/views/UserHomeView.fxml")
+                    getClass().getResource("/views/UserHomeView.fxml")
             );
             Node vue = loader.load();
             UserHomeController ctrl = loader.getController();
@@ -391,39 +488,38 @@ public class UserQuizController {
         }
     }
 
-    // ← null-safe lookup
     private void resolveCA() {
         if (contentArea == null && progressRow.getScene() != null)
             contentArea = (StackPane) progressRow.getScene().lookup("#contentArea");
     }
 
-    // ── Style helpers ─────────────────────────────────────────
+    // ── Style helpers ─────────────────────────────────────────────────────────
 
     private String styleOpt(boolean hover) {
         return "-fx-background-color:" + (hover ? "#EAEAEA" : "#F5F5F5") +
-               "; -fx-border-color:#CCCCCC; -fx-border-width:2; -fx-padding:12 14; -fx-cursor:hand;";
+                "; -fx-border-color:#CCCCCC; -fx-border-width:2; -fx-padding:12 14; -fx-cursor:hand;";
     }
     private String styleOptSelected() {
         return "-fx-background-color:#FFF0CC; -fx-border-color:#C47A00; -fx-border-width:3; -fx-padding:12 14; -fx-cursor:hand;";
     }
     private String styleTF() {
         return "-fx-font-family:'Courier New'; -fx-font-size:14; -fx-font-weight:bold;" +
-               "-fx-background-color:#F5F5F5; -fx-border-color:#CCCCCC; -fx-border-width:2;" +
-               "-fx-background-radius:0; -fx-border-radius:0; -fx-padding:16; -fx-cursor:hand; -fx-text-fill:#1A1A1A;";
+                "-fx-background-color:#F5F5F5; -fx-border-color:#CCCCCC; -fx-border-width:2;" +
+                "-fx-background-radius:0; -fx-border-radius:0; -fx-padding:16; -fx-cursor:hand; -fx-text-fill:#1A1A1A;";
     }
     private String styleTFSelected() {
         return "-fx-font-family:'Courier New'; -fx-font-size:14; -fx-font-weight:bold;" +
-               "-fx-background-color:#FFF0CC; -fx-border-color:#C47A00; -fx-border-width:3;" +
-               "-fx-background-radius:0; -fx-border-radius:0; -fx-padding:16; -fx-cursor:hand; -fx-text-fill:#1A1A1A;";
+                "-fx-background-color:#FFF0CC; -fx-border-color:#C47A00; -fx-border-width:3;" +
+                "-fx-background-radius:0; -fx-border-radius:0; -fx-padding:16; -fx-cursor:hand; -fx-text-fill:#1A1A1A;";
     }
 
-    // ── Helpers métier ────────────────────────────────────────
+    // ── Helpers ───────────────────────────────────────────────────────────────
 
     private String getTypeLabel(String t) {
         return switch (t) {
             case "choix_multiple" -> "CHOIX MULTIPLE";
             case "vrai_faux"      -> "VRAI / FAUX";
-            case "texte"          -> "TEXTE LIBRE";
+            case "texte"          -> "TEXTE LIBRE (IA)";
             default               -> t.toUpperCase();
         };
     }
@@ -434,15 +530,6 @@ public class UserQuizController {
             case "difficile" -> 3;
             default          -> 1;
         };
-    }
-
-    private boolean verifierTexte(String rep, String att) {
-        if (rep == null || att == null) return false;
-        String r = rep.trim().toLowerCase(), a = att.trim().toLowerCase();
-        if (r.equals(a)) return true;
-        String[] mots = a.split("\\s+"); int m = 0;
-        for (String w : mots) if (w.length() > 3 && r.contains(w)) m++;
-        return m >= Math.max(1, mots.length / 3);
     }
 
     private String getBonneLabel(Question q) {
@@ -457,5 +544,8 @@ public class UserQuizController {
         };
     }
 
-    public record ResultItem(Question question, String userAnswer, boolean correct, int points) {}
+    // ── Record ────────────────────────────────────────────────────────────────
+
+    public record ResultItem(Question question, String userAnswer,
+                             boolean correct, int points) {}
 }

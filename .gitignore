@@ -41,3 +41,7 @@ build/
 
 ### Mac OS ###
 .DS_Store
+ai/.env
+ai/cloudflared.exe
+ai/ngrok.exe
+ai/__pycache__/

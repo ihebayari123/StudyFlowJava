@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<!--
+  QuestionTexteLibreView.fxml
+  ═══════════════════════════
+  Vue pour une question de type "texte" avec correction intelligente (SmartValidator).
+
+  À inclure dans votre vue de passage de quiz :
+    <fx:include source="/QuestionTexteLibreView.fxml" fx:id="texteLibreSection"/>
+
+  Ou charger dynamiquement dans le controller parent :
+    FXMLLoader loader = new FXMLLoader(getClass().getResource("/QuestionTexteLibreView.fxml"));
+    Node vue = loader.load();
+    QuestionTexteLibreController ctrl = loader.getController();
+    ctrl.setQuestion(maQuestion);
+-->
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="edu.connexion3a36.Controller.QuestionTexteLibreController"
+      spacing="16"
+      style="-fx-padding: 20; -fx-background-color: white;">
+
+    <!-- En-tête : niveau + type -->
+    <HBox spacing="8" alignment="CENTER_LEFT">
+        <Label text="📝 Réponse Libre"
+               style="-fx-font-size: 11; -fx-background-color: #E3F2FD;
+                      -fx-text-fill: #1565C0; -fx-padding: 4 10;
+                      -fx-background-radius: 12;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label text="🤖 Correction intelligente par IA"
+               style="-fx-font-size: 10; -fx-text-fill: #757575; -fx-font-style: italic;"/>
+    </HBox>
+
+    <!-- Texte de la question -->
+    <Label fx:id="lblQuestion"
+           wrapText="true"
+           style="-fx-font-size: 16; -fx-font-weight: bold;
+                  -fx-text-fill: #1A1A1A; -fx-line-spacing: 2;"/>
+
+    <!-- Indice (affiché seulement si défini) -->
+    <Label fx:id="lblIndice"
+           wrapText="true"
+           visible="false"
+           style="-fx-font-size: 12; -fx-text-fill: #E65100;
+                  -fx-background-color: #FFF3E0; -fx-padding: 8 12;
+                  -fx-background-radius: 6;"/>
+
+    <!-- Zone de saisie étudiant -->
+    <VBox spacing="6">
+        <Label text="Votre réponse :"
+               style="-fx-font-size: 12; -fx-font-weight: bold; -fx-text-fill: #424242;"/>
+        <TextArea fx:id="taReponse"
+                  promptText="Saisissez votre réponse ici..."
+                  prefRowCount="4"
+                  wrapText="true"
+                  style="-fx-font-size: 13; -fx-border-color: #BDBDBD;
+                         -fx-border-radius: 8; -fx-background-radius: 8;
+                         -fx-padding: 10; -fx-focus-color: #2F80ED;"/>
+    </VBox>
+
+    <!-- Bouton Valider -->
+    <HBox alignment="CENTER_RIGHT">
+        <ProgressIndicator fx:id="piCharge"
+                           prefWidth="28" prefHeight="28"
+                           visible="false"
+                           style="-fx-progress-color: #2F80ED;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="btnValider"
+                text="Valider ma réponse  →"
+                onAction="#validerReponse"
+                style="-fx-background-color: #2F80ED; -fx-text-fill: white;
+                       -fx-font-weight: bold; -fx-font-size: 13;
+                       -fx-background-radius: 8; -fx-padding: 10 24;
+                       -fx-cursor: hand;"/>
+    </HBox>
+
+    <!-- Zone Résultat (cachée initialement) -->
+    <VBox fx:id="vboxResultat"
+          spacing="10"
+          visible="false"
+          style="-fx-background-color: #E8F5E9; -fx-border-color: #2E7D32;
+                 -fx-border-radius: 8; -fx-background-radius: 8;
+                 -fx-padding: 14;">
+
+        <HBox spacing="12" alignment="CENTER_LEFT">
+            <!-- Icône ✅ / ❌ -->
+            <Label fx:id="lblIcone"
+                   style="-fx-font-size: 32;"/>
+
+            <!-- Explication de la correction -->
+            <VBox spacing="4">
+                <Label fx:id="lblExplication"
+                       wrapText="true"
+                       style="-fx-font-size: 13; -fx-font-weight: bold;
+                              -fx-text-fill: #1B5E20;"/>
+                <Label fx:id="lblSource"
+                       style="-fx-font-size: 10; -fx-text-fill: #757575;
+                              -fx-font-style: italic;"/>
+            </VBox>
+        </HBox>
+    </VBox>
+
+</VBox>

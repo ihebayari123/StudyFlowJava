@@ -45,6 +45,9 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
+import edu.connexion3a36.utils.OtpService;
+import edu.connexion3a36.Controller.OtpController;
+import javafx.stage.Modality;
 
 public class FitnessDashboardController implements Initializable {
 
@@ -147,6 +150,9 @@ public class FitnessDashboardController implements Initializable {
     @FXML private VBox viewSleep;
     @FXML private VBox viewReclamation;
 
+    @FXML private VBox viewWellBeingForm;
+    @FXML private VBox viewWellBeingResult;
+
     @FXML private StackPane medecinArea;
     @FXML private StackPane stressArea;
     @FXML private StackPane catchStressArea;
@@ -158,6 +164,8 @@ public class FitnessDashboardController implements Initializable {
     @FXML private StackPane aProposArea;
     @FXML private StackPane vipArea;
     @FXML private StackPane sleepArea;
+    @FXML private StackPane wellBeingFormArea;
+    @FXML private StackPane wellBeingResultArea;
 
     @FXML private Label lblMedecinTitle;
     @FXML private TextArea reclamationTextArea;
@@ -301,6 +309,8 @@ public class FitnessDashboardController implements Initializable {
         if (viewVip != null) allViews.add(viewVip);
         if (viewSleep != null) allViews.add(viewSleep);
         if (viewReclamation != null) allViews.add(viewReclamation);
+        if (viewWellBeingForm != null) allViews.add(viewWellBeingForm);
+        if (viewWellBeingResult != null) allViews.add(viewWellBeingResult);
         if (contentArea != null) allViews.add(contentArea);
         if (viewEvents != null) allViews.add(viewEvents);
         if (viewCart != null) allViews.add(viewCart);
@@ -655,20 +665,68 @@ public class FitnessDashboardController implements Initializable {
         setActiveNav(btnRelax);
     }
 
+    /**
+     * Ouvre AjouterStressSurveyEtudiant.fxml DANS le dashboard (viewStress).
+     * Recharge à chaque fois pour permettre une nouvelle saisie.
+     */
     @FXML
     public void handleCalculerScore(ActionEvent e) {
-        if (stressArea.getChildren().isEmpty()) {
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/AjouterStressSurveyEtudiant.fxml"));
-                Node vue = loader.load();
-                stressArea.getChildren().setAll(vue);
-            } catch (IOException ex) {
-                Label err = new Label("❌ Impossible de charger le formulaire : " + ex.getMessage());
-                err.setStyle("-fx-text-fill: #e24b4a; -fx-font-size: 13px; -fx-padding: 24;");
-                stressArea.getChildren().setAll(err);
-            }
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/AjouterStressSurveyEtudiant.fxml"));
+            Node vue = loader.load();
+            AjouterStressSurveyEtudiantController ctrl = loader.getController();
+            ctrl.setDashboardController(this);
+            stressArea.getChildren().setAll(vue);
+        } catch (IOException ex) {
+            Label err = new Label("❌ Impossible de charger le formulaire : " + ex.getMessage());
+            err.setStyle("-fx-text-fill: #e24b4a; -fx-font-size: 13px; -fx-padding: 24;");
+            stressArea.getChildren().setAll(err);
         }
         showView(viewStress);
+        setActiveNav(btnRelax);
+    }
+
+    /**
+     * Appelé par AjouterStressSurveyEtudiantController après enregistrement réussi.
+     * Ouvre directement le chatbot stress IA dans viewWellBeingResult.
+     * Passe l'ID du survey + heures sommeil/étude au chatbot.
+     */
+    public void handleStressSurveySuccess(int surveyId, int sleep, int study) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/stress_chatbot.fxml"));
+            Node vue = loader.load();
+            StressChatbotController ctrl = loader.getController();
+            ctrl.setDashboardController(this);
+            ctrl.initWithData(surveyId, sleep, study);
+            wellBeingResultArea.getChildren().setAll(vue);
+        } catch (IOException ex) {
+            Label err = new Label("❌ Impossible de charger le chatbot : " + ex.getMessage());
+            err.setStyle("-fx-text-fill: #e24b4a; -fx-font-size: 13px; -fx-padding: 24;");
+            wellBeingResultArea.getChildren().setAll(err);
+        }
+        showView(viewWellBeingResult);
+        setActiveNav(btnRelax);
+    }
+
+    /**
+     * Appelé par AjouterWellBeingScoreEtudiantController après enregistrement réussi.
+     * Ouvre le chatbot stress IA dans viewWellBeingResult.
+     * Passe le score, les heures de sommeil et d'étude au chatbot.
+     */
+    public void handleWellBeingScoreSuccess(int score, int sleep, int study) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/stress_chatbot.fxml"));
+            Node vue = loader.load();
+            StressChatbotController ctrl = loader.getController();
+            ctrl.setDashboardController(this);
+            ctrl.initWithData(score, sleep, study);
+            wellBeingResultArea.getChildren().setAll(vue);
+        } catch (IOException ex) {
+            Label err = new Label("❌ Impossible de charger le chatbot : " + ex.getMessage());
+            err.setStyle("-fx-text-fill: #e24b4a; -fx-font-size: 13px; -fx-padding: 24;");
+            wellBeingResultArea.getChildren().setAll(err);
+        }
+        showView(viewWellBeingResult);
         setActiveNav(btnRelax);
     }
 
@@ -1808,12 +1866,12 @@ public class FitnessDashboardController implements Initializable {
     @FXML
     public void handleSaveProfile(ActionEvent e) {
         String prenom = fieldFirstName.getText().trim();
-        String nom = fieldLastName.getText().trim();
-        String email = fieldEmail.getText().trim();
+        String nom    = fieldLastName.getText().trim();
+        String email  = fieldEmail.getText().trim();
 
         String msgPrenom = Validation.messageNom(prenom);
-        String msgNom = Validation.messageNom(nom);
-        String msgEmail = Validation.messageEmail(email);
+        String msgNom    = Validation.messageNom(nom);
+        String msgEmail  = Validation.messageEmail(email);
 
         erreurPrenom.setText(msgPrenom);
         erreurNom.setText(msgNom);
@@ -1831,17 +1889,58 @@ public class FitnessDashboardController implements Initializable {
 
         if (!msgPrenom.isEmpty() || !msgNom.isEmpty() || !msgEmail.isEmpty()) return;
 
+        boolean emailChange = !email.equalsIgnoreCase(utilisateurConnecte.getEmail());
+
         utilisateurConnecte.setPrenom(prenom);
         utilisateurConnecte.setNom(nom);
         utilisateurConnecte.setEmail(email);
 
-        try {
-            new UtilisateurService().updateEntity(utilisateurConnecte.getId().intValue(), utilisateurConnecte);
-            profileFullName.setText(nom + " " + prenom);
-            lblGreeting.setText("Bonjour, " + prenom + " !");
-            showAlert("✅ Succès", "Votre profil a été mis à jour avec succès !");
-        } catch (SQLException ex) {
-            showAlert("❌ Erreur", "Erreur mise à jour : " + ex.getMessage());
+        if (emailChange) {
+            // Email changé → OTP requis
+            new Thread(() -> {
+                boolean envoye = OtpService.sendOtp(email, prenom);
+                javafx.application.Platform.runLater(() -> {
+                    if (!envoye) {
+                        showAlert("❌ Erreur", "Impossible d'envoyer le code. Vérifiez l'email.");
+                        return;
+                    }
+                    try {
+                        FXMLLoader loader = new FXMLLoader(
+                                getClass().getResource("/otpVerification.fxml"));
+                        Parent root = loader.load();
+
+                        OtpController otpController = loader.getController();
+                        otpController.setUtilisateur(utilisateurConnecte, () -> {
+                            profileFullName.setText(nom + " " + prenom);
+                            lblGreeting.setText("Bonjour, " + prenom + " !");
+                            showAlert("✅ Succès", "Email vérifié ! Profil mis à jour.");
+                        });
+                        otpController.setModification(true);
+
+                        javafx.stage.Stage otpStage = new javafx.stage.Stage();
+                        otpStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+                        otpStage.setTitle("Vérification Email");
+                        otpStage.setScene(new javafx.scene.Scene(root));
+                        otpStage.setResizable(false);
+                        otpStage.show();
+
+                    } catch (IOException ex) {
+                        showAlert("❌ Erreur", "Erreur OTP : " + ex.getMessage());
+                    }
+                });
+            }).start();
+
+        } else {
+            // Email inchangé → sauvegarder directement
+            try {
+                new UtilisateurService().updateEntity(
+                        utilisateurConnecte.getId().intValue(), utilisateurConnecte);
+                profileFullName.setText(nom + " " + prenom);
+                lblGreeting.setText("Bonjour, " + prenom + " !");
+                showAlert("✅ Succès", "Votre profil a été mis à jour avec succès !");
+            } catch (SQLException ex) {
+                showAlert("❌ Erreur", "Erreur mise à jour : " + ex.getMessage());
+            }
         }
     }
 
@@ -2360,4 +2459,38 @@ public class FitnessDashboardController implements Initializable {
         a.setContentText(message);
         a.showAndWait();
     }
+    @FXML
+    private void handleRecommandationsIA() {
+        try {
+            List<Event> events = eventService.recupererTous();
+            if (events.isEmpty()) {
+                showAlert("Aucun événement", "Pas d'événements disponibles.");
+                return;
+            }
+
+            new Thread(() -> {
+                try {
+                    edu.connexion3a36.services.RecommendationService rs =
+                            new edu.connexion3a36.services.RecommendationService();
+                    String resultat = rs.recommander(events);
+
+                    javafx.application.Platform.runLater(() ->
+                            showAlert("🤖 Recommandations IA", resultat));
+
+                } catch (Exception e) {
+                    javafx.application.Platform.runLater(() ->
+                            showAlert("❌ Erreur", e.getMessage()));
+                }
+            }).start();
+
+        } catch (SQLException e) {
+            showAlert("❌ Erreur", e.getMessage());
+        }
+    }
+
+
+
+
 }
+
+

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.shape.Circle?>
+
+<VBox spacing="24"
+      style="-fx-background-color: #F5F6FA; -fx-padding: 30;"
+      xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="edu.connexion3a36.Controller.AfficherWellBeingScoreEtudiantController">
+
+    <!-- ── Titre ─────────────────────────────────────────────────── -->
+    <HBox alignment="CENTER_LEFT" spacing="12">
+        <Rectangle height="30" width="5"
+                   style="-fx-fill: #6a1b9a; -fx-arc-width: 3; -fx-arc-height: 3;"/>
+        <Label text="Consulter mon Score de Bien-Être"
+               style="-fx-font-size: 20px; -fx-font-weight: bold;
+                      -fx-text-fill: #1A1A2E; -fx-font-family: 'Segoe UI';"/>
+    </HBox>
+
+    <Separator style="-fx-background-color: #E0E0E0;"/>
+
+    <!-- ── Barre de recherche ─────────────────────────────────────── -->
+    <VBox spacing="10"
+          style="-fx-background-color: white; -fx-background-radius: 12;
+                 -fx-padding: 20; -fx-border-color: #E0E0E0; -fx-border-radius: 12;">
+
+        <Label text="🔍  Rechercher par Survey ID"
+               style="-fx-font-size: 13px; -fx-font-weight: bold;
+                      -fx-text-fill: #6a1b9a; -fx-font-family: 'Segoe UI';"/>
+
+        <HBox spacing="12" alignment="CENTER_LEFT">
+            <Label text="Survey ID :"
+                   style="-fx-text-fill: #555; -fx-font-size: 13px; -fx-font-family: 'Segoe UI';"/>
+            <TextField fx:id="surveyIdTF"
+                       prefWidth="180" prefHeight="38"
+                       promptText="Ex : 5"
+                       style="-fx-background-color: #F8F9FA;
+                              -fx-border-color: #6a1b9a; -fx-border-width: 1.5;
+                              -fx-border-radius: 8; -fx-background-radius: 8;
+                              -fx-padding: 8 12; -fx-font-family: 'Segoe UI'; -fx-font-size: 13px;"/>
+            <Button text="🔍  Rechercher" onAction="#rechercher"
+                    style="-fx-background-color: #6a1b9a; -fx-text-fill: white;
+                           -fx-font-weight: bold; -fx-background-radius: 8;
+                           -fx-padding: 9 22; -fx-cursor: hand;
+                           -fx-font-family: 'Segoe UI'; -fx-font-size: 13px;
+                           -fx-effect: dropshadow(gaussian, rgba(106,27,154,0.25), 8, 0, 0, 2);"/>
+        </HBox>
+    </VBox>
+
+    <!-- ── Résultat : score trouvé ───────────────────────────────── -->
+    <VBox fx:id="resultBox" spacing="16" alignment="CENTER"
+          visible="false" managed="false"
+          style="-fx-background-color: white; -fx-background-radius: 16;
+                 -fx-padding: 30; -fx-border-color: #ce93d8;
+                 -fx-border-radius: 16; -fx-border-width: 1.5;
+                 -fx-effect: dropshadow(gaussian, rgba(106,27,154,0.12), 16, 0, 0, 4);">
+
+        <Label text="✅  Score trouvé"
+               style="-fx-font-size: 13px; -fx-font-weight: bold;
+                      -fx-text-fill: #6a1b9a; -fx-font-family: 'Segoe UI';"/>
+
+        <!-- Cercle score -->
+        <StackPane alignment="CENTER">
+            <Circle radius="70"
+                    style="-fx-fill: linear-gradient(to bottom, #f3e5f5, #ede7f6);
+                           -fx-stroke: #6a1b9a; -fx-stroke-width: 3;"/>
+            <VBox alignment="CENTER" spacing="2">
+                <Label fx:id="scoreLabel" text="—"
+                       style="-fx-font-size: 52px; -fx-font-weight: bold;
+                              -fx-text-fill: #6a1b9a; -fx-font-family: 'Segoe UI';"/>
+                <Label text="/ 100"
+                       style="-fx-font-size: 13px; -fx-text-fill: #9e9e9e;
+                              -fx-font-family: 'Segoe UI';"/>
+            </VBox>
+        </StackPane>
+
+        <Label text="Score de Bien-Être"
+               style="-fx-font-size: 14px; -fx-text-fill: #555;
+                      -fx-font-family: 'Segoe UI';"/>
+    </VBox>
+
+    <!-- ── Résultat : non trouvé ─────────────────────────────────── -->
+    <VBox fx:id="noResultBox" spacing="12" alignment="CENTER"
+          visible="false" managed="false"
+          style="-fx-background-color: #fff3e0; -fx-background-radius: 14;
+                 -fx-padding: 30; -fx-border-color: #ffb74d;
+                 -fx-border-radius: 14; -fx-border-width: 1.5;">
+
+        <Label text="⚠️" style="-fx-font-size: 44px;"/>
+        <Label text="Aucun score trouvé pour ce Survey ID."
+               style="-fx-font-size: 15px; -fx-font-weight: bold;
+                      -fx-text-fill: #e65100; -fx-font-family: 'Segoe UI';"/>
+        <Label text="Veuillez vérifier votre ID et réessayer."
+               style="-fx-font-size: 13px; -fx-text-fill: #bf360c;
+                      -fx-font-family: 'Segoe UI';"/>
+    </VBox>
+
+</VBox>
