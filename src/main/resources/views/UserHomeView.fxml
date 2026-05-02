@@ -57,6 +57,15 @@
             <Label text="quiz"
                    style="-fx-font-size: 11px; -fx-text-fill: #aaaaaa;"/>
         </HBox>
+
+        <!-- Bouton Analytics -->
+        <Button text="📊 Mes Stats"
+                onAction="#ouvrirAnalytics"
+                style="-fx-background-color: #1565C0; -fx-text-fill: white;
+                       -fx-font-size: 12px; -fx-font-weight: bold;
+                       -fx-background-radius: 20; -fx-border-radius: 20;
+                       -fx-padding: 8 20; -fx-cursor: hand;
+                       -fx-effect: dropshadow(gaussian, rgba(21,101,192,0.35), 8, 0, 0, 3);"/>
     </HBox>
 
     <!-- ══════════════════════════════════════════════════════ -->
