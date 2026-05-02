@@ -1,6 +1,7 @@
 package edu.connexion3a36.Controller;
 
 import edu.connexion3a36.entities.Quiz;
+import edu.connexion3a36.entities.Utilisateur;
 import edu.connexion3a36.services.QuizService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -28,14 +29,21 @@ public class UserHomeController {
     // ← fourni par DashboardController avant d'afficher la vue
     private StackPane contentArea;
 
+    // Utilisateur connecté — toujours ETUDIANT dans cette vue
+    private Utilisateur utilisateurConnecte;
+
     public void setContentArea(StackPane ca) {
         this.contentArea = ca;
+    }
+
+    public void setUtilisateur(Utilisateur u) {
+        this.utilisateurConnecte = u;
     }
 
     @FXML
     public void initialize() {
         cbDifficulte.setItems(FXCollections.observableArrayList(
-            "TOUS", "FACILE (<=15 min)", "MOYEN (15-30 min)", "DIFFICILE (>30 min)"
+                "TOUS", "FACILE (<=15 min)", "MOYEN (15-30 min)", "DIFFICILE (>30 min)"
         ));
         cbDifficulte.setValue("TOUS");
         tfRecherche.textProperty().addListener((obs, old, val) -> filtrer());
@@ -97,10 +105,10 @@ public class UserHomeController {
         VBox card = new VBox(0);
         card.setPrefWidth(260);
         card.setStyle(
-            "-fx-background-color: white; -fx-background-radius: 16;" +
-            "-fx-border-color: #eeeeee; -fx-border-radius: 16; -fx-border-width: 1.5;" +
-            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.07), 12, 0, 0, 4);" +
-            "-fx-cursor: hand;"
+                "-fx-background-color: white; -fx-background-radius: 16;" +
+                        "-fx-border-color: #eeeeee; -fx-border-radius: 16; -fx-border-width: 1.5;" +
+                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.07), 12, 0, 0, 4);" +
+                        "-fx-cursor: hand;"
         );
 
         // Barre top colorée
@@ -118,14 +126,14 @@ public class UserHomeController {
         badgeRow.setAlignment(Pos.CENTER_LEFT);
         Label badge = new Label(diffLabel);
         badge.setStyle(
-            "-fx-font-size: 10px; -fx-font-weight: bold; -fx-padding: 3 10;" +
-            "-fx-background-color: " + accentLight + "; -fx-text-fill: " + accent + ";" +
-            "-fx-background-radius: 20;"
+                "-fx-font-size: 10px; -fx-font-weight: bold; -fx-padding: 3 10;" +
+                        "-fx-background-color: " + accentLight + "; -fx-text-fill: " + accent + ";" +
+                        "-fx-background-radius: 20;"
         );
         Region sp = new Region(); HBox.setHgrow(sp, Priority.ALWAYS);
         Label icon = new Label(getIcon(q));
         icon.setStyle("-fx-font-size: 20px; -fx-background-color: #f5f5f5;" +
-                      "-fx-background-radius: 10; -fx-padding: 4 8;");
+                "-fx-background-radius: 10; -fx-padding: 4 8;");
         badgeRow.getChildren().addAll(badge, sp, icon);
 
         // Titre
@@ -152,18 +160,18 @@ public class UserHomeController {
         HBox footer = new HBox(10);
         footer.setAlignment(Pos.CENTER_LEFT);
         footer.setStyle(
-            "-fx-background-color: #f9f9f9; -fx-padding: 10 16;" +
-            "-fx-background-radius: 0 0 16 16;"
+                "-fx-background-color: #f9f9f9; -fx-padding: 10 16;" +
+                        "-fx-background-radius: 0 0 16 16;"
         );
         Label ql = new Label("? questions");
         ql.setStyle("-fx-font-size: 11px; -fx-text-fill: #aaaaaa;");
         Region fsp = new Region(); HBox.setHgrow(fsp, Priority.ALWAYS);
         Button btn = new Button("GO →");
         btn.setStyle(
-            "-fx-font-size: 12px; -fx-font-weight: bold;" +
-            "-fx-background-color: " + accent + "; -fx-text-fill: white;" +
-            "-fx-background-radius: 8; -fx-border-radius: 8;" +
-            "-fx-padding: 7 18; -fx-cursor: hand;"
+                "-fx-font-size: 12px; -fx-font-weight: bold;" +
+                        "-fx-background-color: " + accent + "; -fx-text-fill: white;" +
+                        "-fx-background-radius: 8; -fx-border-radius: 8;" +
+                        "-fx-padding: 7 18; -fx-cursor: hand;"
         );
         btn.setOnAction(e -> lancerQuiz(q));
         footer.getChildren().addAll(ql, fsp, btn);
@@ -173,8 +181,8 @@ public class UserHomeController {
         // Hover — léger lift
         String baseStyle = card.getStyle();
         String hoverStyle = baseStyle.replace(
-            "dropshadow(gaussian, rgba(0,0,0,0.07), 12, 0, 0, 4)",
-            "dropshadow(gaussian, rgba(0,0,0,0.14), 20, 0, 0, 7)"
+                "dropshadow(gaussian, rgba(0,0,0,0.07), 12, 0, 0, 4)",
+                "dropshadow(gaussian, rgba(0,0,0,0.14), 20, 0, 0, 7)"
         ).replace("white;", "#fafafa;");
         card.setOnMouseEntered(e -> card.setStyle(hoverStyle));
         card.setOnMouseExited(e -> card.setStyle(baseStyle));
@@ -184,19 +192,49 @@ public class UserHomeController {
         return wrapper;
     }
 
+    // ── Ouvrir Analytics ──────────────────────────────────────
+
+    @FXML
+    private void ouvrirAnalytics() {
+        resolveContentArea();
+        if (contentArea == null) {
+            new Alert(Alert.AlertType.ERROR, "Erreur navigation : contentArea introuvable.").show();
+            return;
+        }
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/QuizAnalyticsView.fxml")
+            );
+            Node vue = loader.load();
+            QuizAnalyticsController ctrl = loader.getController();
+
+            // Toujours ETUDIANT depuis UserHomeView
+            Utilisateur u = utilisateurConnecte;
+            if (u == null) {
+                // Fallback : créer un utilisateur anonyme de rôle étudiant
+                u = new Utilisateur();
+                u.setRole("ETUDIANT");
+            }
+            ctrl.setUtilisateur(u, contentArea);
+            contentArea.getChildren().setAll(vue);
+        } catch (IOException e) {
+            new Alert(Alert.AlertType.ERROR, "Erreur ouverture analytics : " + e.getMessage()).show();
+        }
+    }
+
     // ── Lancer quiz ───────────────────────────────────────────
 
     private void lancerQuiz(Quiz q) {
         resolveContentArea();
         if (contentArea == null) {
             new Alert(Alert.AlertType.ERROR,
-                "Erreur navigation : contentArea introuvable.\n" +
-                "Vérifiez que DashboardController appelle setContentArea().").show();
+                    "Erreur navigation : contentArea introuvable.\n" +
+                            "Vérifiez que DashboardController appelle setContentArea().").show();
             return;
         }
         try {
             FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/views/UserQuizView.fxml")
+                    getClass().getResource("/views/UserQuizView.fxml")
             );
             Node vue = loader.load();
             UserQuizController ctrl = loader.getController();

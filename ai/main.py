@@ -18,8 +18,8 @@ Fonctionnalités :
 # ══════════════════════════════════════════════════════════════════════════════
 
 NUMEROS_A_NOTIFIER = [
-    "whatsapp:+2169475039",   # ← remplacez par votre numéro
-    # "whatsapp:+21698765432", # ← ajoutez d'autres si besoin
+    "whatsapp:+21694675039",   # ← remplacez par votre numéro
+
 ]
 
 # ══════════════════════════════════════════════════════════════════════════════
