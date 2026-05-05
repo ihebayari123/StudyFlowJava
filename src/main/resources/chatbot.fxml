@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="edu.connexion3a36.Controller.ChatbotController"
+      prefWidth="420" prefHeight="550"
+      style="-fx-background-color: #f0f4f8;">
+
+    <!-- Header -->
+    <HBox style="-fx-background-color: #2c3e7a; -fx-padding: 15;">
+        <Label text="🤖 Assistant StudyFlow"
+               style="-fx-text-fill: white; -fx-font-size: 16; -fx-font-weight: bold;"/>
+    </HBox>
+
+    <!-- Zone messages scrollable -->
+    <ScrollPane fx:id="scrollPane" VBox.vgrow="ALWAYS"
+                fitToWidth="true"
+                style="-fx-background: transparent; -fx-background-color: transparent;">
+        <VBox fx:id="messagesContainer" spacing="10"
+              style="-fx-padding: 15;"/>
+    </ScrollPane>
+
+    <!-- Zone saisie -->
+    <HBox spacing="8" style="-fx-padding: 10; -fx-background-color: white;">
+        <TextField fx:id="inputField"
+                   promptText="Posez votre question..."
+                   HBox.hgrow="ALWAYS"
+                   onAction="#envoyerMessage"
+                   style="-fx-background-radius: 20; -fx-border-radius: 20;
+                          -fx-padding: 8 12; -fx-border-color: #cccccc;"/>
+        <Button text="➤" onAction="#envoyerMessage"
+                style="-fx-background-color: #2c3e7a; -fx-text-fill: white;
+                       -fx-background-radius: 20; -fx-padding: 8 16;
+                       -fx-font-size: 14; -fx-cursor: hand;"/>
+    </HBox>
+
+</VBox>

@@ -16,6 +16,16 @@ import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import edu.connexion3a36.entities.Notification;
+import edu.connexion3a36.services.NotificationService;
+import javafx.geometry.Pos;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import java.sql.SQLException;
+import java.util.List;
+
 public class DashboardController {
 
     private static final Logger LOGGER = Logger.getLogger(DashboardController.class.getName());
@@ -61,6 +71,10 @@ public class DashboardController {
     @FXML private HBox anomaliesItem;
 
     @FXML private StackPane contentArea;
+
+    @FXML private StackPane clochePanier;
+    @FXML private Label badgeNotif;
+    @FXML private Label clocheIcon;
 
     private boolean antiStressMenuOpen = false;
 
@@ -352,12 +366,112 @@ public class DashboardController {
             hideItem(settingsItem);
             hideItem(homeItem);
         }
+        setupNotifications(); // ← ajouter cette ligne
     }
 
     private void hideItem(HBox item) {
         if (item != null) {
             item.setVisible(false);
             item.setManaged(false);
+        }
+    }
+    private void setupNotifications() {
+        if (utilisateurConnecte == null || !utilisateurConnecte.isAdmin()) return;
+        try {
+            NotificationService notifService = new NotificationService();
+            int count = notifService.countUnread(utilisateurConnecte.getId().intValue());
+            if (count > 0) {
+                badgeNotif.setText(String.valueOf(count));
+                badgeNotif.setVisible(true);
+            } else {
+                badgeNotif.setVisible(false);
+            }
+
+            clochePanier.setOnMouseClicked(e -> {
+                try {
+                    List<Notification> notifs = notifService.getUnreadByUserId(
+                            utilisateurConnecte.getId().intValue()
+                    );
+
+                    VBox panel = new VBox(8);
+                    panel.setStyle("-fx-background-color: white;" +
+                            "-fx-background-radius: 12;" +
+                            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 12, 0, 0, 4);" +
+                            "-fx-padding: 12;");
+                    panel.setMaxWidth(280);
+                    panel.setMaxHeight(320);
+
+                    Label titre = new Label("🔔 Alertes de sécurité");
+                    titre.setStyle("-fx-font-weight: bold; -fx-font-size: 13; -fx-text-fill: #1A1A2E;");
+                    panel.getChildren().add(titre);
+
+                    if (notifs.isEmpty()) {
+                        Label rien = new Label("Aucune alerte non lue");
+                        rien.setStyle("-fx-text-fill: #9E9E9E; -fx-font-size: 12;");
+                        panel.getChildren().add(rien);
+                    } else {
+                        for (Notification n : notifs) {
+                            VBox card = new VBox(4);
+                            card.setStyle("-fx-background-color: #FFF3F3;" +
+                                    "-fx-background-radius: 8;" +
+                                    "-fx-padding: 8;");
+
+                            Label msg = new Label(n.getMessage());
+                            msg.setWrapText(true);
+                            msg.setStyle("-fx-font-size: 11; -fx-text-fill: #333;");
+
+                            javafx.scene.control.Button btnBloquer = new javafx.scene.control.Button("🔒 Bloquer");
+                            btnBloquer.setStyle("-fx-background-color: #E53935;" +
+                                    "-fx-text-fill: white;" +
+                                    "-fx-background-radius: 6;" +
+                                    "-fx-font-size: 11;" +
+                                    "-fx-cursor: hand;");
+                            btnBloquer.setOnAction(ev -> {
+                                try {
+                                    // Extraire l'id depuis le message
+                                    String notifMsg = n.getMessage();
+                                    int start = notifMsg.indexOf("[userId:") + 8;
+                                    int end = notifMsg.indexOf("]", start);
+                                    long suspectId = Long.parseLong(notifMsg.substring(start, end));
+
+                                    edu.connexion3a36.services.UtilisateurService us =
+                                            new edu.connexion3a36.services.UtilisateurService();
+                                    us.bloquerDebloquerParId(suspectId);
+
+                                    notifService.markAllAsRead(utilisateurConnecte.getId().intValue());
+                                    badgeNotif.setVisible(false);
+                                    contentArea.getChildren().remove(panel);
+                                    loadView("gestionUtilisateurs");
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
+                            });
+
+                            card.getChildren().addAll(msg, btnBloquer);
+                            panel.getChildren().add(card);
+                        }
+                    }
+
+                    ScrollPane scroll = new ScrollPane(panel);
+                    scroll.setFitToWidth(true);
+                    scroll.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
+                    scroll.setMaxHeight(320);
+
+                    StackPane.setAlignment(panel, Pos.TOP_LEFT);
+                    contentArea.getChildren().add(panel);
+                    panel.setTranslateX(-220);
+                    panel.setTranslateY(10);
+
+                    // Clic en dehors pour fermer
+                    panel.setOnMouseExited(ev -> contentArea.getChildren().remove(panel));
+
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            });
+
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 }

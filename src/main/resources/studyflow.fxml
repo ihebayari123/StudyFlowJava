@@ -12,6 +12,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.shape.Rectangle?>
 
+
 <StackPane style="-fx-background-color: #c8d8e8;"
            xmlns="http://javafx.com/javafx/25"
            xmlns:fx="http://javafx.com/fxml/1"
@@ -40,8 +41,24 @@
                     <HBox alignment="CENTER_LEFT" style="-fx-padding: 0 16 20 20;">
                         <Circle radius="16" style="-fx-fill: #2979FF;" />
                         <Label style="-fx-font-size: 18; -fx-font-weight: bold;
-                                      -fx-text-fill: #1A1A2E; -fx-padding: 0 0 0 8;"
+                  -fx-text-fill: #1A1A2E; -fx-padding: 0 0 0 8;"
                                text="StudyFlow" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <StackPane fx:id="clochePanier" style="-fx-cursor: hand; -fx-padding: 0 4 0 0;">
+                            <Label fx:id="clocheIcon"
+                                   style="-fx-font-size: 18;"
+                                   text="🔔" />
+                            <Label fx:id="badgeNotif"
+                                   style="-fx-background-color: #E53935;
+                      -fx-background-radius: 10;
+                      -fx-text-fill: white;
+                      -fx-font-size: 9;
+                      -fx-font-weight: bold;
+                      -fx-padding: 1 4 1 4;"
+                                   text="0"
+                                   visible="false"
+                                   StackPane.alignment="TOP_RIGHT" />
+                        </StackPane>
                     </HBox>
 
                     <!-- Progression -->

@@ -49,6 +49,11 @@ import edu.connexion3a36.utils.OtpService;
 import edu.connexion3a36.Controller.OtpController;
 import javafx.stage.Modality;
 
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+import java.io.IOException;
+
 public class FitnessDashboardController implements Initializable {
 
     // =========================================================================
@@ -2069,6 +2074,17 @@ public class FitnessDashboardController implements Initializable {
     // =========================================================================
     private Label placeholderLabel(String text) {
         Label l = new Label(text); l.setStyle("-fx-font-size: 40px;"); return l;
+    }
+
+    @FXML
+    private void ouvrirChatbot() throws IOException {
+        Stage stage = new Stage();
+        FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("/chatbot.fxml")); // ✅ correct
+        stage.setScene(new Scene(loader.load()));
+        stage.setTitle("Assistant StudyFlow");
+        stage.setResizable(false);
+        stage.show();
     }
 
     private Label defaultEmoji() {

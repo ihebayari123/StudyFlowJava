@@ -73,6 +73,15 @@ public class Utilisateur {
     @Column(name = "face_attempts")
     private int faceAttempts;
 
+    @Column(name = "last_login_ip", length = 45)
+    private String lastLoginIp;
+
+    @Column(name = "last_login_country", length = 80)
+    private String lastLoginCountry;
+
+    @Column(name = "last_login_city", length = 100)
+    private String lastLoginCity;
+
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,
             orphanRemoval = true, fetch = FetchType.LAZY)
@@ -138,6 +147,15 @@ public class Utilisateur {
 
     public LocalDateTime getLastLogin() { return lastLogin; }
     public void setLastLogin(LocalDateTime lastLogin) { this.lastLogin = lastLogin; }
+
+    public String getLastLoginIp() { return lastLoginIp; }
+    public void setLastLoginIp(String lastLoginIp) { this.lastLoginIp = lastLoginIp; }
+
+    public String getLastLoginCountry() { return lastLoginCountry; }
+    public void setLastLoginCountry(String lastLoginCountry) { this.lastLoginCountry = lastLoginCountry; }
+
+    public String getLastLoginCity() { return lastLoginCity; }
+    public void setLastLoginCity(String lastLoginCity) { this.lastLoginCity = lastLoginCity; }
 
     public String getAvatar() { return avatar; }
     public void setAvatar(String avatar) { this.avatar = avatar; }
