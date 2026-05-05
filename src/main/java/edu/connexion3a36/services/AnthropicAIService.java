@@ -29,7 +29,7 @@ public class AnthropicAIService {
 
     private AnthropicAIService() {
         // Accept any of these variable names — whichever the user set
-        String k = "";
+        String k = System.getenv("GROQ_API_KEY");
         if (k == null || k.isBlank()) k = System.getenv("ANTHROPIC_API_KEY");
         if (k == null || k.isBlank()) k = System.getProperty("GROQ_API_KEY", "");
         if (k == null || k.isBlank()) k = System.getProperty("ANTHROPIC_API_KEY", "");

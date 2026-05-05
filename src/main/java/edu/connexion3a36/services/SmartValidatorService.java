@@ -20,7 +20,7 @@ import java.nio.charset.StandardCharsets;
 public class SmartValidatorService {
 
     private static final String OLLAMA_URL = "http://localhost:11434/api/chat";
-    private static final String MODEL      = "mistral";
+    private static final String MODEL      = "gemma";
     private static final int    TIMEOUT_MS = 30_000;
 
     // ── Résultat ──────────────────────────────────────────────────────────────
