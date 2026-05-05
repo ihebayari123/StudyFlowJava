@@ -77,11 +77,12 @@
                     userData="events"
                     onAction="#handleNav"
                     style="-fx-font-size: 20px; -fx-background-color: transparent; -fx-text-fill: #888888; -fx-cursor: hand;"/>
-        </VBox>
-        <Button text="💬 Assistant IA" onAction="#ouvrirChatbot"
-                style="-fx-background-color: #2c3e7a; -fx-text-fill: white;
+            <Button text="💬 Assistant IA" onAction="#ouvrirChatbot"
+                    style="-fx-background-color: #2c3e7a; -fx-text-fill: white;
                -fx-background-radius: 25; -fx-padding: 10 20;
                -fx-font-size: 13; -fx-cursor: hand;"/>
+        </VBox>
+
 
         <Button fx:id="btnLogout"
                 text="🚪"
