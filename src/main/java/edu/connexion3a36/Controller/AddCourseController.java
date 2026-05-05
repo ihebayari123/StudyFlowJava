@@ -2,8 +2,11 @@ package edu.connexion3a36.Controller;
 
 import edu.connexion3a36.entities.Cours;
 import edu.connexion3a36.entities.Utilisateur;
+import edu.connexion3a36.services.AnthropicAIService;
 import edu.connexion3a36.services.CoursService;
 import edu.connexion3a36.utils.ValidationUtils;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -22,7 +25,13 @@ public class AddCourseController {
     @FXML private ImageView imagePreview;
     @FXML private Button saveButton;
 
-    // Labels pour les messages d'erreur
+    // AI controls
+    @FXML private TextField aiAudienceField;
+    @FXML private Button aiGenerateBtn;
+    @FXML private Label aiStatusLabel;
+    @FXML private TextArea aiObjectivesArea;
+
+    // Error labels
     @FXML private Label titreErrorLabel;
     @FXML private Label descriptionErrorLabel;
     @FXML private Label imageErrorLabel;
@@ -41,8 +50,79 @@ public class AddCourseController {
         }
     }
 
+    // ── AI Feature 1: Description Generator ──────────────────────────────────
+
+    @FXML
+    private void handleGenerateDescription() {
+        String titre = titreField.getText().trim();
+        if (titre.isEmpty()) {
+            showAlert("Titre requis",
+                    "Veuillez d'abord saisir le titre du cours avant de générer une description.",
+                    Alert.AlertType.WARNING);
+            return;
+        }
+
+        String audience = (aiAudienceField != null) ? aiAudienceField.getText().trim() : "";
+
+        // Disable controls while working
+        aiGenerateBtn.setDisable(true);
+        aiGenerateBtn.setText("⏳ Génération...");
+        if (aiStatusLabel != null) {
+            aiStatusLabel.setText("🤖 L'IA génère la description...");
+            aiStatusLabel.setStyle("-fx-text-fill: #2979FF; -fx-font-size: 11px;");
+        }
+
+        Task<AnthropicAIService.CourseDescriptionResult> task = new Task<>() {
+            @Override
+            protected AnthropicAIService.CourseDescriptionResult call() {
+                return AnthropicAIService.getInstance()
+                        .generateCourseDescription(titre, audience);
+            }
+        };
+
+        task.setOnSucceeded(e -> Platform.runLater(() -> {
+            AnthropicAIService.CourseDescriptionResult result = task.getValue();
+            descriptionField.setText(result.getDescription());
+
+            if (aiObjectivesArea != null && !result.getObjectives().isEmpty()) {
+                StringBuilder sb = new StringBuilder();
+                for (String obj : result.getObjectives()) {
+                    sb.append("• ").append(obj).append("\n");
+                }
+                aiObjectivesArea.setText(sb.toString().trim());
+            }
+
+            if (aiStatusLabel != null) {
+                aiStatusLabel.setText("✅ Description générée avec succès !");
+                aiStatusLabel.setStyle("-fx-text-fill: #4CAF50; -fx-font-size: 11px;");
+            }
+            resetAiButton();
+        }));
+
+        task.setOnFailed(e -> Platform.runLater(() -> {
+            String msg = task.getException() != null
+                    ? task.getException().getMessage()
+                    : "Erreur inconnue";
+            if (aiStatusLabel != null) {
+                aiStatusLabel.setText("❌ Erreur : " + msg);
+                aiStatusLabel.setStyle("-fx-text-fill: red; -fx-font-size: 11px;");
+            }
+            showAlert("Erreur IA", "Impossible de générer la description :\n" + msg,
+                    Alert.AlertType.ERROR);
+            resetAiButton();
+        }));
+
+        new Thread(task, "ai-description-thread").start();
+    }
+
+    private void resetAiButton() {
+        aiGenerateBtn.setDisable(false);
+        aiGenerateBtn.setText("✨ Générer avec l'IA");
+    }
+
+    // ── Validation ────────────────────────────────────────────────────────────
+
     private void setupValidation() {
-        // Désactiver le bouton save tant que les champs ne sont pas valides
         saveButton.disableProperty().bind(
                 titreField.textProperty().isEmpty()
                         .or(descriptionField.textProperty().isEmpty())
@@ -51,14 +131,9 @@ public class AddCourseController {
     }
 
     private void setupInputListeners() {
-        // Validation en temps réel du titre
-        titreField.textProperty().addListener((obs, oldVal, newVal) -> validateTitre());
-
-        // Validation en temps réel de la description
-        descriptionField.textProperty().addListener((obs, oldVal, newVal) -> validateDescription());
-
-        // Validation en temps réel de l'URL image
-        imageField.textProperty().addListener((obs, oldVal, newVal) -> validateImageUrl());
+        titreField.textProperty().addListener((obs, o, n) -> validateTitre());
+        descriptionField.textProperty().addListener((obs, o, n) -> validateDescription());
+        imageField.textProperty().addListener((obs, o, n) -> validateImageUrl());
     }
 
     private void validateTitre() {
@@ -68,14 +143,11 @@ public class AddCourseController {
             setErrorLabel(titreErrorLabel, "Le titre est obligatoire");
             return;
         }
-
         if (!ValidationUtils.isValidTitre(titre)) {
             titreField.setStyle("-fx-border-color: red; -fx-border-radius: 3;");
             setErrorLabel(titreErrorLabel, "Le titre doit contenir entre 3 et 100 caractères");
             return;
         }
-
-        // Validation réussie
         titreField.setStyle("-fx-border-color: green; -fx-border-radius: 3;");
         setErrorLabel(titreErrorLabel, null);
     }
@@ -87,13 +159,11 @@ public class AddCourseController {
             setErrorLabel(descriptionErrorLabel, "La description est obligatoire");
             return;
         }
-
         if (!ValidationUtils.isValidDescription(description)) {
             descriptionField.setStyle("-fx-border-color: red; -fx-border-radius: 3;");
             setErrorLabel(descriptionErrorLabel, "La description doit contenir entre 10 et 500 caractères");
             return;
         }
-
         descriptionField.setStyle("-fx-border-color: green; -fx-border-radius: 3;");
         setErrorLabel(descriptionErrorLabel, null);
     }
@@ -112,74 +182,68 @@ public class AddCourseController {
     }
 
     private void setErrorLabel(Label label, String message) {
-        if (label != null) {
-            if (message != null) {
-                label.setText(message);
-                label.setStyle("-fx-text-fill: red; -fx-font-size: 11px;");
-                label.setVisible(true);
-            } else {
-                label.setText("");
-                label.setVisible(false);
-            }
+        if (label == null) return;
+        if (message != null) {
+            label.setText(message);
+            label.setStyle("-fx-text-fill: red; -fx-font-size: 11px;");
+            label.setVisible(true);
+        } else {
+            label.setText("");
+            label.setVisible(false);
         }
     }
 
+    // ── File browser ──────────────────────────────────────────────────────────
+
     @FXML
     private void handleBrowseImage() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Choisir une image");
-        fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp")
-        );
-
-        File selectedFile = fileChooser.showOpenDialog(imageField.getScene().getWindow());
-        if (selectedFile != null) {
-            String imagePath = selectedFile.toURI().toString();
-            imageField.setText(imagePath);
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Choisir une image");
+        fc.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp"));
+        File file = fc.showOpenDialog(imageField.getScene().getWindow());
+        if (file != null) {
+            String path = file.toURI().toString();
+            imageField.setText(path);
             validateImageUrl();
             try {
-                Image image = new Image(imagePath, 100, 100, true, true);
-                imagePreview.setImage(image);
+                imagePreview.setImage(new Image(path, 100, 100, true, true));
             } catch (Exception e) {
                 showAlert("Erreur", "Impossible de charger l'image", Alert.AlertType.ERROR);
             }
         }
     }
-    @FXML
-    private void handleCancel() {
-        closeWindow();
-    }
 
+    @FXML
+    private void handleCancel() { closeWindow(); }
+
+    // ── Save ──────────────────────────────────────────────────────────────────
 
     @FXML
     private void handleSave() {
-        // Valider tous les champs avant sauvegarde
         validateTitre();
         validateDescription();
         validateImageUrl();
 
         if (!isFormValid()) {
             showAlert("Erreur de validation",
-                    "Veuillez corriger les erreurs dans le formulaire:\n" +
-                            getValidationErrors(),
+                    "Veuillez corriger les erreurs dans le formulaire :\n" + getValidationErrors(),
                     Alert.AlertType.ERROR);
             return;
         }
 
         try {
-            String titre = ValidationUtils.capitalizeFirstLetter(titreField.getText().trim());
+            String titre       = ValidationUtils.capitalizeFirstLetter(titreField.getText().trim());
             String description = ValidationUtils.sanitizeText(descriptionField.getText().trim());
-            String image = imageField.getText().trim();
+            String image       = imageField.getText().trim();
 
             if (courseToUpdate != null) {
-                // Mise à jour
                 courseToUpdate.setTitre(titre);
                 courseToUpdate.setDescription(description);
                 courseToUpdate.setImage(image.isEmpty() ? null : image);
                 coursService.update(courseToUpdate);
                 showAlert("Succès", "Cours modifié avec succès", Alert.AlertType.INFORMATION);
             } else {
-                // Création
                 Cours cours = new Cours();
                 cours.setTitre(titre);
                 cours.setDescription(description);
@@ -189,77 +253,64 @@ public class AddCourseController {
                 showAlert("Succès", "Cours ajouté avec succès", Alert.AlertType.INFORMATION);
             }
 
-            if (parentController != null) {
-                parentController.refreshCourses();
-            }
+            if (parentController != null) parentController.refreshCourses();
             closeWindow();
 
         } catch (Exception e) {
-            System.err.println("Erreur: " + e.getMessage());
-            showAlert("Erreur", "Erreur lors de l'enregistrement: " + e.getMessage(), Alert.AlertType.ERROR);
+            showAlert("Erreur", "Erreur lors de l'enregistrement : " + e.getMessage(),
+                    Alert.AlertType.ERROR);
         }
     }
 
     private boolean isFormValid() {
-        return ValidationUtils.isValidTitre(titreField.getText()) &&
-                ValidationUtils.isValidDescription(descriptionField.getText()) &&
-                (imageField.getText().isEmpty() || ValidationUtils.isValidImageUrl(imageField.getText()));
+        return ValidationUtils.isValidTitre(titreField.getText())
+                && ValidationUtils.isValidDescription(descriptionField.getText())
+                && (imageField.getText().isEmpty() || ValidationUtils.isValidImageUrl(imageField.getText()));
     }
 
     private String getValidationErrors() {
-        StringBuilder errors = new StringBuilder();
-        if (!ValidationUtils.isValidTitre(titreField.getText())) {
-            errors.append("• Titre invalide (3-100 caractères)\n");
-        }
-        if (!ValidationUtils.isValidDescription(descriptionField.getText())) {
-            errors.append("• Description invalide (10-500 caractères)\n");
-        }
-        if (!imageField.getText().isEmpty() && !ValidationUtils.isValidImageUrl(imageField.getText())) {
-            errors.append("• URL d'image invalide\n");
-        }
-        return errors.toString();
+        StringBuilder sb = new StringBuilder();
+        if (!ValidationUtils.isValidTitre(titreField.getText()))
+            sb.append("• Titre invalide (3-100 caractères)\n");
+        if (!ValidationUtils.isValidDescription(descriptionField.getText()))
+            sb.append("• Description invalide (10-500 caractères)\n");
+        if (!imageField.getText().isEmpty() && !ValidationUtils.isValidImageUrl(imageField.getText()))
+            sb.append("• URL d'image invalide\n");
+        return sb.toString();
     }
+
+    // ── Setters ───────────────────────────────────────────────────────────────
 
     public void setCourseToUpdate(Cours cours) {
         this.courseToUpdate = cours;
         formTitle.setText("Modifier un Cours");
         titreField.setText(cours.getTitre());
         descriptionField.setText(cours.getDescription());
-        imageField.setText(cours.getImage());
+        imageField.setText(cours.getImage() != null ? cours.getImage() : "");
         if (cours.getImage() != null && !cours.getImage().isEmpty()) {
-            try {
-                imagePreview.setImage(new Image(cours.getImage(), 100, 100, true, true));
-            } catch (Exception e) {
-                // Image invalide
-            }
+            try { imagePreview.setImage(new Image(cours.getImage(), 100, 100, true, true)); }
+            catch (Exception ignored) {}
         }
         validateTitre();
         validateDescription();
         validateImageUrl();
     }
 
-    public void setCoursService(CoursService coursService) {
-        this.coursService = coursService;
-    }
+    public void setCoursService(CoursService svc)          { this.coursService = svc; }
+    public void setParentController(CoursController ctrl)  { this.parentController = ctrl; }
+    public void setCurrentUser(Utilisateur user)           { this.currentUser = user; }
 
-    public void setParentController(CoursController parentController) {
-        this.parentController = parentController;
-    }
-
-    public void setCurrentUser(Utilisateur user) {
-        this.currentUser = user;
-    }
+    // ── Helpers ───────────────────────────────────────────────────────────────
 
     private void closeWindow() {
-        Stage stage = (Stage) titreField.getScene().getWindow();
-        stage.close();
+        ((Stage) titreField.getScene().getWindow()).close();
     }
 
     private void showAlert(String title, String content, Alert.AlertType type) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
+        Alert a = new Alert(type);
+        a.setTitle(title);
+        a.setHeaderText(null);
+        a.setContentText(content);
+        a.showAndWait();
     }
 }

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Rectangle?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="edu.connexion3a36.Controller.CoursFrontController"
+      spacing="0"
+      style="-fx-background-color: #f5f5f5;">
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!--  HEADER                                                         -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <HBox prefHeight="80" alignment="CENTER_LEFT" spacing="16"
+          style="-fx-background-color: #111111;
+                 -fx-border-color: transparent;">
+        <padding><Insets top="0" right="28" bottom="0" left="28"/></padding>
+
+        <VBox spacing="3" HBox.hgrow="ALWAYS">
+            <Label text="Mes Cours"
+                   style="-fx-font-size: 22px; -fx-font-weight: bold;
+                          -fx-text-fill: white; -fx-font-family: 'Georgia';"/>
+            <Label fx:id="lblSubtitle" text="Découvrez et explorez tous vos cours disponibles"
+                   style="-fx-font-size: 12px; -fx-text-fill: #888888;"/>
+        </VBox>
+
+        <Region HBox.hgrow="ALWAYS"/>
+
+        <!-- Search field -->
+        <TextField fx:id="searchField"
+                   promptText="🔍  Rechercher un cours..."
+                   prefWidth="220" prefHeight="36"
+                   onKeyReleased="#handleSearch"
+                   style="-fx-background-radius: 20; -fx-background-color: #222222;
+                          -fx-border-color: #333333; -fx-border-radius: 20;
+                          -fx-padding: 6 14; -fx-font-size: 13px;
+                          -fx-text-fill: white; -fx-prompt-text-fill: #666666;"/>
+    </HBox>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!--  STATS BAR                                                      -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <HBox spacing="12" style="-fx-padding: 16 28 0 28; -fx-background-color: #f5f5f5;">
+
+        <HBox prefWidth="170" prefHeight="64"
+              style="-fx-background-color: white; -fx-background-radius: 14;
+                     -fx-border-color: #eeeeee; -fx-border-radius: 14;"
+              spacing="8" alignment="CENTER_LEFT">
+            <padding><Insets top="12" right="16" bottom="12" left="16"/></padding>
+            <Label fx:id="lblTotalCours" text="0"
+                   style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #111111;"/>
+            <VBox>
+                <Label text="Cours" style="-fx-font-size: 11px; -fx-text-fill: #888;"/>
+                <Label text="disponibles" style="-fx-font-size: 11px; -fx-text-fill: #888;"/>
+            </VBox>
+        </HBox>
+
+        <HBox prefWidth="170" prefHeight="64"
+              style="-fx-background-color: white; -fx-background-radius: 14;
+                     -fx-border-color: #eeeeee; -fx-border-radius: 14;"
+              spacing="8" alignment="CENTER_LEFT">
+            <padding><Insets top="12" right="16" bottom="12" left="16"/></padding>
+            <Label fx:id="lblTotalChapitres" text="0"
+                   style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #111111;"/>
+            <VBox>
+                <Label text="Chapitres" style="-fx-font-size: 11px; -fx-text-fill: #888;"/>
+                <Label text="au total" style="-fx-font-size: 11px; -fx-text-fill: #888;"/>
+            </VBox>
+        </HBox>
+
+        <Region HBox.hgrow="ALWAYS"/>
+
+        <!-- Filter tabs -->
+        <HBox spacing="4" alignment="CENTER_RIGHT">
+            <Button fx:id="filterAll" text="Tous"
+                    userData="all" onAction="#handleFilter"
+                    style="-fx-background-color: #111111; -fx-text-fill: white;
+                           -fx-font-weight: bold; -fx-font-size: 12px;
+                           -fx-cursor: hand; -fx-padding: 8 18;
+                           -fx-background-radius: 20;"/>
+            <Button fx:id="filterRecent" text="Récents"
+                    userData="recent" onAction="#handleFilter"
+                    style="-fx-background-color: #eeeeee; -fx-text-fill: #888;
+                           -fx-font-size: 12px; -fx-cursor: hand;
+                           -fx-padding: 8 18; -fx-background-radius: 20;"/>
+        </HBox>
+    </HBox>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!--  COURSES SCROLL LIST                                            -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                style="-fx-background-color: transparent; -fx-border-color: transparent;">
+        <padding><Insets top="16" right="28" bottom="28" left="28"/></padding>
+
+        <!-- Course cards injected programmatically -->
+        <VBox fx:id="coursesContainer" spacing="10"/>
+    </ScrollPane>
+
+</VBox>

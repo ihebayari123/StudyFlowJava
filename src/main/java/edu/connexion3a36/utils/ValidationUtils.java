@@ -15,7 +15,7 @@ public class ValidationUtils {
     public static boolean isValidDescription(String description) {
         if (description == null || description.trim().isEmpty()) return false;
         String trimmed = description.trim();
-        return trimmed.length() >= 10 && trimmed.length() <= 500;
+        return trimmed.length() >= 10 && trimmed.length() <= 5000;
     }
 
     // Validation de l'URL de l'image
