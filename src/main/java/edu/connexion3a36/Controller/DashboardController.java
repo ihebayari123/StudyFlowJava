@@ -37,6 +37,7 @@ public class DashboardController {
     @FXML private HBox coursItem;
     @FXML private HBox chapitresItem;
     @FXML private HBox quizItem;
+    @FXML private HBox quizAnalyticsItem;   // ← nouveau
     @FXML private HBox exercicesItem;
 
     // ── Ta version (gestion_event) ────────────────────────────────────────────
@@ -54,7 +55,7 @@ public class DashboardController {
     @FXML private HBox settingsItem;
 
     // ── Sous-menu Anti-Stress (main) ──────────────────────────────────────────
-    @FXML private VBox antiStressSubMenu;
+    @FXML private VBox  antiStressSubMenu;
     @FXML private Label antiStressArrow;
 
     @FXML private HBox ajouterMedecinItem;
@@ -77,6 +78,10 @@ public class DashboardController {
 
     private boolean antiStressMenuOpen = false;
 
+    // ── Regex emoji — NE contient PAS 📊 pour que "Quiz Analytics" soit coloré ──
+    private static final String EMOJI_REGEX =
+            "🏠|📚|📖|❓|✏️|🎉|💼|⚙️|🏷️|🛒|🏛️|👤|🛡️|📈|🔓|➕|👥|📅|📋|📱|📝";
+
     @FXML
     public void initialize() {
         System.out.println("DashboardController initialisé");
@@ -84,22 +89,28 @@ public class DashboardController {
         loadView("cours");
     }
 
-    private void setupNavigation() {
-        // ── Commun aux deux versions ──
-        homeItem.setOnMouseClicked(e       -> loadView("dashboard"));
-        coursItem.setOnMouseClicked(e      -> loadView("cours"));
-        chapitresItem.setOnMouseClicked(e  -> loadView("chapitres"));
-        quizItem.setOnMouseClicked(e       -> loadView("QuizView"));
-        exercicesItem.setOnMouseClicked(e  -> loadView("exercices"));
-        settingsItem.setOnMouseClicked(e   -> loadView("settings"));
+    // ── Navigation ────────────────────────────────────────────────────────────
 
-        // ── Ta version (gestion_event) ──
+    private void setupNavigation() {
+        // Commun
+        homeItem.setOnMouseClicked(e      -> loadView("dashboard"));
+        coursItem.setOnMouseClicked(e     -> loadView("cours"));
+        chapitresItem.setOnMouseClicked(e -> loadView("chapitres"));
+        quizItem.setOnMouseClicked(e      -> loadView("QuizView"));
+        exercicesItem.setOnMouseClicked(e -> loadView("exercices"));
+        settingsItem.setOnMouseClicked(e  -> loadView("settings"));
+
+        // Quiz Analytics
+        if (quizAnalyticsItem != null)
+            quizAnalyticsItem.setOnMouseClicked(e -> loadView("QuizAnalyticsView"));
+
+        // Ta version (gestion_event)
         if (eventsItem != null)
             eventsItem.setOnMouseClicked(e -> loadView("eventList"));
         if (sponsorsItem != null)
             sponsorsItem.setOnMouseClicked(e -> loadView("sponsor"));
 
-        // ── Version main ──
+        // Version main
         if (categorieItem != null)
             categorieItem.setOnMouseClicked(e -> loadView("categorieMenu"));
         if (produitItem != null)
@@ -111,10 +122,10 @@ public class DashboardController {
         if (anomaliesItem != null)
             anomaliesItem.setOnMouseClicked(e -> loadView("anomalyDashboard"));
 
-        // ── Anti-Stress toggle ──
+        // Anti-Stress toggle
         progressionItem.setOnMouseClicked(e -> toggleAntiStressMenu());
 
-        // ── Sous-menu Anti-Stress ──
+        // Sous-menu Anti-Stress
         if (ajouterMedecinItem != null)
             ajouterMedecinItem.setOnMouseClicked(e -> loadView("AjouterMedecin"));
         if (listeMedecinsItem != null)
@@ -134,16 +145,15 @@ public class DashboardController {
         if (deconnexionItem != null)
             deconnexionItem.setOnMouseClicked(e -> handleDeconnexion());
 
-        // ── Hover effects ──
+        // Hover effects — inclut quizAnalyticsItem
         HBox[] allItems = {
-                homeItem, coursItem, chapitresItem, quizItem, exercicesItem,
-                eventsItem, sponsorsItem,
+                homeItem, coursItem, chapitresItem, quizItem, quizAnalyticsItem,
+                exercicesItem, eventsItem, sponsorsItem,
                 categorieItem, produitItem, progressionItem,
                 administrationItem, settingsItem, utilisateursItem, anomaliesItem,
                 ajouterMedecinItem, listeMedecinsItem, ajouterConsultationItem,
                 listeConsultationsItem, antiStresseItem,
                 ajouterScoreEtudiantItem, ajouterBienEtreItem, voirScoreItem
-
         };
         for (HBox item : allItems) {
             if (item != null) addHoverEffect(item);
@@ -160,6 +170,8 @@ public class DashboardController {
             antiStressArrow.setText(antiStressMenuOpen ? "▼" : "▶");
         }
     }
+
+    // ── Chargement des vues ───────────────────────────────────────────────────
 
     private void loadView(String viewName) {
         try {
@@ -186,16 +198,23 @@ public class DashboardController {
 
             Object controller = loader.getController();
             if (controller != null) {
-                // Essai générique (main)
+
+                // Essai générique setDashboardController
                 try {
                     controller.getClass()
                             .getMethod("setDashboardController", DashboardController.class)
                             .invoke(controller, this);
                 } catch (Exception ignored) {}
 
-                // Essai spécifique CoursController (ta version)
+                // CoursController spécifique
                 if (controller instanceof CoursController) {
                     ((CoursController) controller).setDashboardController(this);
+                }
+
+                // QuizAnalyticsController — passe l'utilisateur connecté
+                if (controller instanceof QuizAnalyticsController) {
+                    ((QuizAnalyticsController) controller)
+                            .setUtilisateur(utilisateurConnecte, contentArea);
                 }
             }
 
@@ -207,6 +226,8 @@ public class DashboardController {
         }
     }
 
+    // ── Déconnexion ───────────────────────────────────────────────────────────
+
     private void handleDeconnexion() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/Login.fxml"));
@@ -217,6 +238,8 @@ public class DashboardController {
             LOGGER.log(Level.SEVERE, "Erreur déconnexion", e);
         }
     }
+
+    // ── Vue d'erreur ──────────────────────────────────────────────────────────
 
     private void showErrorView(String viewName) {
         VBox errorBox = new VBox();
@@ -230,9 +253,11 @@ public class DashboardController {
         contentArea.getChildren().setAll(errorBox);
     }
 
+    // ── Styles actifs / hover ─────────────────────────────────────────────────
+
     private void resetActiveStyles() {
         HBox[] items = {
-                homeItem, coursItem, chapitresItem, quizItem,
+                homeItem, coursItem, chapitresItem, quizItem, quizAnalyticsItem,
                 exercicesItem, eventsItem, sponsorsItem,
                 categorieItem, produitItem, progressionItem,
                 administrationItem, settingsItem, utilisateursItem, anomaliesItem
@@ -245,11 +270,10 @@ public class DashboardController {
                                 "-fx-padding: 0 12 0 12;"
                 );
                 for (Node node : item.getChildren()) {
-                    if (node instanceof Label) {
-                        Label label = (Label) node;
-                        String text = label.getText();
-                        if (text != null && !text.matches("🏠|📚|📖|❓|✏️|🎉|💼|📊|⚙️|🏷️|🛒|🏛️|👤")) {
-                            label.setStyle(
+                    if (node instanceof Label lbl) {
+                        String text = lbl.getText();
+                        if (text != null && !text.matches(EMOJI_REGEX)) {
+                            lbl.setStyle(
                                     "-fx-font-size: 13; " +
                                             "-fx-text-fill: #757575; " +
                                             "-fx-font-weight: normal;"
@@ -262,41 +286,40 @@ public class DashboardController {
     }
 
     private void setActiveStyle(String viewName) {
-        HBox activeItem = null;
-        switch (viewName) {
-            case "dashboard":           activeItem = homeItem;           break;
-            case "cours":               activeItem = coursItem;          break;
-            case "chapitres":           activeItem = chapitresItem;      break;
-            case "QuizView":            activeItem = quizItem;           break;
-            case "exercices":           activeItem = exercicesItem;      break;
-            case "eventList":           activeItem = eventsItem;         break;
-            case "sponsor":             activeItem = sponsorsItem;       break;
-            case "categorieMenu":       activeItem = categorieItem;      break;
-            case "produitMenu":         activeItem = produitItem;        break;
-            case "admin":               activeItem = administrationItem; break;
-            case "gestionUtilisateurs": activeItem = utilisateursItem;   break;
-            case "settings":            activeItem = settingsItem;       break;
-            case "anomalyDashboard": activeItem = anomaliesItem; break;
-            default: break;
-        }
+        HBox activeItem = switch (viewName) {
+            case "dashboard"           -> homeItem;
+            case "cours"               -> coursItem;
+            case "chapitres"           -> chapitresItem;
+            case "QuizView"            -> quizItem;
+            case "QuizAnalyticsView"   -> quizAnalyticsItem;   // ← nouveau
+            case "exercices"           -> exercicesItem;
+            case "eventList"           -> eventsItem;
+            case "sponsor"             -> sponsorsItem;
+            case "categorieMenu"       -> categorieItem;
+            case "produitMenu"         -> produitItem;
+            case "admin"               -> administrationItem;
+            case "gestionUtilisateurs" -> utilisateursItem;
+            case "settings"            -> settingsItem;
+            case "anomalyDashboard"    -> anomaliesItem;
+            default                    -> null;
+        };
 
-        if (activeItem != null) {
-            activeItem.setStyle(
-                    "-fx-background-color: #E8F0FE; " +
-                            "-fx-background-radius: 8; " +
-                            "-fx-padding: 0 12 0 12;"
-            );
-            for (Node node : activeItem.getChildren()) {
-                if (node instanceof Label) {
-                    Label label = (Label) node;
-                    String text = label.getText();
-                    if (text != null && !text.matches("🏠|📚|📖|❓|✏️|🎉|💼|📊|⚙️|🏷️|🛒|🏛️|👤")) {
-                        label.setStyle(
-                                "-fx-font-size: 13; " +
-                                        "-fx-font-weight: bold; " +
-                                        "-fx-text-fill: #2979FF;"
-                        );
-                    }
+        if (activeItem == null) return;
+
+        activeItem.setStyle(
+                "-fx-background-color: #E8F0FE; " +
+                        "-fx-background-radius: 8; " +
+                        "-fx-padding: 0 12 0 12;"
+        );
+        for (Node node : activeItem.getChildren()) {
+            if (node instanceof Label lbl) {
+                String text = lbl.getText();
+                if (text != null && !text.matches(EMOJI_REGEX)) {
+                    lbl.setStyle(
+                            "-fx-font-size: 13; " +
+                                    "-fx-font-weight: bold; " +
+                                    "-fx-text-fill: #2979FF;"
+                    );
                 }
             }
         }
@@ -325,13 +348,14 @@ public class DashboardController {
         });
     }
 
+    // ── API publique ──────────────────────────────────────────────────────────
+
     public void navigateTo(String viewName) {
         loadView(viewName);
     }
 
     public void setUtilisateurConnecte(Utilisateur u) {
         this.utilisateurConnecte = u;
-
         String role = u.getRole().replace("ROLE_", "");
 
         if (role.equals("ENSEIGNANT")) {

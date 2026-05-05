@@ -411,6 +411,7 @@ public class FitnessDashboardController implements Initializable {
                 Node vue = loader.load();
                 UserHomeController ctrl = loader.getController();
                 ctrl.setContentArea(contentArea);
+                ctrl.setUtilisateur(utilisateurConnecte);
                 contentArea.getChildren().setAll(vue);
             } catch (IOException ex) {
                 showAlert("❌ Erreur", "Impossible de charger le module Quiz : " + ex.getMessage());
@@ -2508,5 +2509,3 @@ public class FitnessDashboardController implements Initializable {
 
 
 }
-
-

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="edu.connexion3a36.Controller.QuizAnalyticsController"
+      spacing="0"
+      style="-fx-background-color: #f5f5f5;">
+
+    <!-- TOPBAR -->
+    <HBox prefHeight="64" alignment="CENTER_LEFT" spacing="16"
+          style="-fx-background-color: white;
+                 -fx-border-color: transparent transparent #e0e0e0 transparent;
+                 -fx-border-width: 0 0 1 0;">
+        <padding><Insets top="0" right="28" bottom="0" left="28"/></padding>
+
+        <!-- Bouton retour -->
+        <Button text="← Retour"
+                onAction="#retourAccueil"
+                style="-fx-background-color: #f0f0f0; -fx-text-fill: #1a1a2e;
+                       -fx-font-size: 12px; -fx-font-weight: bold;
+                       -fx-background-radius: 20; -fx-border-radius: 20;
+                       -fx-padding: 8 18; -fx-cursor: hand;"/>
+
+        <VBox spacing="2">
+            <Label fx:id="lblTitreDashboard" text="📊 Tableau de bord"
+                   style="-fx-font-size: 20px; -fx-font-weight: bold;
+                          -fx-font-family: 'Georgia'; -fx-text-fill: #1a1a2e;"/>
+            <Label text="Analyse locale de vos résultats "
+                   style="-fx-font-size: 11px; -fx-text-fill: #9E9E9E; -fx-font-style: italic;"/>
+        </VBox>
+    </HBox>
+
+    <!-- BODY -->
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                style="-fx-background-color: #f5f5f5; -fx-border-color: transparent;">
+        <VBox spacing="20">
+            <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
+
+            <!-- KPIs -->
+            <HBox fx:id="hboxKpis" spacing="14"/>
+
+            <!-- GRAPHIQUE QUIZ -->
+            <VBox spacing="10"
+                  style="-fx-background-color: white; -fx-background-radius: 20;
+                         -fx-border-color: #eeeeee; -fx-border-radius: 20;
+                         -fx-border-width: 1.5; -fx-padding: 20;">
+                <Label text="Performance par quiz"
+                       style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #1a1a2e;"/>
+                <BarChart fx:id="chartQuiz" prefHeight="220" animated="true">
+                    <xAxis><CategoryAxis/></xAxis>
+                    <yAxis>
+                        <NumberAxis lowerBound="0" upperBound="100" tickUnit="20"/>
+                    </yAxis>
+                </BarChart>
+            </VBox>
+
+            <!-- CONSEILS (étudiant uniquement) -->
+            <VBox fx:id="vboxConseils" spacing="12" visible="false" managed="false"
+                  style="-fx-background-color: #F0F4FF; -fx-background-radius: 20;
+                         -fx-border-color: #C5CEFF; -fx-border-radius: 20;
+                         -fx-border-width: 1.5; -fx-padding: 20;">
+                <Label text="💡 Conseils personnalisés (analyse locale)"
+                       style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #1a237e;"/>
+                <Label fx:id="lblConseils" wrapText="true"
+                       style="-fx-font-size: 13px; -fx-text-fill: #283593; -fx-line-spacing: 3;"/>
+            </VBox>
+
+            <!-- ALERTES (enseignant) -->
+            <VBox fx:id="vboxAlertes" spacing="8"
+                  style="-fx-background-color: white; -fx-background-radius: 20;
+                         -fx-border-color: #eeeeee; -fx-border-radius: 20;
+                         -fx-border-width: 1.5; -fx-padding: 20;"/>
+
+            <!-- QUIZ NON TENTÉS (étudiant) -->
+            <VBox fx:id="vboxQuizNonTentes" spacing="8"
+                  style="-fx-background-color: white; -fx-background-radius: 20;
+                         -fx-border-color: #eeeeee; -fx-border-radius: 20;
+                         -fx-border-width: 1.5; -fx-padding: 20;"/>
+
+        </VBox>
+    </ScrollPane>
+</VBox>

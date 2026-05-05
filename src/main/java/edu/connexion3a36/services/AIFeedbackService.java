@@ -17,16 +17,6 @@ import java.util.Map;
  * ══════════════════
  * Génère un rapport de feedback intelligent après un quiz,
  * en utilisant l'API Groq (LLaMA-3).
- *
- * Appel unique :
- *   AIFeedbackService.FeedbackResult r = AIFeedbackService.generer(quiz, questions, reponsesMap, score, total);
- *
- * Le résultat contient :
- *   - mention        : "Excellent", "Bien", "Passable", "À revoir"
- *   - encouragement  : phrase motivante personnalisée
- *   - pointsForts    : ce que l'étudiant maîtrise bien
- *   - pointsFaibles  : ce qui nécessite révision
- *   - conseil        : action concrète recommandée
  */
 public class AIFeedbackService {
 
@@ -35,18 +25,18 @@ public class AIFeedbackService {
     private static final int    TIMEOUT_S = 20;
 
     private static final HttpClient HTTP = HttpClient.newBuilder()
-        .connectTimeout(Duration.ofSeconds(TIMEOUT_S))
-        .build();
+            .connectTimeout(Duration.ofSeconds(TIMEOUT_S))
+            .build();
 
     // ── Résultat ─────────────────────────────────────────────────────────────
 
     public record FeedbackResult(
-        String mention,
-        String encouragement,
-        String pointsForts,
-        String pointsFaibles,
-        String conseil,
-        String source         // "AI" ou "LOCAL"
+            String mention,
+            String encouragement,
+            String pointsForts,
+            String pointsFaibles,
+            String conseil,
+            String source
     ) {
         public static FeedbackResult local(int score, int total) {
             double pct = total > 0 ? (score * 100.0 / total) : 0;
@@ -83,13 +73,6 @@ public class AIFeedbackService {
 
     // ── Méthode principale ────────────────────────────────────────────────────
 
-    /**
-     * @param quiz        Le quiz passé
-     * @param questions   Liste des questions du quiz
-     * @param reponsesMap Map<questionId, Boolean> — true = bonne réponse
-     * @param score       Nombre de bonnes réponses
-     * @param total       Nombre total de questions
-     */
     public static FeedbackResult generer(
             Quiz quiz,
             List<Question> questions,
@@ -122,7 +105,6 @@ public class AIFeedbackService {
 
         double pct = total > 0 ? Math.round(score * 100.0 / total) : 0;
 
-        // Résumé des questions par type et niveau
         long nbChoix   = questions.stream().filter(q -> "choix_multiple".equals(q.getType())).count();
         long nbVF      = questions.stream().filter(q -> "vrai_faux".equals(q.getType())).count();
         long nbTexte   = questions.stream().filter(q -> "texte".equals(q.getType())).count();
@@ -130,22 +112,21 @@ public class AIFeedbackService {
         long nbMoyen   = questions.stream().filter(q -> "moyen".equals(q.getNiveau())).count();
         long nbDiff    = questions.stream().filter(q -> "difficile".equals(q.getNiveau())).count();
 
-        // Erreurs par type
         long errChoix  = questions.stream()
-            .filter(q -> "choix_multiple".equals(q.getType()) && Boolean.FALSE.equals(reponsesMap.get(q.getId())))
-            .count();
+                .filter(q -> "choix_multiple".equals(q.getType()) && Boolean.FALSE.equals(reponsesMap.get(q.getId())))
+                .count();
         long errVF     = questions.stream()
-            .filter(q -> "vrai_faux".equals(q.getType()) && Boolean.FALSE.equals(reponsesMap.get(q.getId())))
-            .count();
+                .filter(q -> "vrai_faux".equals(q.getType()) && Boolean.FALSE.equals(reponsesMap.get(q.getId())))
+                .count();
         long errTexte  = questions.stream()
-            .filter(q -> "texte".equals(q.getType()) && Boolean.FALSE.equals(reponsesMap.get(q.getId())))
-            .count();
+                .filter(q -> "texte".equals(q.getType()) && Boolean.FALSE.equals(reponsesMap.get(q.getId())))
+                .count();
         long errFacile = questions.stream()
-            .filter(q -> "facile".equals(q.getNiveau()) && Boolean.FALSE.equals(reponsesMap.get(q.getId())))
-            .count();
+                .filter(q -> "facile".equals(q.getNiveau()) && Boolean.FALSE.equals(reponsesMap.get(q.getId())))
+                .count();
         long errDiff   = questions.stream()
-            .filter(q -> "difficile".equals(q.getNiveau()) && Boolean.FALSE.equals(reponsesMap.get(q.getId())))
-            .count();
+                .filter(q -> "difficile".equals(q.getNiveau()) && Boolean.FALSE.equals(reponsesMap.get(q.getId())))
+                .count();
 
         return """
             Tu es un tuteur pédagogique expert et bienveillant pour la plateforme StudyFlow.
@@ -173,7 +154,7 @@ public class AIFeedbackService {
                 nbFacile, nbMoyen, nbDiff,
                 errChoix, errVF, errTexte,
                 errFacile, errDiff
-            );
+        );
     }
 
     // ── Appel Groq ────────────────────────────────────────────────────────────
@@ -187,53 +168,64 @@ public class AIFeedbackService {
         String prompt = buildPrompt(quiz, questions, reponsesMap, score, total);
 
         String body = "{"
-            + "\"model\":\"" + MODEL + "\","
-            + "\"messages\":[{\"role\":\"user\",\"content\":" + jsonStr(prompt) + "}],"
-            + "\"temperature\":0.3,"
-            + "\"max_tokens\":200"
-            + "}";
+                + "\"model\":\"" + MODEL + "\","
+                + "\"messages\":[{\"role\":\"user\",\"content\":" + jsonStr(prompt) + "}],"
+                + "\"temperature\":0.3,"
+                + "\"max_tokens\":200"
+                + "}";
 
         HttpRequest req = HttpRequest.newBuilder()
-            .uri(URI.create(GROQ_URL))
-            .timeout(Duration.ofSeconds(TIMEOUT_S))
-            .header("Content-Type",  "application/json")
-            .header("Authorization", "Bearer " + apiKey)
-            .POST(HttpRequest.BodyPublishers.ofString(body))
-            .build();
+                .uri(URI.create(GROQ_URL))
+                .timeout(Duration.ofSeconds(TIMEOUT_S))
+                .header("Content-Type",  "application/json")
+                .header("Authorization", "Bearer " + apiKey)
+                .POST(HttpRequest.BodyPublishers.ofString(body))
+                .build();
 
         HttpResponse<String> resp = HTTP.send(req, HttpResponse.BodyHandlers.ofString());
 
         if (resp.statusCode() != 200)
             throw new IOException("HTTP " + resp.statusCode() + " : " + resp.body());
 
+        System.out.println("[AIFeedback] raw response: " + resp.body());
         return parseGroqResponse(resp.body(), score, total);
     }
 
-    // ── Parsing JSON brut ─────────────────────────────────────────────────────
+    // ── Parsing — même logique robuste que AIHintService ─────────────────────
 
+    /**
+     * Extrait le contenu du champ "content" en parcourant caractère par caractère
+     * (identique à AIHintService.extraireContenu) puis parse le JSON imbriqué.
+     */
     private static FeedbackResult parseGroqResponse(String body, int score, int total) {
         try {
-            // Extraire le contenu du message
-            int ci = body.indexOf("\"content\":\"");
-            if (ci == -1) throw new IOException("content introuvable");
-            int cs = ci + "\"content\":\"".length();
-            int ce = body.indexOf("\",\"", cs);
-            if (ce == -1) ce = body.lastIndexOf("\"}", cs);
+            String content = extraireContenu(body);
+            System.out.println("[AIFeedback] content extrait: " + content);
 
-            String content = body.substring(cs, ce)
-                .replace("\\n", " ").replace("\\\"", "\"")
-                .replace("\\\\", "\\").trim();
+            if (content.isBlank()) {
+                System.err.println("[AIFeedback] content vide après extraction");
+                return FeedbackResult.local(score, total);
+            }
 
-            // Nettoyer les backticks markdown si présents
-            content = content.replaceAll("```json|```", "").trim();
+            // Nettoyer les éventuels backticks markdown
+            content = content.replaceAll("(?s)```json|```", "").trim();
+
+            // Trouver le JSON entre { et }
+            int start = content.indexOf('{');
+            int end   = content.lastIndexOf('}');
+            if (start == -1 || end == -1 || end <= start) {
+                System.err.println("[AIFeedback] JSON introuvable dans: " + content);
+                return FeedbackResult.local(score, total);
+            }
+            String json = content.substring(start, end + 1);
 
             return new FeedbackResult(
-                extractStr(content, "mention",      "Bien"),
-                extractStr(content, "encouragement","Bon travail !"),
-                extractStr(content, "pointsForts",  "Bonne participation."),
-                extractStr(content, "pointsFaibles","Quelques notions à revoir."),
-                extractStr(content, "conseil",      "Relisez le cours et retentez."),
-                "AI"
+                    extractStr(json, "mention",       "Bien"),
+                    extractStr(json, "encouragement", "Bon travail !"),
+                    extractStr(json, "pointsForts",   "Bonne participation."),
+                    extractStr(json, "pointsFaibles", "Quelques notions à revoir."),
+                    extractStr(json, "conseil",        "Relisez le cours et retentez."),
+                    "AI"
             );
         } catch (Exception e) {
             System.err.println("[AIFeedback] Parsing échoué : " + e.getMessage());
@@ -241,18 +233,67 @@ public class AIFeedbackService {
         }
     }
 
+    /**
+     * Parcours char-by-char identique à AIHintService.extraireContenu.
+     * Gère correctement les séquences d'échappement \n \\" \\\\ etc.
+     */
+    private static String extraireContenu(String body) {
+        int ci = body.indexOf("\"content\":\"");
+        if (ci == -1) return "";
+        int i = ci + "\"content\":\"".length();
+        StringBuilder sb = new StringBuilder();
+        while (i < body.length()) {
+            char c = body.charAt(i);
+            if (c == '"' && (i == 0 || body.charAt(i - 1) != '\\')) break;
+            if (c == '\\' && i + 1 < body.length()) {
+                char nx = body.charAt(i + 1);
+                switch (nx) {
+                    case 'n'  -> { sb.append('\n'); i += 2; continue; }
+                    case '"'  -> { sb.append('"');  i += 2; continue; }
+                    case '\\' -> { sb.append('\\'); i += 2; continue; }
+                    case 'r'  -> { sb.append(' ');  i += 2; continue; }
+                    case 't'  -> { sb.append(' ');  i += 2; continue; }
+                    default   -> { sb.append(c);    i++;    continue; }
+                }
+            }
+            sb.append(c);
+            i++;
+        }
+        return sb.toString().trim();
+    }
+
+    // ── Extraction d'un champ JSON string ────────────────────────────────────
+
     private static String extractStr(String json, String key, String def) {
         String marker = "\"" + key + "\":\"";
         int i = json.indexOf(marker);
         if (i == -1) return def;
         int s = i + marker.length();
-        int e = json.indexOf("\"", s);
-        return e > s ? json.substring(s, e).trim() : def;
+        // Parcours char-by-char pour ignorer les \" échappés
+        StringBuilder sb = new StringBuilder();
+        int j = s;
+        while (j < json.length()) {
+            char c = json.charAt(j);
+            if (c == '\\' && j + 1 < json.length()) {
+                char nx = json.charAt(j + 1);
+                if (nx == '"') { sb.append('"'); j += 2; continue; }
+                if (nx == '\\') { sb.append('\\'); j += 2; continue; }
+                if (nx == 'n') { sb.append(' '); j += 2; continue; }
+                sb.append(c); j++; continue;
+            }
+            if (c == '"') break;
+            sb.append(c);
+            j++;
+        }
+        String result = sb.toString().trim();
+        return result.isEmpty() ? def : result;
     }
+
+    // ── Utils ─────────────────────────────────────────────────────────────────
 
     private static String jsonStr(String s) {
         return "\"" + s.replace("\\","\\\\").replace("\"","\\\"")
-                       .replace("\n","\\n").replace("\r","\\r") + "\"";
+                .replace("\n","\\n").replace("\r","\\r") + "\"";
     }
 
     private static String resolveApiKey() {
@@ -267,7 +308,10 @@ public class AIFeedbackService {
                 java.util.Scanner sc = new java.util.Scanner(f);
                 while (sc.hasNextLine()) {
                     String ln = sc.nextLine().trim();
-                    if (ln.startsWith("GROQ_API_KEY=")) { sc.close(); return ln.substring(13).trim(); }
+                    if (ln.startsWith("GROQ_API_KEY=")) {
+                        sc.close();
+                        return ln.substring("GROQ_API_KEY=".length()).trim();
+                    }
                 }
                 sc.close();
             } catch (Exception ignored) {}
