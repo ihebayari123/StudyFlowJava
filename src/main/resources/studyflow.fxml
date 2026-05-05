@@ -57,7 +57,7 @@
                         <ProgressBar prefHeight="6" prefWidth="120" progress="0.65"
                                      style="-fx-accent: #2979FF;
                                             -fx-background-color: #E0E0E0;
-                                              -fx-background-radius: 4;" />
+                                            -fx-background-radius: 4;" />
                     </VBox>
 
                     <Separator style="-fx-background-color: #F0F0F0;" />
@@ -78,7 +78,7 @@
                                           -fx-text-fill: #2979FF;" text="Tableau de bord" />
                         </HBox>
 
-                        <!-- Utilisateurs (main) -->
+                        <!-- Utilisateurs -->
                         <HBox fx:id="utilisateursItem" alignment="CENTER_LEFT"
                               prefHeight="40" spacing="10"
                               style="-fx-background-radius: 8;
@@ -88,10 +88,11 @@
                                    text="Utilisateurs" />
                         </HBox>
 
+                        <!-- Anomalies (from File 2) -->
                         <HBox fx:id="anomaliesItem" alignment="CENTER_LEFT"
                               prefHeight="40" spacing="10"
                               style="-fx-background-radius: 8;
-                              -fx-padding: 0 12 0 12; -fx-cursor: hand;">
+                                     -fx-padding: 0 12 0 12; -fx-cursor: hand;">
                             <Label style="-fx-font-size: 14;" text="🛡️" />
                             <Label style="-fx-font-size: 13; -fx-text-fill: #757575;"
                                    text="Anomalies" />
@@ -107,7 +108,7 @@
                                    text="Mes Cours" />
                         </HBox>
 
-                        <!-- Chapitres -->
+                        <!-- Chapitres (from File 2) -->
                         <HBox fx:id="chapitresItem" alignment="CENTER_LEFT"
                               prefHeight="40" spacing="10"
                               style="-fx-background-radius: 8;
@@ -126,15 +127,17 @@
                             <Label style="-fx-font-size: 13; -fx-text-fill: #757575;"
                                    text="Quiz" />
                         </HBox>
-                        <!-- Quiz Analytics -->
+
+                        <!-- Quiz Analytics (from File 2) -->
                         <HBox fx:id="quizAnalyticsItem" alignment="CENTER_LEFT"
                               prefHeight="40" spacing="10"
                               style="-fx-background-radius: 8;
-             -fx-padding: 0 12 0 12; -fx-cursor: hand;">
+                                     -fx-padding: 0 12 0 12; -fx-cursor: hand;">
                             <Label style="-fx-font-size: 14;" text="📊" />
                             <Label style="-fx-font-size: 13; -fx-text-fill: #757575;"
                                    text="Quiz Analytics" />
                         </HBox>
+
                         <!-- Exercices -->
                         <HBox fx:id="exercicesItem" alignment="CENTER_LEFT"
                               prefHeight="40" spacing="10"
@@ -145,7 +148,7 @@
                                    text="Exercices" />
                         </HBox>
 
-                        <!-- Événements (ta version) -->
+                        <!-- Événements (from File 2) -->
                         <HBox fx:id="eventsItem" alignment="CENTER_LEFT"
                               prefHeight="40" spacing="10"
                               style="-fx-background-radius: 8;
@@ -155,7 +158,7 @@
                                    text="Événements" />
                         </HBox>
 
-                        <!-- Sponsors (ta version) -->
+                        <!-- Sponsors (from File 2) -->
                         <HBox fx:id="sponsorsItem" alignment="CENTER_LEFT"
                               prefHeight="40" spacing="10"
                               style="-fx-background-radius: 8;
@@ -165,7 +168,7 @@
                                    text="Sponsors" />
                         </HBox>
 
-                        <!-- Categories (main) -->
+                        <!-- Categories -->
                         <HBox fx:id="categorieItem" alignment="CENTER_LEFT"
                               prefHeight="40" spacing="10"
                               style="-fx-background-radius: 8;
@@ -175,7 +178,7 @@
                                    text="Categories" />
                         </HBox>
 
-                        <!-- Produits (main) -->
+                        <!-- Produits -->
                         <HBox fx:id="produitItem" alignment="CENTER_LEFT"
                               prefHeight="40" spacing="10"
                               style="-fx-background-radius: 8;
@@ -191,7 +194,7 @@
                         <Label style="-fx-font-size: 11; -fx-text-fill: #9E9E9E;
                                       -fx-padding: 0 0 4 12;" text="AUTRES" />
 
-                        <!-- Anti-Stress toggle (main) -->
+                        <!-- Anti-Stress toggle -->
                         <HBox fx:id="progressionItem" alignment="CENTER_LEFT"
                               prefHeight="40" spacing="10"
                               style="-fx-background-radius: 8;
@@ -205,7 +208,7 @@
                                    text="▶" />
                         </HBox>
 
-                        <!-- Sous-menu Anti-Stress (main) -->
+                        <!-- Sous-menu Anti-Stress -->
                         <VBox fx:id="antiStressSubMenu" managed="false" visible="false"
                               spacing="2" style="-fx-padding: 2 0 4 14;">
 
@@ -278,7 +281,7 @@
                         </VBox>
                         <!-- Fin sous-menu Anti-Stress -->
 
-                        <!-- Administration (main) -->
+                        <!-- Administration -->
                         <HBox fx:id="administrationItem" alignment="CENTER_LEFT"
                               prefHeight="40" spacing="10"
                               style="-fx-background-radius: 8;
@@ -298,7 +301,7 @@
                                    text="Paramètres" />
                         </HBox>
 
-                        <!-- Déconnexion (main) -->
+                        <!-- Déconnexion -->
                         <HBox fx:id="deconnexionItem" alignment="CENTER_LEFT"
                               prefHeight="36" spacing="8"
                               style="-fx-background-radius: 6;
