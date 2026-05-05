@@ -21,40 +21,29 @@ public class ChapitreService {
     public List<Chapitre> findByCourse(Long courseId) {
         List<Chapitre> chapitres = new ArrayList<>();
         String query = "SELECT * FROM chapitre WHERE course_id = ? ORDER BY ordre ASC";
-
         try {
             PreparedStatement pst = cnx.prepareStatement(query);
             pst.setLong(1, courseId);
             ResultSet rs = pst.executeQuery();
-
-            while (rs.next()) {
-                Chapitre chapitre = mapRow(rs);
-                chapitres.add(chapitre);
-            }
+            while (rs.next()) chapitres.add(mapRow(rs));
         } catch (SQLException e) {
             System.err.println("Erreur findByCourse: " + e.getMessage());
             e.printStackTrace();
         }
-
         return chapitres;
     }
 
     public List<Chapitre> findAll() {
         List<Chapitre> chapitres = new ArrayList<>();
         String query = "SELECT * FROM chapitre ORDER BY course_id ASC, ordre ASC";
-
         try {
             Statement stmt = cnx.createStatement();
             ResultSet rs = stmt.executeQuery(query);
-
-            while (rs.next()) {
-                chapitres.add(mapRow(rs));
-            }
+            while (rs.next()) chapitres.add(mapRow(rs));
         } catch (SQLException e) {
             System.err.println("Erreur findAll: " + e.getMessage());
             e.printStackTrace();
         }
-
         return chapitres;
     }
 
@@ -64,9 +53,7 @@ public class ChapitreService {
             PreparedStatement pst = cnx.prepareStatement(query);
             pst.setLong(1, id);
             ResultSet rs = pst.executeQuery();
-            if (rs.next()) {
-                return mapRow(rs);
-            }
+            if (rs.next()) return mapRow(rs);
         } catch (SQLException e) {
             System.err.println("Erreur findById: " + e.getMessage());
             e.printStackTrace();
@@ -74,24 +61,25 @@ public class ChapitreService {
         return null;
     }
 
+    // ── SAVE ── includes difficulty column ────────────────────────────────────
     public void save(Chapitre chapitre) {
-        String query = "INSERT INTO chapitre (titre, contenu, ordre, course_id, content_type, video_url, file_name, image_url, duration_minutes) " +
-                       "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String query =
+            "INSERT INTO chapitre " +
+            "(titre, contenu, ordre, course_id, content_type, video_url, file_name, image_url, duration_minutes, difficulty) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try {
             PreparedStatement pst = cnx.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             pst.setString(1, chapitre.getTitre());
             pst.setString(2, chapitre.getContenu());
-            pst.setInt(3, chapitre.getOrdre());
-            pst.setLong(4, chapitre.getCourse().getId());
+            pst.setInt   (3, chapitre.getOrdre());
+            pst.setLong  (4, chapitre.getCourse().getId());
             pst.setString(5, chapitre.getContentType());
             pst.setString(6, chapitre.getVideoUrl());
             pst.setString(7, chapitre.getFileName());
             pst.setString(8, chapitre.getImageUrl());
-            if (chapitre.getDurationMinutes() != null) {
-                pst.setInt(9, chapitre.getDurationMinutes());
-            } else {
-                pst.setNull(9, Types.INTEGER);
-            }
+            if (chapitre.getDurationMinutes() != null) pst.setInt(9, chapitre.getDurationMinutes());
+            else pst.setNull(9, Types.INTEGER);
+            pst.setString(10, chapitre.getDifficulty());  // NEW
 
             int rows = pst.executeUpdate();
             if (rows > 0) {
@@ -106,27 +94,37 @@ public class ChapitreService {
         }
     }
 
+    // ── UPDATE ── includes difficulty column ──────────────────────────────────
     public void update(Chapitre chapitre) {
-        String query = "UPDATE chapitre SET titre=?, contenu=?, ordre=?, content_type=?, video_url=?, file_name=?, image_url=?, duration_minutes=? WHERE id=?";
+        // ── 1. Fetch the current state BEFORE overwriting ─────────────────────
+        Chapitre before = findById(chapitre.getId());
+
+        // ── 2. Perform the actual update ──────────────────────────────────────
+        String query = "UPDATE chapitre SET titre=?, contenu=?, ordre=?, content_type=?, " +
+                "video_url=?, file_name=?, image_url=?, duration_minutes=? WHERE id=?";
         try {
             PreparedStatement pst = cnx.prepareStatement(query);
             pst.setString(1, chapitre.getTitre());
             pst.setString(2, chapitre.getContenu());
-            pst.setInt(3, chapitre.getOrdre());
+            pst.setInt(3,    chapitre.getOrdre());
             pst.setString(4, chapitre.getContentType());
             pst.setString(5, chapitre.getVideoUrl());
             pst.setString(6, chapitre.getFileName());
             pst.setString(7, chapitre.getImageUrl());
-            if (chapitre.getDurationMinutes() != null) {
+            if (chapitre.getDurationMinutes() != null)
                 pst.setInt(8, chapitre.getDurationMinutes());
-            } else {
+            else
                 pst.setNull(8, Types.INTEGER);
-            }
             pst.setLong(9, chapitre.getId());
 
             int rows = pst.executeUpdate();
             if (rows > 0) {
                 System.out.println("✅ Chapitre mis à jour: " + chapitre.getTitre());
+
+                // ── 3. Save the old snapshot as a version ─────────────────────
+                if (before != null) {
+                    new ChapitreVersionService().saveVersion(before, chapitre);
+                }
             } else {
                 System.err.println("❌ Aucun chapitre trouvé avec ID: " + chapitre.getId());
             }
@@ -143,11 +141,8 @@ public class ChapitreService {
             PreparedStatement pst = cnx.prepareStatement(query);
             pst.setLong(1, id);
             int rows = pst.executeUpdate();
-            if (rows > 0) {
-                System.out.println("✅ Chapitre supprimé: ID " + id);
-            } else {
-                System.err.println("❌ Aucun chapitre trouvé avec ID: " + id);
-            }
+            if (rows > 0) System.out.println("✅ Chapitre supprimé: ID " + id);
+            else System.err.println("❌ Aucun chapitre trouvé avec ID: " + id);
         } catch (SQLException e) {
             System.err.println("❌ Erreur delete: " + e.getMessage());
             e.printStackTrace();
@@ -160,12 +155,10 @@ public class ChapitreService {
         String query = "SELECT * FROM chapitre WHERE course_id = ? AND titre LIKE ? ORDER BY ordre ASC";
         try {
             PreparedStatement pst = cnx.prepareStatement(query);
-            pst.setLong(1, courseId);
+            pst.setLong  (1, courseId);
             pst.setString(2, "%" + keyword + "%");
             ResultSet rs = pst.executeQuery();
-            while (rs.next()) {
-                chapitres.add(mapRow(rs));
-            }
+            while (rs.next()) chapitres.add(mapRow(rs));
         } catch (SQLException e) {
             System.err.println("Erreur searchByTitle: " + e.getMessage());
             e.printStackTrace();
@@ -186,20 +179,22 @@ public class ChapitreService {
         return 1;
     }
 
+    // ── Row mapper ────────────────────────────────────────────────────────────
     private Chapitre mapRow(ResultSet rs) throws SQLException {
         Chapitre c = new Chapitre();
-        c.setId(rs.getLong("id"));
-        c.setTitre(rs.getString("titre"));
-        c.setContenu(rs.getString("contenu"));
-        c.setOrdre(rs.getInt("ordre"));
+        c.setId        (rs.getLong  ("id"));
+        c.setTitre     (rs.getString("titre"));
+        c.setContenu   (rs.getString("contenu"));
+        c.setOrdre     (rs.getInt   ("ordre"));
         c.setContentType(rs.getString("content_type"));
-        c.setVideoUrl(rs.getString("video_url"));
-        c.setFileName(rs.getString("file_name"));
-        c.setImageUrl(rs.getString("image_url"));
+        c.setVideoUrl  (rs.getString("video_url"));
+        c.setFileName  (rs.getString("file_name"));
+        c.setImageUrl  (rs.getString("image_url"));
+        c.setDifficulty(rs.getString("difficulty"));   // NEW
+
         int dur = rs.getInt("duration_minutes");
         c.setDurationMinutes(rs.wasNull() ? null : dur);
 
-        // Attach the parent course (lightweight stub)
         Cours cours = new Cours();
         cours.setId(rs.getLong("course_id"));
         c.setCourse(cours);

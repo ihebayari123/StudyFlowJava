@@ -3,98 +3,162 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.Region?>
 
-<VBox spacing="16"
-      style="-fx-padding: 24; -fx-background-color: #F5F6FA;"
+<!--
+    Root is a VBox with 3 parts:
+      1. Header  (fixed, never scrolls)
+      2. ScrollPane  (grows to fill space, scrollable)
+      3. Footer with buttons  (fixed, always visible at bottom)
+-->
+<VBox spacing="0"
+      style="-fx-background-color: #F5F6FA;"
       xmlns="http://javafx.com/javafx/21"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="edu.connexion3a36.Controller.AddChapitreController">
 
-    <!-- Title -->
-    <Label fx:id="formTitle" text="➕ Ajouter un Chapitre"
-           style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #1A1A2E;" />
-
-    <Separator />
-
-    <!-- Titre -->
-    <VBox spacing="4">
-        <Label text="Titre *" style="-fx-font-weight: bold; -fx-text-fill: #333;" />
-        <TextField fx:id="titreField" promptText="Titre du chapitre"
-                   style="-fx-background-radius: 6; -fx-border-radius: 6; -fx-padding: 8 12;" />
-        <Label fx:id="titreErrorLabel" text="" visible="false"
-               style="-fx-text-fill: red; -fx-font-size: 11;" />
-    </VBox>
-
-    <!-- Contenu -->
-    <VBox spacing="4">
-        <Label text="Contenu *" style="-fx-font-weight: bold; -fx-text-fill: #333;" />
-        <TextArea fx:id="contenuField" promptText="Contenu / description du chapitre"
-                  prefHeight="120" wrapText="true"
-                  style="-fx-background-radius: 6; -fx-border-radius: 6; -fx-padding: 8 12;" />
-        <Label fx:id="contenuErrorLabel" text="" visible="false"
-               style="-fx-text-fill: red; -fx-font-size: 11;" />
-    </VBox>
-
-    <!-- Ordre + Type (row) -->
-    <HBox spacing="16">
-        <VBox spacing="4" HBox.hgrow="ALWAYS">
-            <Label text="Ordre *" style="-fx-font-weight: bold; -fx-text-fill: #333;" />
-            <TextField fx:id="ordreField" promptText="ex: 1"
-                       style="-fx-background-radius: 6; -fx-border-radius: 6; -fx-padding: 8 12;" />
-            <Label fx:id="ordreErrorLabel" text="" visible="false"
-                   style="-fx-text-fill: red; -fx-font-size: 11;" />
-        </VBox>
-        <VBox spacing="4" HBox.hgrow="ALWAYS">
-            <Label text="Type de contenu" style="-fx-font-weight: bold; -fx-text-fill: #333;" />
-            <ComboBox fx:id="contentTypeBox" prefWidth="200"
-                      style="-fx-background-radius: 6; -fx-padding: 4 8;" />
-        </VBox>
-        <VBox spacing="4" HBox.hgrow="ALWAYS">
-            <Label text="Durée (minutes)" style="-fx-font-weight: bold; -fx-text-fill: #333;" />
-            <TextField fx:id="durationField" promptText="ex: 45"
-                       style="-fx-background-radius: 6; -fx-border-radius: 6; -fx-padding: 8 12;" />
-        </VBox>
+    <!-- ══ HEADER — always visible ════════════════════════════════════════ -->
+    <HBox style="-fx-background-color: #1A1A2E; -fx-padding: 16 24;">
+        <Label fx:id="formTitle" text="➕ Ajouter un Chapitre"
+               style="-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: white;" />
     </HBox>
 
-    <!-- Optional fields -->
-    <TitledPane text="Champs optionnels (URL vidéo, image, fichier)"
-                expanded="false"
-                style="-fx-background-color: #FFFFFF; -fx-background-radius: 8;">
-        <VBox spacing="12" style="-fx-padding: 12;">
+    <!-- ══ SCROLLABLE BODY ════════════════════════════════════════════════ -->
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                style="-fx-background-color: #F5F6FA; -fx-border-color: transparent;"
+                hbarPolicy="NEVER" vbarPolicy="AS_NEEDED">
+
+        <VBox spacing="14" style="-fx-padding: 20 24;">
+
+            <!-- Titre -->
             <VBox spacing="4">
-                <Label text="URL Vidéo" style="-fx-font-weight: bold; -fx-text-fill: #333;" />
-                <TextField fx:id="videoUrlField" promptText="https://youtube.com/..."
+                <Label text="Titre *" style="-fx-font-weight: bold; -fx-text-fill: #333; -fx-font-size: 12;" />
+                <TextField fx:id="titreField" promptText="Titre du chapitre"
                            style="-fx-background-radius: 6; -fx-border-radius: 6; -fx-padding: 8 12;" />
+                <Label fx:id="titreErrorLabel" text="" visible="false"
+                       style="-fx-text-fill: red; -fx-font-size: 11;" />
             </VBox>
+
+            <!-- Contenu -->
             <VBox spacing="4">
-                <Label text="URL Image" style="-fx-font-weight: bold; -fx-text-fill: #333;" />
-                <TextField fx:id="imageUrlField" promptText="https://..."
-                           style="-fx-background-radius: 6; -fx-border-radius: 6; -fx-padding: 8 12;" />
+                <Label text="Contenu *" style="-fx-font-weight: bold; -fx-text-fill: #333; -fx-font-size: 12;" />
+                <TextArea fx:id="contenuField" promptText="Contenu / description du chapitre"
+                          prefHeight="100" wrapText="true"
+                          style="-fx-background-radius: 6; -fx-border-radius: 6; -fx-padding: 8 12;" />
+                <Label fx:id="contenuErrorLabel" text="" visible="false"
+                       style="-fx-text-fill: red; -fx-font-size: 11;" />
             </VBox>
-            <VBox spacing="4">
-                <Label text="Nom du fichier" style="-fx-font-weight: bold; -fx-text-fill: #333;" />
-                <TextField fx:id="fileNameField" promptText="document.pdf"
-                           style="-fx-background-radius: 6; -fx-border-radius: 6; -fx-padding: 8 12;" />
+
+            <!-- Ordre + Type + Durée -->
+            <HBox spacing="12">
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="Ordre *" style="-fx-font-weight: bold; -fx-text-fill: #333; -fx-font-size: 12;" />
+                    <TextField fx:id="ordreField" promptText="ex: 1"
+                               style="-fx-background-radius: 6; -fx-border-radius: 6; -fx-padding: 8 12;" />
+                    <Label fx:id="ordreErrorLabel" text="" visible="false"
+                           style="-fx-text-fill: red; -fx-font-size: 11;" />
+                </VBox>
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="Type de contenu" style="-fx-font-weight: bold; -fx-text-fill: #333; -fx-font-size: 12;" />
+                    <ComboBox fx:id="contentTypeBox" prefWidth="160"
+                              style="-fx-background-radius: 6; -fx-padding: 4 8;" />
+                </VBox>
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="Durée (minutes)" style="-fx-font-weight: bold; -fx-text-fill: #333; -fx-font-size: 12;" />
+                    <TextField fx:id="durationField" promptText="ex: 45"
+                               style="-fx-background-radius: 6; -fx-border-radius: 6; -fx-padding: 8 12;" />
+                </VBox>
+            </HBox>
+
+            <!-- ══ AI DIFFICULTY TAGGER ══════════════════════════════════ -->
+            <VBox spacing="10"
+                  style="-fx-background-color: #FFF7ED; -fx-background-radius: 10;
+                         -fx-border-color: #FED7AA; -fx-border-radius: 10; -fx-border-width: 1;
+                         -fx-padding: 14 16;">
+
+                <HBox alignment="CENTER_LEFT" spacing="8">
+                    <Label text="🎯" style="-fx-font-size: 14;" />
+                    <Label text="Analyse IA de la difficulté"
+                           style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #92400E;" />
+                </HBox>
+
+                <Label text="L'IA analyse votre titre et contenu pour suggérer un niveau de difficulté."
+                       style="-fx-font-size: 11; -fx-text-fill: #B45309;" wrapText="true"/>
+
+                <Button fx:id="aiDifficultyBtn"
+                        text="🎯 Analyser la difficulté"
+                        onAction="#handleAnalyzeDifficulty"
+                        style="-fx-background-color: #D97706; -fx-text-fill: white;
+                               -fx-background-radius: 8; -fx-padding: 8 16;
+                               -fx-cursor: hand; -fx-font-size: 12; -fx-font-weight: bold;" />
+
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <VBox spacing="3" HBox.hgrow="ALWAYS">
+                        <Label fx:id="aiDifficultyLabel" text="En attente d'analyse..."
+                               style="-fx-text-fill: #9E9E9E; -fx-font-size: 13;" />
+                        <Label fx:id="aiDifficultyConfidence" text=""
+                               style="-fx-text-fill: #666; -fx-font-size: 11;" />
+                        <Label fx:id="aiDifficultyReason" text=""
+                               style="-fx-text-fill: #555; -fx-font-size: 11;" wrapText="true"/>
+                    </VBox>
+                </HBox>
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Niveau final :"
+                           style="-fx-font-size: 12; -fx-font-weight: bold; -fx-text-fill: #92400E;" />
+                    <ComboBox fx:id="difficultyCombo" prefWidth="180"
+                              style="-fx-background-radius: 6; -fx-padding: 4 8;" />
+                    <Label text="(accepter ou modifier la suggestion)"
+                           style="-fx-font-size: 10; -fx-text-fill: #B45309;" />
+                </HBox>
             </VBox>
+
+            <!-- Optional fields -->
+            <TitledPane text="Champs optionnels (URL vidéo, image, fichier)"
+                        expanded="false"
+                        style="-fx-background-color: #FFFFFF; -fx-background-radius: 8;">
+                <VBox spacing="12" style="-fx-padding: 12;">
+                    <VBox spacing="4">
+                        <Label text="URL Vidéo" style="-fx-font-weight: bold; -fx-text-fill: #333; -fx-font-size: 12;" />
+                        <TextField fx:id="videoUrlField" promptText="https://youtube.com/..."
+                                   style="-fx-background-radius: 6; -fx-border-radius: 6; -fx-padding: 8 12;" />
+                    </VBox>
+                    <VBox spacing="4">
+                        <Label text="URL Image" style="-fx-font-weight: bold; -fx-text-fill: #333; -fx-font-size: 12;" />
+                        <TextField fx:id="imageUrlField" promptText="https://..."
+                                   style="-fx-background-radius: 6; -fx-border-radius: 6; -fx-padding: 8 12;" />
+                    </VBox>
+                    <VBox spacing="4">
+                        <Label text="Nom du fichier" style="-fx-font-weight: bold; -fx-text-fill: #333; -fx-font-size: 12;" />
+                        <TextField fx:id="fileNameField" promptText="document.pdf"
+                                   style="-fx-background-radius: 6; -fx-border-radius: 6; -fx-padding: 8 12;" />
+                    </VBox>
+                </VBox>
+            </TitledPane>
+
         </VBox>
-    </TitledPane>
+    </ScrollPane>
 
-    <Separator />
-
-    <!-- Buttons -->
-    <HBox spacing="12" alignment="CENTER_RIGHT">
-        <Button text="Annuler" onAction="#handleCancel"
-                style="-fx-background-color: #E0E0E0; -fx-text-fill: #333; -fx-cursor: hand;
-                        -fx-background-radius: 8; -fx-padding: 10 20;" />
-        <Button fx:id="saveButton" text="💾  Enregistrer" onAction="#handleSave"
-                style="-fx-background-color: #2979FF; -fx-text-fill: white; -fx-font-weight: bold;
-                        -fx-cursor: hand; -fx-background-radius: 8; -fx-padding: 10 20;" />
-    </HBox>
+    <!-- ══ FOOTER — always visible at the bottom ══════════════════════════ -->
+    <VBox spacing="0"
+          style="-fx-background-color: white;
+                 -fx-border-color: #E0E0E0 transparent transparent transparent;
+                 -fx-border-width: 1 0 0 0;">
+        <HBox spacing="12" alignment="CENTER_RIGHT" style="-fx-padding: 14 24;">
+            <Button text="Annuler" onAction="#handleCancel"
+                    style="-fx-background-color: #E0E0E0; -fx-text-fill: #333; -fx-cursor: hand;
+                            -fx-background-radius: 8; -fx-padding: 10 20;" />
+            <Button fx:id="saveButton" text="💾  Enregistrer" onAction="#handleSave"
+                    style="-fx-background-color: #2979FF; -fx-text-fill: white; -fx-font-weight: bold;
+                            -fx-cursor: hand; -fx-background-radius: 8; -fx-padding: 10 20;" />
+        </HBox>
+    </VBox>
 
 </VBox>

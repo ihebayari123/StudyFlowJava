@@ -42,7 +42,7 @@
             <TableColumn text="Titre" fx:id="titleColumn" prefWidth="250"/>
             <TableColumn text="Description" fx:id="descriptionColumn" prefWidth="350"/>
             <TableColumn text="Image" fx:id="imageColumn" prefWidth="100"/>
-            <TableColumn text="Actions" fx:id="actionsColumn" prefWidth="150"/>
+            <TableColumn text="Actions" fx:id="actionsColumn" prefWidth="300"/>
         </columns>
         <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>

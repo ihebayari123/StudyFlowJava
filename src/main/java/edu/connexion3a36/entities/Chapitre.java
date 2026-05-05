@@ -1,6 +1,7 @@
 package edu.connexion3a36.entities;
 
 import jakarta.persistence.*;
+
 import java.util.List;
 
 @Entity
@@ -41,107 +42,58 @@ public class Chapitre {
 
     private Integer durationMinutes;
 
+    // ── NEW: AI-assigned difficulty level ────────────────────────────────────
+    @Column(length = 30)
+    private String difficulty;   // "Débutant" | "Intermédiaire" | "Avancé"
+
     // Constructeurs
     public Chapitre() {}
 
     public Chapitre(String titre, String contenu, Integer ordre, Cours course) {
-        this.titre = titre;
+        this.titre   = titre;
         this.contenu = contenu;
-        this.ordre = ordre;
-        this.course = course;
+        this.ordre   = ordre;
+        this.course  = course;
     }
 
     // Getters et Setters
-    public Long getId() {
-        return id;
-    }
+    public Long getId()            { return id; }
+    public void setId(Long id)     { this.id = id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public String getTitre()       { return titre; }
+    public void setTitre(String t) { this.titre = t; }
 
-    public String getTitre() {
-        return titre;
-    }
+    public String getContenu()        { return contenu; }
+    public void setContenu(String c)  { this.contenu = c; }
 
-    public void setTitre(String titre) {
-        this.titre = titre;
-    }
+    public Integer getOrdre()         { return ordre; }
+    public void setOrdre(Integer o)   { this.ordre = o; }
 
-    public String getContenu() {
-        return contenu;
-    }
+    public Cours getCourse()          { return course; }
+    public void setCourse(Cours c)    { this.course = c; }
 
-    public void setContenu(String contenu) {
-        this.contenu = contenu;
-    }
+    public String getContentType()            { return contentType; }
+    public void setContentType(String type)   { this.contentType = type; }
 
-    public Integer getOrdre() {
-        return ordre;
-    }
+    public String getVideoUrl()               { return videoUrl; }
+    public void setVideoUrl(String url)       { this.videoUrl = url; }
 
-    public void setOrdre(Integer ordre) {
-        this.ordre = ordre;
-    }
+    public String getFileName()               { return fileName; }
+    public void setFileName(String name)      { this.fileName = name; }
 
-    public Cours getCourse() {
-        return course;
-    }
+    public List<String> getLinks()            { return links; }
+    public void setLinks(List<String> links)  { this.links = links; }
 
-    public void setCourse(Cours course) {
-        this.course = course;
-    }
+    public String getImageUrl()               { return imageUrl; }
+    public void setImageUrl(String url)       { this.imageUrl = url; }
 
-    public String getContentType() {
-        return contentType;
-    }
+    public Integer getDurationMinutes()           { return durationMinutes; }
+    public void setDurationMinutes(Integer mins)  { this.durationMinutes = mins; }
 
-    public void setContentType(String contentType) {
-        this.contentType = contentType;
-    }
-
-    public String getVideoUrl() {
-        return videoUrl;
-    }
-
-    public void setVideoUrl(String videoUrl) {
-        this.videoUrl = videoUrl;
-    }
-
-    public String getFileName() {
-        return fileName;
-    }
-
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
-
-    public List<String> getLinks() {
-        return links;
-    }
-
-    public void setLinks(List<String> links) {
-        this.links = links;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
-    public Integer getDurationMinutes() {
-        return durationMinutes;
-    }
-
-    public void setDurationMinutes(Integer durationMinutes) {
-        this.durationMinutes = durationMinutes;
-    }
+    // ── Difficulty ────────────────────────────────────────────────────────────
+    public String getDifficulty()             { return difficulty; }
+    public void setDifficulty(String diff)    { this.difficulty = diff; }
 
     @Override
-    public String toString() {
-        return titre;
-    }
+    public String toString() { return titre; }
 }
